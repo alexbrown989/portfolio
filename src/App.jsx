@@ -1,5 +1,5 @@
 // src/App.jsx
-import { useEffect, useState, Suspense, lazy, Component, useRef } from 'react'
+import { useEffect, useState, Suspense, lazy, Component } from 'react'
 import { Routes, Route } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 
@@ -13,8 +13,6 @@ const Contact       = lazy(() => import('./components/Contact'))
 const Footer        = lazy(() => import('./components/Footer'))
 const Manifesto     = lazy(() => import('./components/Manifesto').catch(() => ({ default: () => null })))
 const MissionLog    = lazy(() => import('./components/MissionLog').catch(() => ({ default: () => null })))
-const ThermalSim    = lazy(() => import('./components/ThermalSim').catch(() => ({ default: () => null })))
-const Model3D       = lazy(() => import('./components/Model3D').catch(() => ({ default: () => null })))
 const Timeline      = lazy(() => import('./components/Timeline').catch(() => ({ default: () => null })))
 const AboutPage     = lazy(() => import('./pages/About'))
 
@@ -61,154 +59,26 @@ const LoadingFallback = ({ message = 'Loading component...' }) => (
   </div>
 )
 
-// --- PERFORMANCE MONITOR ---
-const PerformanceMonitor = () => {
-  const [fps, setFps] = useState(60)
-  const frameCount = useRef(0)
-  const lastTime = useRef(performance.now())
-  useEffect(() => {
-    let id
-    const tick = () => {
-      frameCount.current++
-      const t = performance.now()
-      if (t >= lastTime.current + 1000) {
-        setFps(Math.round((frameCount.current * 1000) / (t - lastTime.current)))
-        frameCount.current = 0
-        lastTime.current = t
-      }
-      id = requestAnimationFrame(tick)
-    }
-    id = requestAnimationFrame(tick)
-    return () => cancelAnimationFrame(id)
-  }, [])
-  const color = fps >= 50 ? 'text-green-400' : fps >= 30 ? 'text-yellow-400' : 'text-red-400'
-  return <div className={`text-xs font-mono ${color}`}>{fps} FPS</div>
-}
-
-// --- DEBUG PANEL ---
-const DebugPanel = ({ config, setConfig, stats }) => {
-  const [minimized, setMinimized] = useState(false)
-  return (
-    <motion.div
-      initial={{ opacity: 0, x: 100 }}
-      animate={{ opacity: 1, x: 0 }}
-      className={`fixed z-[9999] right-3 bottom-3 bg-black/90 backdrop-blur border border-cyan-500/30 rounded-lg text-xs font-mono text-gray-200 ${minimized ? 'w-auto' : 'w-72'}`}
-    >
-      <div className="p-3">
-        <div className="flex items-center justify-between mb-2">
-          <span className="text-cyan-400 font-bold">⚙ DEBUG PANEL</span>
-          <button onClick={() => setMinimized(!minimized)} className="text-gray-400 hover:text-white">
-            {minimized ? '◀' : '▶'}
-          </button>
-        </div>
-        {!minimized && (
-          <>
-            <div className="space-y-2 py-2 border-t border-gray-700">
-              <PerformanceMonitor />
-              <label className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  checked={config.particles}
-                  onChange={e => setConfig(p => ({ ...p, particles: e.target.checked }))}
-                />
-                <span>Particle Effects</span>
-              </label>
-              <label className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  checked={config.animations}
-                  onChange={e => setConfig(p => ({ ...p, animations: e.target.checked }))}
-                />
-                <span>Animations</span>
-              </label>
-              <label className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  checked={config.liveData}
-                  onChange={e => setConfig(p => ({ ...p, liveData: e.target.checked }))}
-                />
-                <span>Live Data</span>
-              </label>
-              <label className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  checked={config.heavySections}
-                  onChange={e => setConfig(p => ({ ...p, heavySections: e.target.checked }))}
-                />
-                <span>Heavy Sections (3D/Sim)</span>
-              </label>
-            </div>
-            <div className="py-2 border-t border-gray-700 space-y-1">
-              <div className="text-gray-400">Stats:</div>
-              <div>Components: {stats.componentsLoaded}/10</div>
-              <div>Load Time: {stats.loadTime}ms</div>
-              <div>Errors: {stats.errors}</div>
-            </div>
-            <div className="pt-2 border-t border-gray-700 space-y-2">
-              <button
-                onClick={() => window.location.reload()}
-                className="w-full px-2 py-1 bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-500/50 rounded text-cyan-400"
-              >
-                Reload Page
-              </button>
-              <button
-                onClick={() => console.clear()}
-                className="w-full px-2 py-1 bg-gray-700/50 hover:bg-gray-700/70 border border-gray-600 rounded"
-              >
-                Clear Console
-              </button>
-            </div>
-          </>
-        )}
-      </div>
-    </motion.div>
-  )
-}
-
 // --- MAIN APP ---
 export default function App() {
-  // Configuration state
+  // Keep simple config used by components and background
   const [config, setConfig] = useState({
     particles: true,
     animations: true,
     liveData: true,
-    heavySections: false,
-    debugMode: true,
   })
 
-  // App state
+  // Simple boot splash
   const [loading, setLoading] = useState(true)
-  const [stats, setStats] = useState({ componentsLoaded: 2, loadTime: 0, errors: 0 })
-
   useEffect(() => {
-    const t0 = performance.now()
-    const timer = setTimeout(() => {
-      setLoading(false)
-      setStats(s => ({ ...s, loadTime: Math.round(performance.now() - t0) }))
-    }, 800)
-    const bump = () =>
-      setStats(s => ({ ...s, componentsLoaded: s.componentsLoaded + 1 }))
-    window.addEventListener('componentLoaded', bump)
-    return () => {
-      clearTimeout(timer)
-      window.removeEventListener('componentLoaded', bump)
-    }
+    const t = setTimeout(() => setLoading(false), 800)
+    return () => clearTimeout(t)
   }, [])
 
+  // Shortcuts: toggle particles & jump home
   useEffect(() => {
-    const onErr = () => setStats(s => ({ ...s, errors: s.errors + 1 }))
-    window.addEventListener('error', onErr)
-    window.addEventListener('unhandledrejection', onErr)
-    return () => {
-      window.removeEventListener('error', onErr)
-      window.removeEventListener('unhandledrejection', onErr)
-    }
-  }, [])
-
-  useEffect(() => {
-    const onKey = e => {
+    const onKey = (e) => {
       if (e.ctrlKey || e.metaKey) {
-        if (e.key === 'd') { e.preventDefault(); setConfig(p => ({ ...p, debugMode: !p.debugMode })) }
         if (e.key === 'p') { e.preventDefault(); setConfig(p => ({ ...p, particles: !p.particles })) }
         if (e.key === 'h') { e.preventDefault(); window.location.href = '/#hero' }
       }
@@ -243,7 +113,7 @@ export default function App() {
     )
   }
 
-  // Sections list for nav (kept)
+  // Sections list for nav (unchanged)
   const sections = [
     { id: 'hero', label: 'Home', icon: '🏠' },
     { id: 'projects', label: 'Projects', icon: '🚀' },
@@ -284,7 +154,7 @@ export default function App() {
     </div>
   )
 
-  // Home page content (your original sections)
+  // Home page content
   const HomeContent = () => (
     <>
       {/* Hero */}
@@ -292,7 +162,7 @@ export default function App() {
         <ErrorBoundary name="Hero"><Hero config={config} /></ErrorBoundary>
       </section>
 
-      {/* Manifesto teaser (optional) */}
+      {/* Manifesto (optional) */}
       <ErrorBoundary name="Manifesto">
         <Suspense fallback={null}>
           <section id="manifesto" className="py-24">
@@ -325,45 +195,6 @@ export default function App() {
           </section>
         </Suspense>
       </ErrorBoundary>
-
-      {/* Heavy sections toggle */}
-      <AnimatePresence>
-        {config.heavySections && (
-          <>
-            <motion.section
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              id="sim"
-              className="py-32 bg-black/20"
-            >
-              <div className="container mx-auto px-6">
-                <ErrorBoundary name="ThermalSim">
-                  <Suspense fallback={<LoadingFallback message="Loading thermal simulation..." />}>
-                    <ThermalSim config={config} />
-                  </Suspense>
-                </ErrorBoundary>
-              </div>
-            </motion.section>
-
-            <motion.section
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              id="viewer"
-              className="py-32"
-            >
-              <div className="container mx-auto px-6">
-                <ErrorBoundary name="Model3D">
-                  <Suspense fallback={<LoadingFallback message="Loading 3D viewer..." />}>
-                    <Model3D config={config} />
-                  </Suspense>
-                </ErrorBoundary>
-              </div>
-            </motion.section>
-          </>
-        )}
-      </AnimatePresence>
 
       {/* Contact */}
       <section id="contact" className="py-32">
@@ -406,17 +237,9 @@ export default function App() {
         </Routes>
       </main>
 
-      {/* Debug */}
-      <AnimatePresence>
-        {config.debugMode && (
-          <DebugPanel config={config} setConfig={setConfig} stats={stats} />
-        )}
-      </AnimatePresence>
-
       {/* shortcuts */}
       <div className="fixed bottom-3 left-3 text-xs text-gray-500 font-mono hidden lg:block">
         <div>Shortcuts:</div>
-        <div>Ctrl+D: Debug</div>
         <div>Ctrl+P: Particles</div>
         <div>Ctrl+H: Home</div>
       </div>

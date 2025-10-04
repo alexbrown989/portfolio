@@ -6,8 +6,6 @@ const Manifesto = lazy(() => import('../components/Manifesto'))
 const MissionLog = lazy(() => import('../components/MissionLog').catch(() => ({ default: () => null })))
 const Projects = lazy(() => import('../components/Projects'))
 const Timeline = lazy(() => import('../components/Timeline').catch(() => ({ default: () => null })))
-const ThermalSim = lazy(() => import('../components/ThermalSim').catch(() => ({ default: () => null })))
-const Model3D = lazy(() => import('../components/Model3D').catch(() => ({ default: () => null })))
 const Contact = lazy(() => import('../components/Contact'))
 const Footer = lazy(() => import('../components/Footer'))
 
@@ -39,26 +37,7 @@ export default function Home({ config }) {
         </div>
       </section>
 
-      {/* Optional heavy sections behind DebugPanel toggle */}
-      {config.heavySections && (
-        <>
-          <section id="sim" className="py-32 bg-black/20">
-            <div className="container mx-auto px-6">
-              <Suspense fallback={<div className="py-12 text-center text-gray-400">Loading thermal simulation…</div>}>
-                <ThermalSim config={config} />
-              </Suspense>
-            </div>
-          </section>
-
-          <section id="viewer" className="py-32">
-            <div className="container mx-auto px-6">
-              <Suspense fallback={<div className="py-12 text-center text-gray-400">Loading 3D viewer…</div>}>
-                <Model3D config={config} />
-              </Suspense>
-            </div>
-          </section>
-        </>
-      )}
+      
 
       <section id="contact" className="py-32">
         <div className="container mx-auto px-6">
