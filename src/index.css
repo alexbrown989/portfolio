@@ -1,0 +1,55 @@
+/* Imports MUST come first */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+@import "maplibre-gl/dist/maplibre-gl.css";
+
+/* Reusable glow button (used on project cards) */
+.glow-btn {
+  position: relative;
+  isolation: isolate;
+}
+.glow-btn::before {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  z-index: -1;
+  border-radius: 0.75rem;
+  background: radial-gradient(120% 120% at 50% 0%, rgba(34,211,238,.45), rgba(147,51,234,.35), transparent 60%);
+  filter: blur(10px);
+  opacity: .65;
+  transition: opacity .2s ease, transform .2s ease;
+}
+.glow-btn:hover::before { opacity: 1; transform: scale(1.02); }
+
+/* Tailwind directives come AFTER imports */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@keyframes floatY {
+  0%   { transform: translateY(0) }
+  50%  { transform: translateY(-12px) }
+  100% { transform: translateY(0) }
+}
+
+
+/* Reset and base styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: #1a1a1a !important;
+  color: #ffffff !important;
+  font-family: 'Inter', system-ui, sans-serif;
+  min-height: 100vh;
+}
+
+#root {
+  min-height: 100vh;
+}
