@@ -11,7 +11,7 @@ export default defineConfig({
     port: 5174,
     host: true,
     hmr: {
-      overlay: false // Disable error overlay for now
+      overlay: true 
     }
   }
 })

@@ -1,18 +1,33 @@
 // src/shared/STLViewer.jsx
-import { Canvas, useLoader } from '@react-three/fiber'
+import React, { useEffect, useMemo, useState } from 'react'
+import { Canvas } from '@react-three/fiber'
 import { OrbitControls, Bounds, Html } from '@react-three/drei'
-import { Suspense, useState } from 'react'
-import { STLLoader } from 'three/examples/jsm/loaders/STLLoader.js'
 import * as THREE from 'three'
-import React from 'react'
+import { STLLoader } from 'three/examples/jsm/loaders/STLLoader.js'
 
-function Model({ src, layFlat = true, color = '#A8B2BE' }) {
-  // useLoader handles fetch + Suspense and will throw on error (caught by our boundary)
-  const geometry = useLoader(STLLoader, src)
-  // Defensive: compute normals/bounds if missing
-  geometry.computeVertexNormals?.()
-  geometry.computeBoundingBox?.()
-  if (layFlat) geometry.rotateX(-Math.PI / 2)
+/** ---------- small helpers ---------- */
+function NiceBg() {
+  return <color attach="background" args={['#0b1220']} />
+}
+function Lights() {
+  return (
+    <>
+      <ambientLight intensity={0.7} />
+      <directionalLight position={[4, 6, 3]} intensity={1} castShadow />
+    </>
+  )
+}
+
+/** Parse STL from an ArrayBuffer safely */
+function MeshFromArrayBuffer({ buffer, layFlat = true, color = '#A8B2BE' }) {
+  const geometry = useMemo(() => {
+    const loader = new STLLoader()
+    const g = loader.parse(buffer)
+    g.computeVertexNormals?.()
+    g.computeBoundingBox?.()
+    if (layFlat) g.rotateX(-Math.PI / 2)
+    return g
+  }, [buffer, layFlat])
 
   return (
     <mesh geometry={geometry} castShadow receiveShadow>
@@ -21,43 +36,96 @@ function Model({ src, layFlat = true, color = '#A8B2BE' }) {
   )
 }
 
-function ViewerError({ error, src }) {
+/** Friendly error panel that never crashes the route */
+function ErrorPanel({ message, onRetry, src }) {
   return (
     <div className="h-full w-full grid place-items-center bg-[rgba(10,15,28,.7)] text-center p-4">
       <div className="max-w-sm">
-        <div className="text-red-300 font-semibold mb-2">STL failed to load</div>
-        <div className="text-xs text-gray-300">
-          {String(error?.message || error) || 'Unknown error'}
-        </div>
+        <div className="text-red-300 font-semibold mb-1">3D model failed to load</div>
+        <div className="text-xs text-gray-300">{message}</div>
         <div className="text-[10px] text-gray-400 mt-2">
-          Check file path: <span className="text-cyan-300">{src}</span><br />
-          Ensure it’s in <code>/public</code> and the browser can fetch it directly.
+          Path: <span className="text-cyan-300">{src}</span>
+          <br />
+          Verify it exists in <code>/public</code> and is accessible in the browser.
         </div>
+        <button
+          onClick={onRetry}
+          className="mt-3 px-3 py-1.5 rounded border border-cyan-400/40 text-cyan-200 bg-cyan-500/10 hover:bg-cyan-500/20"
+        >
+          Retry
+        </button>
       </div>
     </div>
   )
 }
 
-// Tiny error boundary scoped to the canvas
-class MiniBoundary extends React.Component {
-  constructor(props){ super(props); this.state = { hasError:false, error:null } }
-  static getDerivedStateFromError(error){ return { hasError:true, error } }
-  componentDidCatch(err){ console.error('STLViewer error:', err) }
-  render(){
-    if (this.state.hasError) return <ViewerError error={this.state.error} src={this.props.src} />
-    return this.props.children
-  }
+/** Placeholder 3D scene so the canvas still renders even if STL failed */
+function PlaceholderScene({ controlsTarget = [0, 0, 0] }) {
+  return (
+    <>
+      <NiceBg />
+      <Lights />
+      <gridHelper args={[10, 10, '#1f2937', '#111827']} />
+      <axesHelper args={[3]} />
+      <OrbitControls enableDamping dampingFactor={0.08} target={new THREE.Vector3(...controlsTarget)} />
+    </>
+  )
 }
 
-// NOTE: We export default React here; App bundlers handle it
-// eslint-disable-next-line no-undef
+/** ---------- MAIN VIEWER (robust) ---------- */
 export default function STLViewer({
   src,
   height = 480,
   className = '',
   layFlat = true,
+  color = '#A8B2BE',
+  cameraPosition = [160, 160, 90],
+  controlsTarget = [0, 0, 0],
+  zoom = 1,
   debug = false,
+  onLoad,     // optional callback when mesh is ready
+  onError,    // optional callback on failure
 }) {
+  const [buf, setBuf] = useState(null)
+  const [error, setError] = useState(null)
+  const [attempt, setAttempt] = useState(0)
+
+  useEffect(() => {
+    let alive = true
+    ;(async () => {
+      try {
+        setError(null)
+        setBuf(null)
+
+        // preflight fetch with no caching so dev changes are seen
+        const res = await fetch(src, { cache: 'no-cache' })
+        if (!res.ok) throw new Error(`HTTP ${res.status} while fetching ${src}`)
+
+        // must be at least header(80) + triCount(4)
+        const ab = await res.arrayBuffer()
+        if (ab.byteLength < 84) throw new Error('File too small to be a valid STL')
+
+        // very rough sanity check: many servers set content-type
+        const ct = res.headers.get('content-type') || ''
+        if (ct.includes('text/html')) {
+          throw new Error('Received HTML instead of STL (likely a 404 page behind a proxy)')
+        }
+
+        if (!alive) return
+        setBuf(ab)
+        onLoad?.()
+      } catch (e) {
+        if (!alive) return
+        const msg = e instanceof Error ? e.message : String(e)
+        setError(msg)
+        onError?.(msg)
+        console.error('[STLViewer] load error:', msg)
+      }
+    })()
+    return () => { alive = false }
+    // re-run when src or manual retry changes
+  }, [src, attempt, onLoad, onError])
+
   return (
     <div
       className={`relative rounded-xl overflow-hidden border border-white/10 bg-white/5 ${className}`}
@@ -65,23 +133,45 @@ export default function STLViewer({
     >
       {debug && (
         <div className="absolute z-10 top-2 left-2 px-2 py-1 text-[10px] rounded bg-black/60 border border-white/10">
-          <span className="text-gray-300">STL:</span>{' '}
+          <span className="text-gray-300">STL: </span>
           <span className="text-cyan-300">{src}</span>
         </div>
       )}
-      <MiniBoundary src={src}>
-        <Canvas shadows dpr={[1, 2]} camera={{ position: [160, 160, 90], fov: 55 }}>
-          <color attach="background" args={['#0b1220']} />
-          <ambientLight intensity={0.7} />
-          <directionalLight position={[4, 6, 3]} intensity={1} castShadow />
-          <Suspense fallback={<Html center className="text-xs text-cyan-300">Loading STL…</Html>}>
+
+      {/* If we had a hard error, keep a canvas with a placeholder so page never blanks */}
+      {error ? (
+        <>
+          <ErrorPanel message={error} src={src} onRetry={() => setAttempt(a => a + 1)} />
+          <div className="absolute inset-0 pointer-events-none opacity-30">
+            <Canvas camera={{ position: cameraPosition, fov: 55, zoom }}>
+              <PlaceholderScene controlsTarget={controlsTarget} />
+            </Canvas>
+          </div>
+        </>
+      ) : (
+        <Canvas dpr={[1, 2]} camera={{ position: cameraPosition, fov: 55, zoom }}>
+          <NiceBg />
+          <Lights />
+
+          {!buf && (
+            <Html center className="text-xs text-cyan-300">
+              Loading STL…
+            </Html>
+          )}
+
+          {buf && (
             <Bounds margin={1.2}>
-              <Model src={src} layFlat={layFlat} />
+              <MeshFromArrayBuffer buffer={buf} layFlat={layFlat} color={color} />
             </Bounds>
-          </Suspense>
-          <OrbitControls enableDamping dampingFactor={0.08} />
+          )}
+
+          <OrbitControls
+            enableDamping
+            dampingFactor={0.08}
+            target={new THREE.Vector3(...controlsTarget)}
+          />
         </Canvas>
-      </MiniBoundary>
+      )}
     </div>
   )
 }

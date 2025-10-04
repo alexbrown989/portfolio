@@ -34,5 +34,5 @@ export const site = {
     ],
   },
 
-  features: { showThermalSim: true, showModel3D: true, showTimeline: true },
+  features: {showTimeline: true },
 }

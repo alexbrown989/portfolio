@@ -1,10 +1,11 @@
 // src/pages/projects/VibrationPCM.jsx
-import { useMemo } from 'react'
+// ✅ CORRECT
+import { lazy, Suspense, useMemo } from 'react'
 import { motion } from 'framer-motion'
 import { Link, useLocation } from 'react-router-dom'
 import ProjectLayout from '../ProjectLayout'
-import STLViewer from '../../shared/STLViewer'
 
+const STLViewer = lazy(() => import('../../shared/STLViewer.jsx'))
 /* ------------------------- small shared bits ------------------------- */
 function Glass({ className = '', children, hover = true, pad = true }) {
   return (

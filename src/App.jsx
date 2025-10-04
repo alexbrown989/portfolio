@@ -8,23 +8,23 @@ import Navigation from './components/Navigation'
 import Hero from './components/Hero'
 
 // --- LAZY LOADED COMPONENTS (for performance) ---
-const Projects      = lazy(() => import('./components/Projects'))
-const Contact       = lazy(() => import('./components/Contact'))
-const Footer        = lazy(() => import('./components/Footer'))
+const Projects      = lazy(() => import('./components/Projects').catch(() => ({ default: () => null })))
+const Contact       = lazy(() => import('./components/Contact').catch(() => ({ default: () => null })))
+const Footer        = lazy(() => import('./components/Footer').catch(() => ({ default: () => null })))
 const Manifesto     = lazy(() => import('./components/Manifesto').catch(() => ({ default: () => null })))
 const MissionLog    = lazy(() => import('./components/MissionLog').catch(() => ({ default: () => null })))
 const Timeline      = lazy(() => import('./components/Timeline').catch(() => ({ default: () => null })))
-const AboutPage     = lazy(() => import('./pages/About'))
+const AboutPage     = lazy(() => import('./pages/About').catch(() => ({ default: () => null })))
 
 // GENERIC project page (data-driven)
-const ProjectDetail = lazy(() => import('./pages/ProjectDetail'))
+const ProjectDetail = lazy(() => import('./pages/ProjectDetail').catch(() => ({ default: () => null })))
 
 // CUSTOM project pages (hand-built views)
-const BETH          = lazy(() => import('./pages/projects/BETH.jsx'))
-const Coastal       = lazy(() => import('./pages/projects/Coastal.jsx'))
-const Micromobility = lazy(() => import('./pages/projects/Micromobility.jsx'))
-const Turret        = lazy(() => import('./pages/projects/Turret.jsx'))
-const VibrationPCM  = lazy(() => import('./pages/projects/VibrationPCM.jsx'))
+const BETH          = lazy(() => import('./pages/projects/BETH.jsx').catch(() => ({ default: () => null })))
+const Coastal       = lazy(() => import('./pages/projects/Coastal.jsx').catch(() => ({ default: () => null })))
+const Micromobility = lazy(() => import('./pages/projects/Micromobility.jsx').catch(() => ({ default: () => null })))
+const Turret        = lazy(() => import('./pages/projects/Turret.jsx').catch(() => ({ default: () => null })))
+const VibrationPCM  = lazy(() => import('./pages/projects/VibrationPCM.jsx').catch(() => ({ default: () => null })))
 
 // --- ERROR BOUNDARY ---
 class ErrorBoundary extends Component {
@@ -221,17 +221,91 @@ export default function App() {
       <main className="relative z-10">
         <Routes>
           <Route path="/" element={<HomeContent />} />
-          <Route path="/about" element={<Suspense fallback={null}><AboutPage /></Suspense>} />
+
+          <Route
+            path="/about"
+            element={
+              <ErrorBoundary name="About">
+                <Suspense fallback={<LoadingFallback message="Loading About…" />}>
+                  <AboutPage />
+                </Suspense>
+              </ErrorBoundary>
+            }
+          />
 
           {/* CUSTOM project pages override the generic route */}
-          <Route path="/projects/beth"          element={<Suspense fallback={null}><BETH /></Suspense>} />
-          <Route path="/projects/coastal"       element={<Suspense fallback={null}><Coastal /></Suspense>} />
-          <Route path="/projects/micromobility" element={<Suspense fallback={null}><Micromobility /></Suspense>} />
-          <Route path="/projects/turret"        element={<Suspense fallback={null}><Turret /></Suspense>} />
-          <Route path="/projects/vibration"     element={<Suspense fallback={null}><VibrationPCM /></Suspense>} />
+          <Route
+            path="/projects/beth"
+            element={
+              <ErrorBoundary name="BETH">
+                <Suspense fallback={<LoadingFallback message="Loading project…" />}>
+                  <BETH />
+                </Suspense>
+              </ErrorBoundary>
+            }
+          />
+          <Route
+            path="/projects/coastal"
+            element={
+              <ErrorBoundary name="Coastal">
+                <Suspense fallback={<LoadingFallback message="Loading project…" />}>
+                  <Coastal />
+                </Suspense>
+              </ErrorBoundary>
+            }
+          />
+          <Route
+            path="/projects/micromobility"
+            element={
+              <ErrorBoundary name="Micromobility">
+                <Suspense fallback={<LoadingFallback message="Loading project…" />}>
+                  <Micromobility />
+                </Suspense>
+              </ErrorBoundary>
+            }
+          />
+          <Route
+            path="/projects/turret"
+            element={
+              <ErrorBoundary name="Turret">
+                <Suspense fallback={<LoadingFallback message="Loading project…" />}>
+                  <Turret />
+                </Suspense>
+              </ErrorBoundary>
+            }
+          />
+          <Route
+            path="/projects/vibration"
+            element={
+              <ErrorBoundary name="VibrationPCM">
+                <Suspense fallback={<LoadingFallback message="Loading project…" />}>
+                  <VibrationPCM />
+                </Suspense>
+              </ErrorBoundary>
+            }
+          />
+          <Route
+            path="/projects/vibration-pcm"
+            element={
+              <ErrorBoundary name="VibrationPCM">
+                <Suspense fallback={<LoadingFallback message="Loading project…" />}>
+                  <VibrationPCM />
+                </Suspense>
+              </ErrorBoundary>
+            }
+          />
 
           {/* GENERIC project page for everything else */}
-          <Route path="/projects/:id" element={<Suspense fallback={null}><ProjectDetail /></Suspense>} />
+          <Route
+            path="/projects/:id"
+            element={
+              <ErrorBoundary name="ProjectDetail">
+                <Suspense fallback={<LoadingFallback message="Loading project…" />}>
+                  <ProjectDetail />
+                </Suspense>
+              </ErrorBoundary>
+            }
+          />
 
           <Route path="*" element={<HomeContent />} />
         </Routes>
