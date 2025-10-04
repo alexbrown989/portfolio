@@ -1,424 +1,611 @@
-// src/pages/projects/BETH.jsx
-import { motion } from 'framer-motion'
+import { useState, useRef } from 'react'
+import { motion, useInView, AnimatePresence } from 'framer-motion'
 import ProjectLayout from '../ProjectLayout'
 import { Link } from 'react-router-dom'
 
-/* ---------------------------- Small Utilities ---------------------------- */
-
-function Kicker({ children }) {
-  return (
-    <div className="text-[11px] font-mono uppercase tracking-[0.25em] text-cyan-200">
-      {children}
-    </div>
-  )
-}
-
-function H2({ children }) {
-  return (
-    <div className="mb-4">
-      <h2 className="text-xl md:text-2xl font-bold text-white">{children}</h2>
-      <div className="mt-2 h-px w-24 bg-gradient-to-r from-cyan-400/80 to-transparent rounded-full" />
-    </div>
-  )
-}
-
-/** Local glass wrapper (no cross-file deps). Pass `group` to enable hover overlay. */
-function Glass({ className = '', children, hover = true, pad = true }) {
+function Glass({ children, className = '', hover = true, glow = false }) {
   return (
     <motion.div
-      whileHover={hover ? { scale: 1.015, y: -2 } : {}}
-      transition={{ duration: 0.25 }}
-      className={`group relative rounded-2xl border border-white/12 bg-white/7 backdrop-blur-sm overflow-hidden ${pad ? 'p-5' : ''} ${className}`}
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      whileHover={hover ? { scale: 1.01, y: -2 } : {}}
+      transition={{ duration: 0.3 }}
+      className={`
+        relative rounded-2xl border border-white/12 bg-white/7 backdrop-blur-sm overflow-hidden p-6
+        ${glow ? 'shadow-[0_0_40px_rgba(6,182,212,0.15)]' : ''}
+        ${className}
+      `}
     >
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-cyan-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+      <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-all duration-500" />
       <div className="relative">{children}</div>
     </motion.div>
   )
 }
 
-/* ---------------------- 1) Elastin: function, not form -------------------- */
-/** Animated fiber network that stretches (disorder) then recoils (order). */
-function ElastinSketch() {
-  // Stretches down, then recoils
-  const stretch = {
-    initial: { scaleY: 1, y: 0 },
-    cycle: {
-      scaleY: [1, 1.25, 1],
-      y: ['0%', '10%', '0%'],
-      transition: { duration: 3.2, ease: 'easeInOut', repeat: Infinity }
-    }
-  }
+function HeroSection() {
+  const ref = useRef(null)
+  const inView = useInView(ref, { once: true })
 
   return (
-    <div className="w-full h-44 grid place-items-center">
-      <motion.svg
-        viewBox="0 0 200 140"
-        className="w-full h-full"
-        variants={stretch}
-        initial="initial"
-        animate="cycle"
-      >
-        <defs>
-          <linearGradient id="elastinGrad" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stopColor="#22d3ee" />
-            <stop offset="100%" stopColor="#a78bfa" />
-          </linearGradient>
-        </defs>
-
-        {/* Longitudinal fibers */}
-        {[30, 60, 100, 140, 170].map((x, i) => (
-          <path
-            key={i}
-            d={`M ${x} 18 Q ${x + (i % 2 ? 10 : -10)} 70 ${x} 122`}
-            stroke="url(#elastinGrad)"
-            strokeWidth="3"
-            fill="none"
-            opacity="0.85"
-          />
-        ))}
-
-        {/* Cross links (entropy-sensitive) */}
-        {[...Array(8)].map((_, i) => {
-          const y = 24 + i * 12
-          return (
-            <motion.line
-              key={i}
-              x1={25}
-              x2={175}
-              y1={y}
-              y2={y + (i % 2 ? 3 : -3)}
-              stroke="url(#elastinGrad)"
-              strokeWidth="1.5"
-              initial={{ opacity: 0.7 }}
-              animate={{ opacity: [0.5, 1, 0.5] }}
-              transition={{ duration: 2.2 + i * 0.05, repeat: Infinity, ease: 'easeInOut' }}
-            />
-          )
-        })}
-      </motion.svg>
-      <div className="mt-2 text-xs text-gray-400">Stretch ↔ Recoil (entropy-driven network)</div>
-    </div>
-  )
-}
-
-/* ---------------- 2) BET-H: unified, sequenced mechanism sketch ------------ */
-/** Heat → Disorder ↑ → Hydration clamp ↓ → Heat out (release) */
-function BETHMechanism() {
-  // Timeline control using staggered containers
-  const seq = {
-    init: { opacity: 0 },
-    enter: { opacity: 1, transition: { when: 'beforeChildren', staggerChildren: 0.12 } }
-  }
-
-  const heatWave = {
-    init: { pathLength: 0, opacity: 0.0 },
-    enter: {
-      pathLength: [0, 1],
-      opacity: [0.0, 1, 0.0],
-      transition: { duration: 1.6, repeat: Infinity, repeatDelay: 1.2, ease: 'easeInOut' }
-    }
-  }
-
-  const core = {
-    init: { scale: 1, rotate: 0, filter: 'saturate(90%)' },
-    // heat-in → disorder (expand + slight rotate)
-    heat: {
-      scale: 1.06,
-      rotate: 2,
-      filter: 'saturate(120%)',
-      transition: { duration: 0.8, ease: 'easeOut' }
-    },
-    // hydrated → entropy buffered (clamp back)
-    hydrated: {
-      scale: 1.0,
-      rotate: 0,
-      filter: 'saturate(100%)',
-      transition: { duration: 0.8, ease: 'easeOut' }
-    }
-  }
-
-  return (
-    <div className="relative grid sm:grid-cols-[140px_1fr_140px] gap-4 items-center">
-      {/* Heat in (left) */}
-      <motion.svg variants={seq} initial="init" animate="enter" className="w-full h-28">
-        {[0, 1, 2].map((i) => (
-          <motion.path
-            key={i}
-            d={`M 10 ${20 + i * 18} C 50 ${10 + i * 18}, 90 ${30 + i * 18}, 130 ${20 + i * 18}`}
-            stroke="#fbbf24"
-            strokeWidth="3"
-            fill="none"
-            variants={heatWave}
-          />
-        ))}
-      </motion.svg>
-
-      {/* Core material */}
-      <div className="relative h-32 rounded-xl border border-white/15 bg-white/5 overflow-hidden">
-        {/* core slab */}
-        <motion.div
-          className="absolute inset-2 rounded-lg"
-          style={{ background: 'linear-gradient(180deg, rgba(34,211,238,.12), rgba(167,139,250,.12))' }}
-          variants={core}
-          initial="init"
-          animate={['heat', 'hydrated']}
-          transition={{ repeat: Infinity, repeatDelay: 1.0 }}
-        />
-
-        {/* water molecules appear during "hydrated" stage */}
-        {[...Array(8)].map((_, i) => (
+    <section ref={ref} className="pt-24 pb-12 relative overflow-hidden">
+      <div className="absolute inset-0 pointer-events-none">
+        {[...Array(15)].map((_, i) => (
           <motion.div
             key={i}
-            className="absolute w-1.5 h-1.5 rounded-full bg-cyan-300/80"
-            style={{ top: `${12 + (i % 4) * 18}px`, left: `${12 + (i * 11) % 80}%` }}
-            initial={{ opacity: 0, y: -6 }}
-            animate={{ opacity: [0, 1, 0], y: [-6, 0, -6] }}
-            transition={{ duration: 2.6, delay: 0.6 + i * 0.08, repeat: Infinity }}
+            className="absolute w-1 h-1 bg-cyan-400/30 rounded-full"
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+            }}
+            animate={{
+              y: [-20, 20, -20],
+              opacity: [0.2, 0.8, 0.2],
+            }}
+            transition={{
+              duration: 3 + Math.random() * 2,
+              repeat: Infinity,
+              delay: Math.random() * 2,
+            }}
           />
         ))}
-        <div className="absolute inset-0 grid place-items-center">
-          <div className="text-[11px] text-gray-300">Hydration clamps entropy → stores/release heat</div>
-        </div>
       </div>
 
-      {/* Heat out (right, cooler) */}
-      <motion.svg variants={seq} initial="init" animate="enter" className="w-full h-28">
-        {[0, 1, 2].map((i) => (
-          <motion.path
-            key={i}
-            d={`M 10 ${20 + i * 18} C 50 ${10 + i * 18}, 90 ${30 + i * 18}, 130 ${20 + i * 18}`}
-            stroke="#60a5fa"
-            strokeWidth="3"
-            fill="none"
-            variants={heatWave}
-            transition={{ duration: 1.6, repeat: Infinity, repeatDelay: 1.2 }}
-          />
-        ))}
-      </motion.svg>
-    </div>
+      <div className="container mx-auto px-6 relative">
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={inView ? { opacity: 1, y: 0 } : {}}
+          className="text-xs font-mono uppercase tracking-[0.3em] text-cyan-400 mb-4"
+        >
+          // Theoretical Framework for Passive Thermal Systems
+        </motion.div>
+        
+        <motion.h1
+          initial={{ opacity: 0, y: 20 }}
+          animate={inView ? { opacity: 1, y: 0 } : {}}
+          transition={{ delay: 0.1 }}
+          className="text-4xl md:text-6xl font-bold text-white mb-6"
+        >
+          BET-H: <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-400">
+            Biological Elastin Thermoregulation
+          </span>
+        </motion.h1>
+        
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={inView ? { opacity: 1 } : {}}
+          transition={{ delay: 0.2 }}
+          className="text-xl text-gray-300 max-w-3xl leading-relaxed"
+        >
+          A speculative framework exploring passive thermal control inspired by elastin's entropy-driven behavior.
+          Translates biological principles into engineered materials that regulate heat without external power.
+        </motion.p>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={inView ? { opacity: 1, y: 0 } : {}}
+          transition={{ delay: 0.3 }}
+          className="flex flex-wrap gap-6 mt-8"
+        >
+          <div className="flex items-center gap-2">
+            <div className="w-2 h-2 bg-yellow-400 rounded-full animate-pulse" />
+            <span className="text-sm text-gray-300">Theoretical Research</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse" />
+            <span className="text-sm text-gray-300">Conceptual Framework</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-2 h-2 bg-purple-400 rounded-full animate-pulse" />
+            <span className="text-sm text-gray-300">Material Science</span>
+          </div>
+        </motion.div>
+      </div>
+    </section>
   )
 }
 
-/* ------------------- 3) Animated system/architecture cards ----------------- */
+function InteractiveElastin() {
+  const [stretched, setStretched] = useState(false)
 
-function SolarRoofDiagram() {
   return (
-    <div className="h-48 rounded-xl border border-white/10 bg-white/5 relative overflow-hidden">
-      {/* Sun rays */}
-      {[...Array(6)].map((_, i) => (
-        <motion.div
-          key={i}
-          className="absolute top-0 left-0 h-1 w-24 bg-amber-300/70"
-          style={{ transformOrigin: 'left center', rotate: 15 + i * 4, top: 10 + i * 6 }}
-          initial={{ x: -40, opacity: 0 }}
-          animate={{ x: [ -40, 110, 130 ], opacity: [0, 1, 0] }}
-          transition={{ duration: 2.2, delay: i * 0.15, repeat: Infinity }}
-        />
-      ))}
+    <div className="relative h-64 rounded-xl bg-gradient-to-br from-gray-900 to-gray-800 border border-white/10 overflow-hidden group">
+      <div className="absolute top-4 left-4 text-xs text-gray-400 z-10">
+        Click to stretch/release
+      </div>
+      
+      <motion.div
+        className="absolute inset-0 cursor-pointer"
+        onClick={() => setStretched(!stretched)}
+        whileHover={{ scale: 1.01 }}
+      >
+        <svg viewBox="0 0 400 200" className="w-full h-full">
+          <defs>
+            <linearGradient id="elastinGrad" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stopColor="#06b6d4" />
+              <stop offset="100%" stopColor="#a855f7" />
+            </linearGradient>
+          </defs>
 
-      {/* Layer stack */}
-      <div className="absolute inset-2 grid grid-rows-3 rounded-lg overflow-hidden">
-        <div className="row-span-1 bg-zinc-900/70 grid place-items-center text-xs text-gray-300">
-          Carbon Black (absorption)
-        </div>
-        <div className="row-span-1 bg-slate-800/70 relative">
-          {/* heat carriers flowing downward */}
-          {[...Array(16)].map((_, i) => (
-            <motion.div
+          {[...Array(12)].map((_, i) => (
+            <motion.path
               key={i}
-              className="absolute w-1 h-1 rounded-full bg-rose-300/80"
-              style={{ left: `${5 + (i * 6) % 90}%`, top: 6 }}
-              animate={{ y: [0, 20], opacity: [0.8, 0.6] }}
-              transition={{ duration: 1.8 + (i % 3) * 0.2, repeat: Infinity, delay: i * 0.05 }}
+              d={`M ${50 + i * 30} 30 Q ${60 + i * 30} 100 ${50 + i * 30} 170`}
+              stroke="url(#elastinGrad)"
+              strokeWidth="2"
+              fill="none"
+              animate={{
+                d: stretched
+                  ? `M ${50 + i * 30} 10 Q ${60 + i * 30} 100 ${50 + i * 30} 190`
+                  : `M ${50 + i * 30} 30 Q ${60 + i * 30} 100 ${50 + i * 30} 170`,
+              }}
+              transition={{ duration: 0.8, type: "spring", stiffness: 100 }}
             />
           ))}
-          <div className="absolute inset-0 grid place-items-center text-xs text-gray-300">Graphite Sheet (transfer)</div>
-        </div>
-        <div className="row-span-1 bg-slate-700/70 relative">
-          {/* PCM “fill level” */}
-          <motion.div
-            className="absolute left-0 bottom-0 w-full bg-cyan-400/20"
-            initial={{ height: '10%' }}
-            animate={{ height: ['10%', '85%', '12%'] }}
-            transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
-          />
-          <div className="absolute inset-0 grid place-items-center text-xs text-gray-300">PCM Core (storage)</div>
+
+          {[...Array(8)].map((_, i) => (
+            <motion.line
+              key={`cross-${i}`}
+              x1={40}
+              x2={360}
+              y1={40 + i * 20}
+              y2={40 + i * 20}
+              stroke="url(#elastinGrad)"
+              strokeWidth="1"
+              opacity={0.6}
+              animate={{
+                y1: stretched ? 35 + i * 22 : 40 + i * 20,
+                y2: stretched ? 35 + i * 22 : 40 + i * 20,
+                opacity: stretched ? 0.3 : 0.6,
+              }}
+              transition={{ duration: 0.6 }}
+            />
+          ))}
+        </svg>
+      </motion.div>
+
+      <div className="absolute bottom-4 right-4 z-10">
+        <motion.div
+          animate={{
+            scale: stretched ? 1.05 : 1,
+          }}
+          className={`text-sm font-mono ${stretched ? 'text-yellow-400' : 'text-cyan-400'}`}
+        >
+          {stretched ? 'HIGH ENTROPY' : 'LOW ENTROPY'}
+        </motion.div>
+        <div className="text-xs text-gray-400 text-right mt-1">
+          {stretched ? 'Heat absorbed' : 'Heat released'}
         </div>
       </div>
     </div>
   )
 }
 
-function StirlingDiagram() {
+function ThermalFlowDiagram() {
+  const [stage, setStage] = useState(0)
+  const stages = ['Absorption', 'Storage', 'Release']
+
   return (
-    <div className="h-48 rounded-xl border border-white/10 bg-white/5 relative overflow-hidden grid place-items-center">
-      {/* Piston */}
-      <motion.div
-        className="w-40 h-3 rounded bg-cyan-400/60"
-        animate={{ x: [-10, 10, -10] }}
-        transition={{ duration: 2.6, repeat: Infinity, ease: 'easeInOut' }}
-      />
-      {/* “Flywheel” */}
-      <motion.div
-        className="absolute right-4 top-4 w-10 h-10 rounded-full border border-white/20"
-        animate={{ rotate: [0, 360] }}
-        transition={{ duration: 5.2, repeat: Infinity, ease: 'linear' }}
-      />
-      <div className="absolute bottom-2 left-2 text-[11px] text-gray-400">
-        Thermal expansion → mechanical work → dissipation
+    <div className="space-y-4">
+      <div className="flex gap-2">
+        {stages.map((s, i) => (
+          <button
+            key={s}
+            onClick={() => setStage(i)}
+            className={`px-4 py-2 rounded-lg text-sm transition-all ${
+              stage === i
+                ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-400/50 shadow-lg shadow-cyan-500/10'
+                : 'bg-white/5 text-gray-400 border border-white/10 hover:border-white/20'
+            }`}
+          >
+            {s}
+          </button>
+        ))}
+      </div>
+
+      <div className="relative h-64 rounded-xl bg-gradient-to-br from-gray-900 to-gray-800 border border-white/10 overflow-hidden">
+        <AnimatePresence mode="wait">
+          {stage === 0 && (
+            <motion.div
+              key="absorption"
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="absolute inset-0 flex items-center justify-center"
+            >
+              {[...Array(5)].map((_, i) => (
+                <motion.div
+                  key={i}
+                  className="absolute top-0 w-2 h-20 bg-gradient-to-b from-yellow-400 to-transparent rounded-full"
+                  style={{ left: `${20 + i * 15}%` }}
+                  animate={{ y: [0, 200], opacity: [1, 0] }}
+                  transition={{
+                    duration: 2,
+                    repeat: Infinity,
+                    delay: i * 0.3,
+                  }}
+                />
+              ))}
+              <div className="text-center z-10">
+                <div className="text-4xl mb-3">☀️</div>
+                <div className="text-white font-semibold text-lg">Solar Absorption</div>
+                <div className="text-sm text-gray-400 mt-1">Carbon black: ~98% efficiency</div>
+              </div>
+            </motion.div>
+          )}
+
+          {stage === 1 && (
+            <motion.div
+              key="storage"
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="absolute inset-0 flex items-center justify-center"
+            >
+              <div className="relative">
+                <motion.div
+                  className="w-32 h-32 rounded-full bg-gradient-to-r from-cyan-500/20 to-purple-500/20 blur-2xl"
+                  animate={{ scale: [1, 1.2, 1], opacity: [0.5, 0.8, 0.5] }}
+                  transition={{ duration: 3, repeat: Infinity }}
+                />
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="text-center">
+                    <div className="text-white font-semibold text-lg">Phase Change Storage</div>
+                    <div className="text-3xl font-bold text-cyan-400 mt-2">~247 kJ/kg</div>
+                    <div className="text-sm text-gray-400 mt-1">Latent heat (n-eicosane)</div>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          )}
+
+          {stage === 2 && (
+            <motion.div
+              key="release"
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="absolute inset-0 flex items-center justify-center"
+            >
+              {[...Array(5)].map((_, i) => (
+                <motion.div
+                  key={i}
+                  className="absolute bottom-0 w-2 h-20 bg-gradient-to-t from-blue-400 to-transparent rounded-full"
+                  style={{ left: `${20 + i * 15}%` }}
+                  animate={{ y: [0, -200], opacity: [1, 0] }}
+                  transition={{
+                    duration: 2,
+                    repeat: Infinity,
+                    delay: i * 0.3,
+                  }}
+                />
+              ))}
+              <div className="text-center z-10">
+                <div className="text-4xl mb-3">❄️</div>
+                <div className="text-white font-semibold text-lg">Controlled Release</div>
+                <div className="text-sm text-gray-400 mt-1">Time-shifted thermal regulation</div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   )
 }
 
-/* --------------------------------- Page ----------------------------------- */
+function PerformanceMetrics() {
+  const metrics = [
+    { 
+      label: 'Latent Heat', 
+      value: '~247', 
+      unit: 'kJ/kg', 
+      color: 'from-cyan-400 to-blue-500',
+      note: 'n-eicosane PCM'
+    },
+    { 
+      label: 'Thermal Conductivity', 
+      value: '~4300', 
+      unit: 'W/m·K', 
+      color: 'from-purple-400 to-pink-500',
+      note: 'Graphite (in-plane)'
+    },
+    { 
+      label: 'Solar Absorption', 
+      value: '~98', 
+      unit: '%', 
+      color: 'from-green-400 to-emerald-500',
+      note: 'Carbon black'
+    },
+    { 
+      label: 'Copper Thermal', 
+      value: '~400', 
+      unit: 'W/m·K', 
+      color: 'from-yellow-400 to-orange-500',
+      note: 'Isotropic'
+    },
+  ]
+
+  return (
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      {metrics.map((m, i) => (
+        <motion.div
+          key={m.label}
+          initial={{ opacity: 0, scale: 0.9 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: true }}
+          transition={{ delay: i * 0.1 }}
+          className="relative group"
+        >
+          <div className={`absolute inset-0 bg-gradient-to-r ${m.color} opacity-20 group-hover:opacity-30 transition-opacity rounded-xl blur-xl`} />
+          <div className="relative bg-black/40 backdrop-blur rounded-xl border border-white/10 p-4 text-center hover:border-white/20 transition-colors">
+            <div className="text-2xl md:text-3xl font-bold text-white">{m.value}</div>
+            <div className="text-sm text-gray-400 mt-0.5">{m.unit}</div>
+            <div className="text-xs text-gray-500 mt-2">{m.label}</div>
+            <div className="text-[10px] text-gray-600 mt-1">{m.note}</div>
+          </div>
+        </motion.div>
+      ))}
+    </div>
+  )
+}
+
+function ApplicationsGrid() {
+  const applications = [
+    {
+      icon: '🔋',
+      title: 'EV Battery Concept',
+      description: 'Passive thermal buffering during fast-charging with layered PCM architecture',
+      status: 'Theoretical',
+    },
+    {
+      icon: '🏠',
+      title: 'Solar Roofing System',
+      description: 'Multi-layer heat capture and time-shifted energy release platform',
+      status: 'Conceptual',
+    },
+    {
+      icon: '⚙️',
+      title: 'Stirling Dissipator',
+      description: 'Cold-side heat rejection using conductive networks and phase change buffering',
+      status: 'Design Phase',
+    },
+    {
+      icon: '🌡️',
+      title: 'MDT Framework',
+      description: 'Material-driven thermoregulation design principles and methodology',
+      status: 'Research',
+    },
+  ]
+
+  return (
+    <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+      {applications.map((app, i) => (
+        <motion.div
+          key={app.title}
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ delay: i * 0.1 }}
+          whileHover={{ scale: 1.03, y: -4 }}
+          className="bg-white/5 backdrop-blur rounded-xl border border-white/10 p-5 hover:border-cyan-400/30 transition-all cursor-default"
+        >
+          <div className="text-3xl mb-3">{app.icon}</div>
+          <h3 className="font-semibold text-white mb-2">{app.title}</h3>
+          <p className="text-sm text-gray-400 mb-3 leading-relaxed">{app.description}</p>
+          <div className="text-xs text-yellow-400/80 font-mono">{app.status}</div>
+        </motion.div>
+      ))}
+    </div>
+  )
+}
 
 export default function BETH() {
+  const [activeTab, setActiveTab] = useState('concept')
+
+  const tabs = [
+    { id: 'concept', label: 'Hypothesis', icon: '💡' },
+    { id: 'mechanism', label: 'Materials', icon: '⚙️' },
+    { id: 'performance', label: 'Properties', icon: '📊' },
+    { id: 'applications', label: 'Applications', icon: '🌍' },
+  ]
+
   return (
     <ProjectLayout>
-      {/* Header */}
-      <section className="pt-24 pb-6">
-        <div className="container mx-auto px-6">
-          <Kicker>// A New Framework for Zero-Energy Thermal Control</Kicker>
-          <h1 className="text-4xl md:text-5xl font-extrabold text-white mt-2">
-            The BET-H Framework: Passive Thermodynamics Inspired by Biology
-          </h1>
-          <p className="text-gray-300 mt-3 max-w-3xl">
-            A multidisciplinary hypothesis for passive thermal regulation inspired by elastin’s entropy buffering.
-            In preparation for peer-reviewed publication, BET-H proposes a pathway to infrastructure-free thermal systems.
-          </p>
-        </div>
-      </section>
+      <HeroSection />
 
-      {/* Conceptual Leap */}
-      <section className="pb-10">
-        <div className="container mx-auto px-6">
-          <H2>The Conceptual Leap: From Biology to Engineering</H2>
-          <div className="grid md:grid-cols-2 gap-6">
-            <Glass>
-              <div className="text-sm text-gray-400 mb-2">The Biological Model: Elastin</div>
-              <ElastinSketch />
-              <p className="text-sm text-gray-300 mt-3">
-                Elastin’s network stretches under load and recoils as entropy returns—an insight into thermal
-                buffering without moving parts.
-              </p>
-            </Glass>
-
-            <Glass>
-              <div className="text-sm text-gray-400 mb-2">The Engineering Hypothesis: BET-H</div>
-              <div className="h-16" />
-              <p className="text-sm text-gray-300">
-                The Biological Elastin Thermoregulation Hypothesis reframes hydration as a controllable clamp on entropy:
-                capture heat, stabilize via hydration, and release when conditions change.
-              </p>
-            </Glass>
-          </div>
-        </div>
-      </section>
-
-      {/* Core Framework */}
-      <section className="pb-10">
-        <div className="container mx-auto px-6">
-          <H2>The BET-H Framework: A New Design Paradigm</H2>
-          <Glass>
-            <BETHMechanism />
-            <p className="text-sm text-gray-300 mt-4">
-              Heat raises disorder in a material. Controlled hydration “clamps” the entropy state, passively storing
-              energy that later releases as hydration changes—uniting thermodynamics, materials science, and biomechanics.
-            </p>
-          </Glass>
-        </div>
-      </section>
-
-      {/* Systems & Materials */}
-      <section className="pb-8">
-        <div className="container mx-auto px-6">
-          <H2>Theoretical Systems & Material Performance</H2>
-          <div className="grid md:grid-cols-2 gap-6">
-            <Glass>
-              <div className="text-sm font-semibold text-white mb-1">System 1: Solar Roofing</div>
-              <div className="text-xs text-gray-400 mb-3">Carbon black → Graphite → PCM core</div>
-              <SolarRoofDiagram />
-              <p className="text-sm text-gray-300 mt-3">
-                Broadband absorption with carbon black, lateral transfer through graphite, and phase-change storage in
-                a PCM reservoir for time-shifted release.
-              </p>
-            </Glass>
-
-            <Glass>
-              <div className="text-sm font-semibold text-white mb-1">System 2: Stirling Engine Dissipator</div>
-              <div className="text-xs text-gray-400 mb-3">Thermal expansion → Mechanical work → Heat sink</div>
-              <StirlingDiagram />
-              <p className="text-sm text-gray-300 mt-3">
-                Waste-heat expansion provides the work to drive a simplified Stirling cycle for dissipation or
-                low-grade power generation.
-              </p>
-            </Glass>
-          </div>
-
-          {/* Key materials metrics */}
-          <div className="grid sm:grid-cols-3 gap-3 mt-6">
-            <Glass hover={false}>
-              <div className="text-2xl font-bold text-white">250 kJ/kg</div>
-              <div className="text-xs text-gray-400 mt-1">Latent Heat Capacity (PCMs)</div>
-            </Glass>
-            <Glass hover={false}>
-              <div className="text-2xl font-bold text-white">4300 W/m·K</div>
-              <div className="text-xs text-gray-400 mt-1">Thermal Conductivity (Graphite)</div>
-            </Glass>
-            <Glass hover={false}>
-              <div className="text-2xl font-bold text-white">~98%</div>
-              <div className="text-xs text-gray-400 mt-1">Solar Absorption (Carbon Black)</div>
-            </Glass>
-          </div>
-        </div>
-      </section>
-
-      {/* Vision */}
       <section className="pb-12">
         <div className="container mx-auto px-6">
-          <H2>Vision & Future Impact</H2>
-          <Glass>
-            <div className="text-sm font-semibold text-white mb-2">Designing for a Post-Infrastructure World</div>
-            <ul className="list-disc pl-5 text-sm text-gray-300 space-y-1">
-              <li><span className="text-white">Off-Grid Energy:</span> scalable, infrastructure-free thermal control for low-resource and climate-vulnerable communities.</li>
-              <li><span className="text-white">Biomedical Devices:</span> self-regulating thermal components for implants and wearables.</li>
-              <li><span className="text-white">Climate-Resilient Architecture:</span> materials that passively buffer heat loads to reduce active HVAC demand.</li>
-            </ul>
-          </Glass>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            {['Zero External Power', 'No Moving Parts', 'Passive Response', 'Bio-Inspired'].map((stat, i) => (
+              <motion.div
+                key={stat}
+                initial={{ opacity: 0, scale: 0.8 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.05 }}
+                className="text-center py-2"
+              >
+                <div className="text-xs text-cyan-400 font-mono">{stat}</div>
+              </motion.div>
+            ))}
+          </div>
         </div>
       </section>
 
-      {/* CTA */}
+      <section className="pb-12">
+        <div className="container mx-auto px-6">
+          <div className="flex flex-wrap gap-2 mb-8">
+            {tabs.map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`px-6 py-3 rounded-xl font-medium transition-all ${
+                  activeTab === tab.id
+                    ? 'bg-gradient-to-r from-cyan-500/20 to-purple-500/20 text-white border border-cyan-400/50 shadow-lg'
+                    : 'bg-white/5 text-gray-400 border border-white/10 hover:text-white hover:border-white/20'
+                }`}
+              >
+                <span className="mr-2">{tab.icon}</span>
+                {tab.label}
+              </button>
+            ))}
+          </div>
+
+          <AnimatePresence mode="wait">
+            {activeTab === 'concept' && (
+              <motion.div
+                key="concept"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+              >
+                <Glass glow>
+                  <h2 className="text-2xl font-bold text-white mb-6">The Biological Spark</h2>
+                  <div className="grid md:grid-cols-2 gap-8">
+                    <div className="space-y-4">
+                      <p className="text-gray-300 leading-relaxed">
+                        Elastin manages energy through entropy changes in its hydration shell. When stretched, 
+                        molecular disorder increases and heat is absorbed. When released, order returns and heat 
+                        is expelled—all without active metabolic input.
+                      </p>
+                      <div className="bg-cyan-500/10 border border-cyan-500/30 rounded-lg p-4">
+                        <div className="text-sm text-cyan-300 font-semibold mb-2">Experimental Evidence</div>
+                        <p className="text-sm text-gray-300">
+                          At 37°C, elastin releases −159.5 ± 5 mJ/g internally while mechanical work is only 
+                          35.5 ± 0.3 mJ/g. The 4.5× difference comes from water reorientation, not polymer deformation.
+                        </p>
+                      </div>
+                      <p className="text-gray-300 leading-relaxed">
+                        <span className="text-purple-400 font-semibold">BET-H proposes:</span> This isn't unique to elastin 
+                        but represents a design principle—materials can regulate thermal energy through reversible 
+                        structural transitions alone.
+                      </p>
+                    </div>
+                    <InteractiveElastin />
+                  </div>
+                </Glass>
+              </motion.div>
+            )}
+
+            {activeTab === 'mechanism' && (
+              <motion.div
+                key="mechanism"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+              >
+                <Glass glow>
+                  <h2 className="text-2xl font-bold text-white mb-6">Material-Driven Thermoregulation (MDT)</h2>
+                  <ThermalFlowDiagram />
+                  <div className="mt-8 grid md:grid-cols-3 gap-4">
+                    <div className="bg-black/30 rounded-lg p-5 border border-white/10 hover:border-cyan-400/30 transition-colors">
+                      <div className="text-cyan-400 font-semibold mb-3 text-sm">Phase Change Materials</div>
+                      <p className="text-gray-300 text-sm leading-relaxed">
+                        Store latent heat during phase transitions (~247 kJ/kg for n-eicosane). 
+                        Provide thermal buffering without temperature rise.
+                      </p>
+                    </div>
+                    <div className="bg-black/30 rounded-lg p-5 border border-white/10 hover:border-purple-400/30 transition-colors">
+                      <div className="text-purple-400 font-semibold mb-3 text-sm">Graphite Sheets</div>
+                      <p className="text-gray-300 text-sm leading-relaxed">
+                        Ultrahigh in-plane conductivity (~4300 W/m·K in thin films) enables rapid lateral 
+                        heat spreading while limiting through-plane loss.
+                      </p>
+                    </div>
+                    <div className="bg-black/30 rounded-lg p-5 border border-white/10 hover:border-green-400/30 transition-colors">
+                      <div className="text-green-400 font-semibold mb-3 text-sm">Carbon Black</div>
+                      <p className="text-gray-300 text-sm leading-relaxed">
+                        Near-perfect solar absorption (~98%) plus mechanical reinforcement. 
+                        Durable, low-cost, globally available.
+                      </p>
+                    </div>
+                  </div>
+                </Glass>
+              </motion.div>
+            )}
+
+            {activeTab === 'performance' && (
+              <motion.div
+                key="performance"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+              >
+                <Glass glow>
+                  <h2 className="text-2xl font-bold text-white mb-6">Material Properties</h2>
+                  <PerformanceMetrics />
+                  <div className="mt-8 bg-black/30 rounded-xl p-6 border border-white/10">
+                    <h3 className="text-lg font-semibold text-white mb-4">Framework Principles</h3>
+                    <ul className="space-y-3 text-gray-300 text-sm">
+                      <li className="flex items-start gap-3">
+                        <span className="text-cyan-400 mt-0.5 flex-shrink-0">→</span>
+                        <span><strong className="text-white">Abstraction, not imitation:</strong> Extract thermodynamic function from biology rather than biochemical structure</span>
+                      </li>
+                      <li className="flex items-start gap-3">
+                        <span className="text-cyan-400 mt-0.5 flex-shrink-0">→</span>
+                        <span><strong className="text-white">Passive by design:</strong> System intelligence emerges from material properties and spatial arrangement</span>
+                      </li>
+                      <li className="flex items-start gap-3">
+                        <span className="text-cyan-400 mt-0.5 flex-shrink-0">→</span>
+                        <span><strong className="text-white">Scalable materials:</strong> Carbon black, graphite, PCMs, copper are abundant and cost-effective</span>
+                      </li>
+                      <li className="flex items-start gap-3">
+                        <span className="text-cyan-400 mt-0.5 flex-shrink-0">→</span>
+                        <span><strong className="text-white">Research status:</strong> Conceptual applications require experimental validation and long-term durability testing</span>
+                      </li>
+                    </ul>
+                  </div>
+                </Glass>
+              </motion.div>
+            )}
+
+            {activeTab === 'applications' && (
+              <motion.div
+                key="applications"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+              >
+                <Glass glow>
+                  <h2 className="text-2xl font-bold text-white mb-6">Conceptual Applications</h2>
+                  <ApplicationsGrid />
+                  <div className="mt-6 p-4 bg-yellow-500/10 border border-yellow-500/30 rounded-lg">
+                    <p className="text-sm text-yellow-200/90 leading-relaxed">
+                      <strong>Note:</strong> These applications are theoretical frameworks requiring experimental validation, 
+                      material durability testing, and performance characterization under real-world conditions.
+                    </p>
+                  </div>
+                </Glass>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      </section>
+
       <section className="pb-16">
         <div className="container mx-auto px-6">
-          <Glass pad>
-            <div className="grid md:grid-cols-[1fr_auto_auto] gap-4 items-center">
-              <div>
-                <h3 className="text-2xl font-bold text-white">Why This Research Matters</h3>
-                <p className="text-sm text-gray-300 mt-2">
-                  BET-H synthesizes principles from thermodynamics, materials science, and biomechanics into a novel,
-                  testable hypothesis—first-principles thinking aimed at foundational, global-impact tech.
-                </p>
-              </div>
-              <a
-                href="/#contact"
-                className="px-5 py-3 rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-semibold text-sm text-center"
-              >
-                Get in Touch
-              </a>
-              <a
-                href="/files/beth_draft.pdf"
-                target="_blank"
-                className="px-5 py-3 rounded-lg border border-white/15 text-gray-200 hover:border-cyan-400/50 hover:text-white text-sm text-center"
-              >
-                Read Draft (PDF)
-              </a>
-            </div>
+          <Glass className="text-center">
+            <h2 className="text-3xl font-bold text-white mb-4">
+              Rethinking Thermal Systems
+            </h2>
+            <p className="text-gray-300 max-w-2xl mx-auto mb-8 leading-relaxed">
+              This framework represents a fundamental shift: replacing mechanical complexity with material intelligence. 
+              By embedding thermodynamic function into structure, we create systems that respond to their environment 
+              through physics alone—no sensors, no control loops, no external power.
+            </p>
+            <Link 
+              to="/#contact"
+              className="inline-block px-6 py-3 rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-semibold hover:shadow-lg hover:shadow-cyan-500/25 transition-all"
+            >
+              Discuss Research
+            </Link>
           </Glass>
 
-          <div className="mt-6">
-            <Link className="inline-flex items-center gap-2 text-cyan-300 hover:text-cyan-200 transition-colors" to="/#projects">
+          <div className="mt-8 text-center">
+            <Link 
+              to="/#projects" 
+              className="inline-flex items-center gap-2 text-cyan-400 hover:text-cyan-300 transition-colors"
+            >
               <span>←</span> Back to Projects
             </Link>
           </div>

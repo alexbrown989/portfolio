@@ -1,34 +1,37 @@
 // src/shared/STLViewer.jsx
-import React, { useEffect, useMemo, useState } from 'react'
-import { Canvas } from '@react-three/fiber'
-import { OrbitControls, Bounds, Html } from '@react-three/drei'
-import * as THREE from 'three'
+import React, { Suspense, useMemo, useRef, useEffect } from 'react'
+import { Canvas, useLoader, useThree } from '@react-three/fiber'
+import { OrbitControls, Bounds, Html, useBounds } from '@react-three/drei'
 import { STLLoader } from 'three/examples/jsm/loaders/STLLoader.js'
 
-/** ---------- small helpers ---------- */
-function NiceBg() {
-  return <color attach="background" args={['#0b1220']} />
-}
-function Lights() {
+/* -------------------- tiny error UI -------------------- */
+function ViewerError({ error, src }) {
   return (
-    <>
-      <ambientLight intensity={0.7} />
-      <directionalLight position={[4, 6, 3]} intensity={1} castShadow />
-    </>
+    <div className="h-full w-full grid place-items-center bg-[rgba(10,15,28,.7)] text-center p-4">
+      <div className="max-w-sm">
+        <div className="text-red-300 font-semibold mb-2">STL failed to load</div>
+        <div className="text-xs text-gray-300">{String(error?.message || error) || 'Unknown error'}</div>
+        <div className="text-[10px] text-gray-400 mt-2">
+          Path: <span className="text-cyan-300">{src}</span>
+        </div>
+      </div>
+    </div>
   )
 }
 
-/** Parse STL from an ArrayBuffer safely */
-function MeshFromArrayBuffer({ buffer, layFlat = true, color = '#A8B2BE' }) {
-  const geometry = useMemo(() => {
-    const loader = new STLLoader()
-    const g = loader.parse(buffer)
-    g.computeVertexNormals?.()
-    g.computeBoundingBox?.()
-    if (layFlat) g.rotateX(-Math.PI / 2)
-    return g
-  }, [buffer, layFlat])
+class MiniBoundary extends React.Component {
+  constructor(p){ super(p); this.state = { hasError:false, error:null } }
+  static getDerivedStateFromError(error){ return { hasError:true, error } }
+  componentDidCatch(err){ console.error('STLViewer error:', err) }
+  render(){ return this.state.hasError ? <ViewerError error={this.state.error} src={this.props.src} /> : this.props.children }
+}
 
+/* -------------------- mesh loader -------------------- */
+function Model({ src, layFlat = true, color = '#A8B2BE' }) {
+  const geometry = useLoader(STLLoader, src)
+  geometry.computeVertexNormals?.()
+  geometry.computeBoundingBox?.()
+  if (layFlat) geometry.rotateX(-Math.PI / 2)
   return (
     <mesh geometry={geometry} castShadow receiveShadow>
       <meshStandardMaterial metalness={0.2} roughness={0.5} color={color} />
@@ -36,115 +39,50 @@ function MeshFromArrayBuffer({ buffer, layFlat = true, color = '#A8B2BE' }) {
   )
 }
 
-/** Friendly error panel that never crashes the route */
-function ErrorPanel({ message, onRetry, src }) {
-  return (
-    <div className="h-full w-full grid place-items-center bg-[rgba(10,15,28,.7)] text-center p-4">
-      <div className="max-w-sm">
-        <div className="text-red-300 font-semibold mb-1">3D model failed to load</div>
-        <div className="text-xs text-gray-300">{message}</div>
-        <div className="text-[10px] text-gray-400 mt-2">
-          Path: <span className="text-cyan-300">{src}</span>
-          <br />
-          Verify it exists in <code>/public</code> and is accessible in the browser.
-        </div>
-        <button
-          onClick={onRetry}
-          className="mt-3 px-3 py-1.5 rounded border border-cyan-400/40 text-cyan-200 bg-cyan-500/10 hover:bg-cyan-500/20"
-        >
-          Retry
-        </button>
-      </div>
-    </div>
-  )
+/* -------------------- dbl-click reset -------------------- */
+function DoubleClickReset({ controlsRef }) {
+  const api = useBounds()
+  const { gl } = useThree()
+  useEffect(() => {
+    const handler = () => {
+      // fit the current bounds and reset orbit target/distance
+      api.fit()
+      controlsRef.current?.reset?.()
+    }
+    gl.domElement.addEventListener('dblclick', handler)
+    return () => gl.domElement.removeEventListener('dblclick', handler)
+  }, [api, gl, controlsRef])
+  return null
 }
 
-/** Placeholder 3D scene so the canvas still renders even if STL failed */
-function PlaceholderScene({ controlsTarget = [0, 0, 0] }) {
-  return (
-    <>
-      <NiceBg />
-      <Lights />
-      <gridHelper args={[10, 10, '#1f2937', '#111827']} />
-      <axesHelper args={[3]} />
-      <OrbitControls enableDamping dampingFactor={0.08} target={new THREE.Vector3(...controlsTarget)} />
-    </>
-  )
-}
-
-/** ---------- MAIN VIEWER (robust) ---------- */
+/* -------------------- exported viewer -------------------- */
 export default function STLViewer({
   src,
   height = 480,
   className = '',
   layFlat = true,
-  color = '#A8B2BE',
-  cameraPosition = [160, 160, 90],
-  controlsTarget = [0, 0, 0],
-  zoom = 1,
   debug = false,
-  onLoad,     // optional callback when mesh is ready
-  onError,    // optional callback on failure
+  // slightly tighter by default
+  cameraPosition = [80, 80, 80],
+  controlsTarget = [0, 0, 0],
+  zoom = 10,               // tad more zoom
+  fitMargin = 1.06,          // and a tighter fit
+  background = '#0b1220',
 }) {
-  // ✅ SSR / non-DOM guard: bail out immediately with a friendly fallback
-  if (typeof window === 'undefined' || !globalThis?.document) {
+  // SSR guard
+  if (typeof window === 'undefined' || !globalThis.document) {
     return (
       <div
-        className={`relative rounded-xl overflow-hidden border border-white/10 bg-white/5 ${className}`}
+        className={`rounded-xl border border-white/10 bg-white/5 text-xs text-gray-300 grid place-items-center ${className}`}
         style={{ height }}
       >
-        <div className="h-full w-full grid place-items-center text-center p-4">
-          <div>
-            <div className="text-[11px] font-mono uppercase tracking-[0.25em] text-cyan-200 mb-1">
-              // 3D preview unavailable
-            </div>
-            <div className="text-sm text-gray-300">
-              This viewer requires a browser environment. The STL will load normally on the client.
-            </div>
-          </div>
-        </div>
+        3D viewer will load on the client…
       </div>
     )
   }
 
-  const [buf, setBuf] = useState(null)
-  const [error, setError] = useState(null)
-  const [attempt, setAttempt] = useState(0)
-
-  useEffect(() => {
-    let alive = true
-    ;(async () => {
-      try {
-        setError(null)
-        setBuf(null)
-
-        // preflight fetch with no caching so dev changes are seen
-        const res = await fetch(src, { cache: 'no-cache' })
-        if (!res.ok) throw new Error(`HTTP ${res.status} while fetching ${src}`)
-
-        // must be at least header(80) + triCount(4)
-        const ab = await res.arrayBuffer()
-        if (ab.byteLength < 84) throw new Error('File too small to be a valid STL')
-
-        // rough sanity check: if server returns HTML, we likely hit a 404/redirect page
-        const ct = res.headers.get('content-type') || ''
-        if (ct.includes('text/html')) {
-          throw new Error('Received HTML instead of STL (likely a 404/redirect)')
-        }
-
-        if (!alive) return
-        setBuf(ab)
-        onLoad?.()
-      } catch (e) {
-        if (!alive) return
-        const msg = e instanceof Error ? e.message : String(e)
-        setError(msg)
-        onError?.(msg)
-        console.error('[STLViewer] load error:', msg)
-      }
-    })()
-    return () => { alive = false }
-  }, [src, attempt, onLoad, onError])
+  const key = useMemo(() => `stl-${src}`, [src])
+  const controlsRef = useRef(null)
 
   return (
     <div
@@ -158,40 +96,28 @@ export default function STLViewer({
         </div>
       )}
 
-      {/* If we had a hard error, keep a canvas with a placeholder so page never blanks */}
-      {error ? (
-        <>
-          <ErrorPanel message={error} src={src} onRetry={() => setAttempt(a => a + 1)} />
-          <div className="absolute inset-0 pointer-events-none opacity-30">
-            <Canvas camera={{ position: cameraPosition, fov: 55, zoom }}>
-              <PlaceholderScene controlsTarget={controlsTarget} />
-            </Canvas>
-          </div>
-        </>
-      ) : (
-        <Canvas dpr={[1, 2]} camera={{ position: cameraPosition, fov: 55, zoom }}>
-          <NiceBg />
-          <Lights />
+      <MiniBoundary src={src}>
+        <Canvas key={key} shadows dpr={[1, 2]} camera={{ position: cameraPosition, fov: 55, zoom }}>
+          <color attach="background" args={[background]} />
+          <ambientLight intensity={0.7} />
+          <directionalLight position={[4, 6, 3]} intensity={1} castShadow />
 
-          {!buf && (
-            <Html center className="text-xs text-cyan-300">
-              Loading STL…
-            </Html>
-          )}
-
-          {buf && (
-            <Bounds margin={1.2}>
-              <MeshFromArrayBuffer buffer={buf} layFlat={layFlat} color={color} />
+          <Suspense fallback={<Html center className="text-xs text-cyan-300">Loading STL…</Html>}>
+            {/* Bounds auto-frames; tighter margin => slightly zoomed in */}
+            <Bounds margin={fitMargin} clip observe>
+              <Model src={src} layFlat={layFlat} />
             </Bounds>
-          )}
+          </Suspense>
 
           <OrbitControls
+            ref={controlsRef}
             enableDamping
             dampingFactor={0.08}
-            target={new THREE.Vector3(...controlsTarget)}
+            target={controlsTarget}
           />
+          <DoubleClickReset controlsRef={controlsRef} />
         </Canvas>
-      )}
+      </MiniBoundary>
     </div>
   )
 }
