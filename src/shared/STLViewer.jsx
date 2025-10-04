@@ -86,6 +86,27 @@ export default function STLViewer({
   onLoad,     // optional callback when mesh is ready
   onError,    // optional callback on failure
 }) {
+  // ✅ SSR / non-DOM guard: bail out immediately with a friendly fallback
+  if (typeof window === 'undefined' || !globalThis?.document) {
+    return (
+      <div
+        className={`relative rounded-xl overflow-hidden border border-white/10 bg-white/5 ${className}`}
+        style={{ height }}
+      >
+        <div className="h-full w-full grid place-items-center text-center p-4">
+          <div>
+            <div className="text-[11px] font-mono uppercase tracking-[0.25em] text-cyan-200 mb-1">
+              // 3D preview unavailable
+            </div>
+            <div className="text-sm text-gray-300">
+              This viewer requires a browser environment. The STL will load normally on the client.
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   const [buf, setBuf] = useState(null)
   const [error, setError] = useState(null)
   const [attempt, setAttempt] = useState(0)
@@ -105,10 +126,10 @@ export default function STLViewer({
         const ab = await res.arrayBuffer()
         if (ab.byteLength < 84) throw new Error('File too small to be a valid STL')
 
-        // very rough sanity check: many servers set content-type
+        // rough sanity check: if server returns HTML, we likely hit a 404/redirect page
         const ct = res.headers.get('content-type') || ''
         if (ct.includes('text/html')) {
-          throw new Error('Received HTML instead of STL (likely a 404 page behind a proxy)')
+          throw new Error('Received HTML instead of STL (likely a 404/redirect)')
         }
 
         if (!alive) return
@@ -123,7 +144,6 @@ export default function STLViewer({
       }
     })()
     return () => { alive = false }
-    // re-run when src or manual retry changes
   }, [src, attempt, onLoad, onError])
 
   return (
