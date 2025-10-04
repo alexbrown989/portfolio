@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom'
 import { motion, useInView } from 'framer-motion'
 import { projects } from '../../content/projects'
 import ProjectLayout from '../ProjectLayout'
-import YouTube from '../../shared/YouTube'
+import YouTube from '../../shared/Youtube'
 
 const STLViewer = lazy(() => import('../../shared/STLViewer.jsx'))
 
