@@ -131,7 +131,7 @@ export default function Turret() {
                 <p className="text-xs text-gray-400">
                   <span className="text-cyan-400">Interactive: </span>
                   Explore the multi-part SolidWorks assembly. Key design features include press-fit servo mounts and a stabilized dual-axis gimbal.
-                  Drag to rotate • Scroll to zoom • Double-click to reset.
+                  Drag to rotate • Scroll to zoom
                 </p>
               </div>
             </Glass>

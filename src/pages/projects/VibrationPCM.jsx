@@ -243,13 +243,17 @@ export default function VibrationPCM() {
             {/* If the STL is missing/invalid, STLViewer shows its own safe fallback */}
             <STLViewer
               src="/models/resonance_rig.stl"
-              height={420}
               layFlat
-              debug={debug}
+              height={520}
+              cameraPosition={[900, 900, 900]}
+              controlsTarget={[0, 0, 0]}
+              zoom={2.2}
             />
             <div className="px-5 py-4 text-sm text-gray-300 border-t border-white/10">
+              <span className="text-cyan-400">Interactive: </span>
               The final design looks simple, but its monolithic structure and adaptable clamp are direct results of a
-              rigorous, iterative process that embraced and learned from early design failures.
+              rigorous, iterative process.
+              Drag to rotate • Scroll to zoom
             </div>
           </Glass>
 

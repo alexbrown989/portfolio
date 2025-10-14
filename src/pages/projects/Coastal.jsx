@@ -227,7 +227,7 @@ export default function Coastal() {
               </Suspense>
               <div className="p-4 border-t border-white/10">
                 <p className="text-xs text-gray-400">
-                  <span className="text-cyan-400">Interactive:</span> Drag to rotate • Scroll to zoom • Double-click to reset
+                  <span className="text-cyan-400">Interactive:</span> Drag to rotate • Scroll to zoom
                 </p>
               </div>
             </Glass>

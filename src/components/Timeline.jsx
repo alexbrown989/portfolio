@@ -161,7 +161,7 @@ const getVolunteerIcon = (label = '') => {
                         {/* Highlights (first 3) */}
                         <div className="space-y-2">
                           {(item.highlights || [])
-                            .slice(0, expandedIndex === idx ? undefined : 3)
+                            .slice(0,3)
                             .map((highlight, i) => (
                               <motion.div
                                 key={i}
@@ -300,7 +300,7 @@ const getVolunteerIcon = (label = '') => {
 
                         {v.label}
                       </div>
-                      <ul className="space-y-2">
+                      <ul className="space-y-2 list-none">
                         {Array.isArray(v.details) &&
                           v.details.map((d, j) => (
                             <li key={j} className="flex items-start gap-2 text-sm text-gray-300">
