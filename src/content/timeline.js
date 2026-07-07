@@ -7,30 +7,38 @@
 
 export const timeline = [
   // ---------------------------------------------------------------------
-  // 1) Current internship (Summer 2026)
-  //
-  // TODO(alex): replace title, org, location, summary, and highlights with
-  // the actual internship once confirmed. This entry is structured so the
-  // page will render cleanly the moment you drop in real content.
+  // 1) Verus Aerospace — Engineering Intern (Lead Intern)
+  //    The current, active internship. Featured first so it lands at the
+  //    top of the timeline where recruiters scan.
   // ---------------------------------------------------------------------
   {
-    period: 'Summer 2026',
-    title: 'Mechanical Engineering Intern',
-    org: 'Company Name — TBD',
-    location: 'TBD',
+    period: 'Dec 2025 – Present',
+    title: 'Engineering Intern · Lead Intern',
+    org: 'Verus Aerospace — Tacoma, WA',
+    location: 'Tacoma, WA',
     icon: 'intern',
     current: true,
-    draft: true,
     summary:
-      'Incoming summer engineering internship — replace this entry with the real role, scope, and outcomes once details are finalized.',
+      'Aerospace manufacturing, quality, and process improvement for flight-critical hardware in a high-mix production environment. Selected as Lead Intern for onboarding and coordination of incoming interns.',
     highlights: [
-      'Design, prototype, and validate mechanical subsystems under production timelines.',
-      'Own instrumentation and data-analysis workflows for at least one experimental study.',
-      'Ship deliverables aligned with team OKRs; document lessons learned in an end-of-term AAR.',
+      'Maintain Engineering Masters and configuration control in Infor VISUAL ERP — revision control, traceability, and production release readiness across active aerospace programs.',
+      'Develop inspection plans and quality documentation supporting verification of critical aerospace hardware, GD&T interpretation, and AS9102 First Article Inspection activities.',
+      'Perform independent over-check inspections on Gulfstream assemblies and aerospace hardware — identifying dimensional discrepancies, defects, and documentation issues prior to release.',
+      'Lead Quality Clinic operations: tracking non-conforming hardware through rework, reassignment, and scrap disposition while improving organization, traceability, and material flow.',
+      'Redesigning Quality Clinic workflow and disposition processes to strengthen communication between engineering, quality, production, and inspection teams.',
+      'Monitor and analyze monthly manufacturing and quality KPIs — throughput, scrap trends, FOD, quality escapes, production performance — to support data-driven process improvement.',
+      'Assist in the development and revision of manufacturing standards, setup docs, inspection docs, and operating procedures used across engineering, quality, and production.',
+      'Selected as Lead Intern — support onboarding, training, and coordination of incoming interns as a resource for ERP workflows, quality processes, and daily production support.',
+      'Gained exposure to multi-spindle CNC machining of titanium and Inconel components, supporting close-tolerance aerospace manufacturing at real production scale.',
     ],
     expandedInfo: {
-      metrics: 'Scope • Deliverables • Impact — to be populated post-internship',
-      technologies: ['SolidWorks', 'MATLAB', 'Python', 'Instrumentation'],
+      metrics:
+        'AS9102 FAI · Infor VISUAL ERP · Gulfstream over-check inspections · Quality Clinic redesign · Lead Intern',
+      technologies: [
+        'AS9102 FAI', 'Infor VISUAL ERP', 'GD&T', 'Quality Systems',
+        'CNC Machining (Ti / Inconel)', 'Inspection Planning',
+        'KPI Analysis', 'Process Improvement',
+      ],
     },
   },
 

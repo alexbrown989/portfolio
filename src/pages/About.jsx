@@ -12,6 +12,7 @@ const Footer  = lazy(() => import('../components/Footer'))
 const story = [
   `My engineering journey began not in a classroom, but in high-stakes clinical settings as a U.S. Navy Corpsman. For five years I learned lessons no lecture hall can teach. The military instilled a deep sense of ownership and a mission-first focus. I learned to execute with precision when the stakes were high, to lead with composure, and to understand that the success of any system ultimately comes down to its impact on people. Managing a complex medical supply system and developing safety protocols taught me to see the world through the lens of an engineer — optimizing processes where failure was not an option.`,
   `That background is the bedrock of how I approach engineering today. I am not just a student; I am a builder, driven by curiosity about how things work and a compulsion to make them better. My work is a constant dialogue between the theoretical and the tangible — translating a spark of an idea (a new theory on passive thermodynamics; a two-axis autonomous turret) into a fully functional prototype. That obsession with the entire lifecycle of creation, from LTspice circuits to composite materials, is what fuels me.`,
+  `Today that mindset lives inside my current internship at Verus Aerospace in Tacoma, where I support manufacturing, quality, and process improvement for flight-critical hardware. I maintain Engineering Masters and configuration control in Infor VISUAL ERP, develop inspection plans, run AS9102 First Article Inspection activities, and perform independent over-check inspections on Gulfstream assemblies. As the Lead Intern I also coordinate onboarding for incoming interns and lead the Quality Clinic — tracking non-conforming hardware through disposition and redesigning the workflow that keeps engineering, quality, and production aligned. It is the environment where operations, GD&T, and real production physics meet, and it is exactly where I want to be.`,
   `What sets me apart is the fusion of lived operational experience and rigorous hands-on R&D. While many learn theory, I have applied systems thinking in environments where the human cost of a design flaw is immediate and real. I’m now looking for the opportunity to bring that blend of leadership and technical skill to a team tackling the world’s most critical problems, where the challenges are steep, the mission is critical, and the goal is to build what comes next.`,
 ]
 
@@ -23,12 +24,13 @@ const stats = [
 ]
 
 const portfolioLines = [
+  'Aerospace Manufacturing (Verus Aerospace): AS9102 FAI, Infor VISUAL ERP, GD&T inspection, Quality Clinic redesign, and multi-spindle CNC (Ti / Inconel) exposure.',
+  'Machining & GD&T: folding multi-tool fabricated to ±0.005 in precision, 0.003 in parallelism, 0.002 in flatness; every feature inspected against print.',
+  'Mechanical Design: reduction gearbox for a 1-DOF robotic elbow — gear-ratio + shaft + bearing calcs, tolerance stack-up, and design-review-approved assembly.',
   'Zero-Energy Thermal (BET-H): phase-change architecture with about 250 kJ/kg latent capacity.',
   'PIV Innovation: visual-field redesign that improved measurement accuracy by 40%.',
   'Autonomous Robotics: two-axis turret from concept to prototype in four weeks.',
-  'Coastal Engineering: 3D-printed seawall models for wave interaction analysis.',
-  'Materials and Vibration: composite damping test rig with Arduino DAQ and scope validation.',
-  'Analog Computation: balanced-ternary logic adder that connects theory to hardware.',
+  'Materials and Vibration: composite damping test rig with Arduino DAQ and scope validation — 10× damping improvement.',
   'Equity Engineering: co-authoring a study on inclusive micromobility design.',
 ]
 
