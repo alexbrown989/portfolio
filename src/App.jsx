@@ -21,8 +21,9 @@ const Coastal       = lazy(() => import('./pages/projects/Coastal.jsx'))
 const Micromobility = lazy(() => import('./pages/projects/Micromobility.jsx'))
 const Turret        = lazy(() => import('./pages/projects/Turret.jsx'))
 const VibrationPCM  = lazy(() => import('./pages/projects/VibrationPCM.jsx'))
-const TernaryAdder  = lazy(() => import('./pages/projects/TernaryAdder.jsx'))
 const FEAValidation = lazy(() => import('./pages/projects/FEAValidation.jsx'))
+const MultiToolFab  = lazy(() => import('./pages/projects/MultiToolFab.jsx'))
+const Gearbox       = lazy(() => import('./pages/projects/Gearbox.jsx'))
 
 /* ----- Error boundary ----- */
 class ErrorBoundary extends Component {
@@ -153,7 +154,8 @@ export default function App() {
         <Route path="/projects/turret"         element={withBoundary('Turret',        <Turret />)} />
         <Route path="/projects/vibration"      element={withBoundary('VibrationPCM',  <VibrationPCM />)} />
         <Route path="/projects/vibration-pcm"  element={withBoundary('VibrationPCM',  <VibrationPCM />)} />
-        <Route path="/projects/ternary"        element={withBoundary('TernaryAdder',  <TernaryAdder />)} />
+        <Route path="/projects/multitool"      element={withBoundary('MultiToolFab',  <MultiToolFab />)} />
+        <Route path="/projects/gearbox"        element={withBoundary('Gearbox',       <Gearbox />)} />
         <Route path="/projects/fea-validation" element={withBoundary('FEAValidation', <FEAValidation />)} />
 
         {/* Generic fallback for anything data-driven */}

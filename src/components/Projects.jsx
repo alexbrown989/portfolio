@@ -14,7 +14,7 @@ import { SectionTitle, Chip, StatusPill } from '../shared/ui'
 // the router (see App.jsx), so a single href pattern is fine.
 const CUSTOM_ROUTES = new Set([
   'beth', 'coastal', 'micromobility', 'turret', 'vibration',
-  'ternary', 'fea-validation',
+  'multitool', 'gearbox', 'fea-validation',
 ])
 
 const STATUS = {
@@ -33,7 +33,8 @@ async function prefetch(id) {
     case 'micromobility': return import('../pages/projects/Micromobility.jsx')
     case 'turret':        return import('../pages/projects/Turret.jsx')
     case 'vibration':     return import('../pages/projects/VibrationPCM.jsx')
-    case 'ternary':       return import('../pages/projects/TernaryAdder.jsx')
+    case 'multitool':     return import('../pages/projects/MultiToolFab.jsx')
+    case 'gearbox':       return import('../pages/projects/Gearbox.jsx')
     case 'fea-validation':return import('../pages/projects/FEAValidation.jsx')
     default:              return
   }
