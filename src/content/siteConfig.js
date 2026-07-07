@@ -1,11 +1,12 @@
+// src/content/siteConfig.js
 export const site = {
   brand: {
     name: 'Alex Brown',
-    logoEmoji: '⚙',
-    tagline: 'Mechanical • Defense • R&D • Energy',
+    logoInitials: 'AB',
+    tagline: 'Mechanical • R&D • Defense • Energy',
   },
 
-  // About is a real route; the others are homepage anchors
+  // About is a real route; the others are homepage anchors.
   nav: [
     { href: '#hero',     label: 'Home' },
     { href: '#projects', label: 'Projects' },
@@ -14,25 +15,19 @@ export const site = {
   ],
 
   hero: {
-    titleTop: 'ALEX BROWN',
-    titleBottom: 'MECHANICAL ENGINEERING',
+    titleTop: 'Alex Brown',
+    titleBottom: 'Mechanical Engineer / Builder',
     subtitle:
-      'Aspiring mechanical engineer with a builder’s bias: rapid prototyping, data-driven validation, and mission-ready systems across energy, materials, R&D, and defense tech.',
-    bullets: ['Mech Design', 'Lab Prototyping', 'Controls & Data', 'CFD/PIV'],
-    ctas: [
-      { href: '#projects', label: 'Explore Projects', intent: 'primary' },
-      { href: '#contact',  label: 'Get In Touch',     intent: 'secondary' },
-    ],
+      'Mechanical engineering student translating five years of high-stakes Navy operations into rigorous, hands-on R&D — from mechatronics and coastal fluid dynamics to phase-change materials and bio-inspired thermal systems.',
+    bullets: ['Mech Design', 'Lab Prototyping', 'Controls & Data', 'CFD / PIV'],
+    // Trimmed to four load-bearing numbers — no filler.
     stats: [
-      { label: 'Prototypes Built',          value: '40', suffix: '+' },
-      { label: 'Lab Systems Run',           value: '12' },
-      { label: 'Years Operating',           value: '6',  suffix: '+' },
-      { label: 'Clinical Error Reduction',  value: '30', suffix: '%' },
-      { label: 'Systems Shipped/Deployed',  value: '10', suffix: '+' },
-      { label: 'Events Led (SAME/UWT)',     value: '15', suffix: '+' },
-      { label: 'SOPs & Protocols Authored', value: '10', suffix: '+' },
+      { label: 'Prototypes built',       value: '40', suffix: '+' },
+      { label: 'Years operating',        value: '6',  suffix: '+' },
+      { label: 'PIV accuracy gain',      value: '40', suffix: '%' },
+      { label: 'Damping improvement',    value: '10', suffix: '×' },
     ],
   },
 
-  features: {showTimeline: true },
+  features: { showTimeline: true },
 }
