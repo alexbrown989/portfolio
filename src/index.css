@@ -2,37 +2,13 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
 @import "maplibre-gl/dist/maplibre-gl.css";
 
-/* Reusable glow button (used on project cards) */
-.glow-btn {
-  position: relative;
-  isolation: isolate;
-}
-.glow-btn::before {
-  content: "";
-  position: absolute;
-  inset: -2px;
-  z-index: -1;
-  border-radius: 0.75rem;
-  background: radial-gradient(120% 120% at 50% 0%, rgba(34,211,238,.45), rgba(147,51,234,.35), transparent 60%);
-  filter: blur(10px);
-  opacity: .65;
-  transition: opacity .2s ease, transform .2s ease;
-}
-.glow-btn:hover::before { opacity: 1; transform: scale(1.02); }
-
-/* Tailwind directives come AFTER imports */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-@keyframes floatY {
-  0%   { transform: translateY(0) }
-  50%  { transform: translateY(-12px) }
-  100% { transform: translateY(0) }
-}
-
-
-/* Reset and base styles */
+/* ---------------------------------------------------------------- */
+/* Base                                                              */
+/* ---------------------------------------------------------------- */
 * {
   margin: 0;
   padding: 0;
@@ -41,15 +17,90 @@
 
 html {
   scroll-behavior: smooth;
+  color-scheme: dark;
 }
 
 body {
-  background-color: #1a1a1a !important;
-  color: #ffffff !important;
+  background-color: #05070d;
+  color: #e5e7eb;
   font-family: 'Inter', system-ui, sans-serif;
   min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
 #root {
   min-height: 100vh;
+}
+
+/* ---------------------------------------------------------------- */
+/* Selection + focus                                                 */
+/* ---------------------------------------------------------------- */
+::selection {
+  background: rgba(34, 191, 224, 0.25);
+  color: #fff;
+}
+
+:focus-visible {
+  outline: 2px solid rgba(34, 191, 224, 0.7);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* ---------------------------------------------------------------- */
+/* Motion respect                                                    */
+/* ---------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ---------------------------------------------------------------- */
+/* Utilities used across pages                                       */
+/* ---------------------------------------------------------------- */
+@keyframes floatY {
+  0%, 100% { transform: translateY(0) }
+  50%      { transform: translateY(-10px) }
+}
+
+/* Subtle glow ring for primary CTAs; tuned for the brand palette */
+.glow-btn {
+  position: relative;
+  isolation: isolate;
+}
+.glow-btn::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  z-index: -1;
+  border-radius: inherit;
+  background: linear-gradient(135deg, rgba(34,191,224,0.35), rgba(99,102,241,0.25));
+  filter: blur(14px);
+  opacity: 0.55;
+  transition: opacity 0.2s ease;
+}
+.glow-btn:hover::before { opacity: 0.9; }
+
+/* Card texture — extremely subtle, replaces the loud cyan grid */
+.bg-mesh {
+  background-image:
+    radial-gradient(ellipse 60% 40% at 50% 0%, rgba(34,191,224,0.06), transparent 60%),
+    radial-gradient(ellipse 60% 40% at 100% 100%, rgba(99,102,241,0.05), transparent 60%),
+    linear-gradient(180deg, #0a0f1a 0%, #05070d 100%);
+}
+
+/* Fine engineering grid overlay — near-invisible until you look */
+.bg-grid {
+  background-image:
+    linear-gradient(rgba(148,163,184,0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(148,163,184,0.06) 1px, transparent 1px);
+  background-size: 48px 48px;
+  background-position: -1px -1px;
+  mask-image: radial-gradient(ellipse 80% 60% at 50% 30%, #000 40%, transparent 100%);
 }
