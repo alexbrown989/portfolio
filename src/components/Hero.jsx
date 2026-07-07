@@ -1,128 +1,116 @@
 // src/components/Hero.jsx
-import { useEffect, useState } from 'react'
+// Restrained hero. One subtle gradient, calm motion, and the same section
+// title / metric surfaces used across the rest of the site.
+
 import { motion } from 'framer-motion'
+import { Link } from 'react-router-dom'
+import { ArrowRight, ArrowUpRight, Circle } from 'lucide-react'
 import { site } from '../content/siteConfig'
 
+const container = {
+  hidden: { opacity: 0 },
+  show:   { opacity: 1, transition: { staggerChildren: 0.06, delayChildren: 0.05 } },
+}
+const item = {
+  hidden: { opacity: 0, y: 10 },
+  show:   { opacity: 1, y: 0, transition: { duration: 0.5, ease: 'easeOut' } },
+}
+
 export default function Hero() {
-  const [mouse, setMouse] = useState({ x: 0, y: 0 })
-
-  useEffect(() => {
-    const onMove = (e) => {
-      setMouse({
-        x: (e.clientX / window.innerWidth - 0.5) * 20,
-        y: (e.clientY / window.innerHeight - 0.5) * 20,
-      })
-    }
-    window.addEventListener('mousemove', onMove)
-    return () => window.removeEventListener('mousemove', onMove)
-  }, [])
-
   return (
-    <div className="relative min-h-[88vh] grid place-items-center px-6">
-      <div
-        aria-hidden
-        className="absolute -z-10 left-1/2 top-0 -translate-x-1/2 h-[55vh] w-[90vw] rounded-full blur-3xl"
-        style={{
-          background:
-            'radial-gradient(circle at 50% 50%, rgba(0,255,231,.10), rgba(139,92,246,.06), transparent 60%)',
-        }}
-      />
-
+    <div className="relative w-full">
       <motion.div
-        animate={{ x: mouse.x, y: mouse.y }}
-        transition={{ type: 'spring', damping: 30 }}
-        className="pointer-events-none absolute -top-40 -left-40 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl"
-      />
-      <motion.div
-        animate={{ x: -mouse.x, y: -mouse.y }}
-        transition={{ type: 'spring', damping: 30 }}
-        className="pointer-events-none absolute -bottom-40 -right-40 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl"
-      />
-
-      <div className="relative z-10 max-w-6xl mx-auto text-center">
-        <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="inline-block mb-6">
-          <div className="flex items-center gap-3 px-5 py-2.5 rounded-full bg-white/5 backdrop-blur border border-cyan-500/20">
-            <div className="flex gap-1">
-              <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
-              <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" style={{ animationDelay: '0.2s' }} />
-              <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" style={{ animationDelay: '0.4s' }} />
-            </div>
-            <span className="text-xs font-mono text-cyan-400 uppercase tracking-widest">
-              Systems Online
-            </span>
-          </div>
+        variants={container}
+        initial="hidden"
+        animate="show"
+        className="container mx-auto px-6 max-w-6xl"
+      >
+        {/* Status pill */}
+        <motion.div variants={item} className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-brand-500/30 bg-brand-500/5 backdrop-blur-sm text-brand-200 text-[11px] font-mono uppercase tracking-[0.22em]">
+          <Circle className="w-2 h-2 fill-emerald-400 stroke-none" />
+          <span>Available Summer 2026</span>
         </motion.div>
 
+        {/* Title */}
         <motion.h1
-          initial={{ opacity: 0, y: 18 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="text-5xl md:text-7xl lg:text-8xl font-bold mb-3"
+          variants={item}
+          className="mt-6 text-5xl md:text-7xl font-extrabold tracking-tight leading-[1.05]"
         >
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600">
-            {site.hero.titleTop}
+          <span className="text-white">{site.hero.titleTop}</span>
+          <span className="block text-gray-400 font-semibold text-3xl md:text-5xl mt-2 tracking-tight">
+            {site.hero.titleBottom}
           </span>
-          <br />
-          <span className="text-white">{site.hero.titleBottom}</span>
         </motion.h1>
 
-        <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }} className="text-lg md:text-2xl text-gray-300">
+        {/* Subtitle */}
+        <motion.p
+          variants={item}
+          className="mt-6 text-base md:text-lg text-gray-300 leading-relaxed max-w-2xl"
+        >
           {site.hero.subtitle}
         </motion.p>
 
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }} className="flex flex-wrap items-center justify-center gap-4 text-sm text-gray-400 mt-4">
-          {site.hero.bullets.map((b, i) => (
-            <div key={i} className="flex items-center gap-2">
-              <div className="w-1.5 h-1.5 bg-cyan-400 rounded-full" />
+        {/* Bullets */}
+        <motion.div variants={item} className="mt-5 flex flex-wrap gap-x-5 gap-y-2 text-sm text-gray-400">
+          {site.hero.bullets.map((b) => (
+            <div key={b} className="flex items-center gap-2">
+              <span className="w-1 h-1 rounded-full bg-brand-400" />
               <span>{b}</span>
             </div>
           ))}
         </motion.div>
 
-        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="flex flex-wrap gap-4 justify-center mt-8">
-          {site.hero.ctas.map((c) => (
-            <a
-              key={c.label}
-              href={c.href}
-              className={
-                c.intent === 'primary'
-                  ? 'px-8 py-3.5 bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-semibold rounded-lg hover:shadow-lg hover:shadow-cyan-500/25 transition-all'
-                  : 'px-8 py-3.5 bg-white/5 backdrop-blur border border-cyan-500/30 text-cyan-400 font-semibold rounded-lg hover:bg-white/10 transition-all'
-              }
-              onClick={(e) => {
-                if (c.href?.startsWith('#')) {
-                  e.preventDefault()
-                  document.querySelector(c.href)?.scrollIntoView({ behavior: 'smooth' })
-                }
-              }}
-            >
-              {c.label}
-            </a>
-          ))}
+        {/* CTAs */}
+        <motion.div variants={item} className="mt-8 flex flex-wrap gap-3">
+          <Link
+            to="/#projects"
+            onClick={(e) => {
+              e.preventDefault()
+              document.getElementById('projects')?.scrollIntoView({ behavior: 'smooth' })
+            }}
+            className="glow-btn inline-flex items-center gap-2 px-5 py-3 rounded-lg bg-brand-500 text-white font-semibold hover:bg-brand-400 transition-colors"
+          >
+            Explore projects <ArrowRight className="w-4 h-4" />
+          </Link>
+          <Link
+            to="/about"
+            className="inline-flex items-center gap-2 px-5 py-3 rounded-lg border border-line-strong text-gray-100 hover:border-brand-400/60 hover:text-white transition-colors"
+          >
+            About me
+          </Link>
+          <a
+            href="/resume.pdf"
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center gap-2 px-5 py-3 rounded-lg border border-line text-gray-300 hover:text-white hover:border-brand-400/60 transition-colors"
+          >
+            Resume <ArrowUpRight className="w-4 h-4" />
+          </a>
         </motion.div>
 
+        {/* Stats — one card style, tight grid, tabular numerals */}
         {Array.isArray(site.hero.stats) && site.hero.stats.length > 0 && (
           <motion.div
-            initial={{ opacity: 0, y: 18 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
-            className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-3xl mx-auto mt-12"
+            variants={item}
+            className="mt-14 grid grid-cols-2 md:grid-cols-4 gap-3 max-w-3xl"
           >
-            {site.hero.stats.map((s, i) => (
-              <div key={i} className="relative bg-white/5 backdrop-blur rounded-2xl p-6 border border-white/10">
-                <div className="text-4xl font-bold text-cyan-400">
-                  {String(s.value)}<span className="text-2xl text-cyan-400/70">{s.suffix || ''}</span>
+            {site.hero.stats.slice(0, 4).map((s) => (
+              <div
+                key={s.label}
+                className="rounded-xl border border-line bg-surface-2/60 backdrop-blur-sm px-4 py-3"
+              >
+                <div className="text-2xl md:text-3xl font-bold text-white tabular-nums leading-none">
+                  {s.value}
+                  <span className="text-brand-300/80 text-xl">{s.suffix || ''}</span>
                 </div>
-                <p className="text-sm text-gray-400 mt-2">{s.label}</p>
+                <div className="text-[11px] uppercase tracking-[0.16em] text-gray-400 mt-2">
+                  {s.label}
+                </div>
               </div>
             ))}
           </motion.div>
         )}
-
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.8 }} className="mt-10 text-xs text-gray-500">
-          Scroll to explore
-        </motion.div>
-      </div>
+      </motion.div>
     </div>
   )
 }
