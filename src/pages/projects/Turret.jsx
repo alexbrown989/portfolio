@@ -3,7 +3,7 @@ import { lazy, Suspense } from 'react'
 import ProjectLayout from '../ProjectLayout'
 import {
   Container, PageHero, SectionTitle, Glass, MetricBox,
-  ProjectPager, ProjectCTA,
+  ProjectPager, ProjectCTA, STARSection, AARSection,
 } from '../../shared/ui'
 import { projects } from '../../content/projects'
 import { motion } from 'framer-motion'
@@ -197,6 +197,9 @@ export default function Turret() {
           </Glass>
         </Container>
       </section>
+
+      <STARSection star={project.star} />
+      <AARSection aar={project.aar} />
 
       <ProjectCTA
         title="Why this project matters"

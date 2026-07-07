@@ -5,7 +5,7 @@ import YouTube from '../../shared/Youtube'
 import { projects } from '../../content/projects'
 import {
   Container, PageHero, SectionTitle, Glass, MetricBox,
-  ProjectPager, ProjectCTA,
+  ProjectPager, ProjectCTA, STARSection, AARSection,
 } from '../../shared/ui'
 
 const STLViewer = lazy(() => import('../../shared/STLViewer.jsx'))
@@ -175,6 +175,9 @@ export default function Coastal() {
           </Container>
         </section>
       )}
+
+      <STARSection star={project.star} />
+      <AARSection aar={project.aar} />
 
       <ProjectCTA
         title="Interested in coastal resilience?"

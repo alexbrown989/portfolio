@@ -289,6 +289,116 @@ export function ProjectCTA({
 }
 
 /* ------------------------------------------------------------------ */
+/* STAR block — Situation / Task / Action / Result                     */
+/* ------------------------------------------------------------------ */
+//
+// STAR is how recruiters and engineering managers read case studies. Every
+// project page renders one of these near the top so a hiring manager can
+// scan the story in ten seconds without decoding the whole page.
+
+export function STARSection({ star, title = 'STAR', kicker = '// Case Study' }) {
+  if (!star) return null
+  const { situation, task, actions = [], results = [] } = star
+  return (
+    <section className="pb-10">
+      <Container>
+        <SectionTitle kicker={kicker} title={title} />
+        <div className="grid md:grid-cols-2 gap-4">
+          {situation && (
+            <Glass>
+              <div className="text-[11px] font-mono uppercase tracking-[0.18em] text-brand-300/90 mb-1.5">
+                Situation
+              </div>
+              <p className="text-sm text-gray-200 leading-relaxed">{situation}</p>
+            </Glass>
+          )}
+          {task && (
+            <Glass>
+              <div className="text-[11px] font-mono uppercase tracking-[0.18em] text-brand-300/90 mb-1.5">
+                Task
+              </div>
+              <p className="text-sm text-gray-200 leading-relaxed">{task}</p>
+            </Glass>
+          )}
+          {actions.length > 0 && (
+            <Glass className="md:col-span-1">
+              <div className="text-[11px] font-mono uppercase tracking-[0.18em] text-brand-300/90 mb-2">
+                Action
+              </div>
+              <ul className="space-y-2 text-sm text-gray-200 leading-relaxed">
+                {actions.map((a, i) => (
+                  <li key={i} className="flex gap-2">
+                    <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-brand-400 flex-shrink-0" />
+                    <span>{a}</span>
+                  </li>
+                ))}
+              </ul>
+            </Glass>
+          )}
+          {results.length > 0 && (
+            <Glass className="md:col-span-1">
+              <div className="text-[11px] font-mono uppercase tracking-[0.18em] text-emerald-300/90 mb-2">
+                Result
+              </div>
+              <ul className="space-y-2 text-sm text-gray-200 leading-relaxed">
+                {results.map((r, i) => (
+                  <li key={i} className="flex gap-2">
+                    <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-emerald-400 flex-shrink-0" />
+                    <span>{r}</span>
+                  </li>
+                ))}
+              </ul>
+            </Glass>
+          )}
+        </div>
+      </Container>
+    </section>
+  )
+}
+
+/* ------------------------------------------------------------------ */
+/* AAR block — engineer's reflection (What went right / wrong / learned) */
+/* ------------------------------------------------------------------ */
+//
+// STAR is the pitch; AAR is the honest reflection. Keeping both makes each
+// case study read as both a professional summary and a thoughtful post-mortem
+// — which is what real engineers do.
+
+export function AARSection({ aar, kicker = '// After Action Review', title = 'What the project taught me' }) {
+  if (!aar) return null
+  const items = [
+    { key: 'right',   label: 'What went right', text: aar.right,   tone: 'emerald' },
+    { key: 'wrong',   label: 'What went wrong', text: aar.wrong,   tone: 'amber'   },
+    { key: 'learned', label: 'Lessons learned', text: aar.learned, tone: 'brand'   },
+  ].filter(x => x.text)
+  if (items.length === 0) return null
+
+  const toneCls = {
+    emerald: 'text-emerald-300',
+    amber:   'text-amber-300',
+    brand:   'text-brand-300',
+  }
+
+  return (
+    <section className="pb-10">
+      <Container>
+        <SectionTitle kicker={kicker} title={title} />
+        <div className="grid md:grid-cols-3 gap-4">
+          {items.map((it) => (
+            <Glass key={it.key}>
+              <div className={`text-xs font-mono uppercase tracking-[0.18em] mb-2 ${toneCls[it.tone]}`}>
+                {it.label}
+              </div>
+              <p className="text-sm text-gray-300 leading-relaxed">{it.text}</p>
+            </Glass>
+          ))}
+        </div>
+      </Container>
+    </section>
+  )
+}
+
+/* ------------------------------------------------------------------ */
 /* Small utilities                                                     */
 /* ------------------------------------------------------------------ */
 

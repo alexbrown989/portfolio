@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from 'react'
 import ProjectLayout from '../ProjectLayout'
 import {
   Container, PageHero, SectionTitle, Glass,
-  ProjectPager, ProjectCTA,
+  ProjectPager, ProjectCTA, STARSection, AARSection,
 } from '../../shared/ui'
 import { projects } from '../../content/projects'
 import { useInView } from 'framer-motion'
@@ -206,6 +206,9 @@ export default function Micromobility() {
           </div>
         </Container>
       </section>
+
+      <STARSection star={project.star} />
+      <AARSection aar={project.aar} />
 
       <ProjectCTA
         title="Why this matters"

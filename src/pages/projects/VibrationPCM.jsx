@@ -4,7 +4,7 @@ import { motion } from 'framer-motion'
 import ProjectLayout from '../ProjectLayout'
 import {
   Container, PageHero, SectionTitle, Glass, MetricBox,
-  ProjectPager, ProjectCTA,
+  ProjectPager, ProjectCTA, STARSection, AARSection,
 } from '../../shared/ui'
 import { projects } from '../../content/projects'
 
@@ -249,6 +249,9 @@ export default function VibrationPCM() {
           </Glass>
         </Container>
       </section>
+
+      <STARSection star={project.star} />
+      <AARSection aar={project.aar} />
 
       <ProjectCTA
         title="Why this project matters"

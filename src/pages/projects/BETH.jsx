@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import ProjectLayout from '../ProjectLayout'
 import {
   Container, PageHero, SectionTitle, Glass, MetricBox,
-  ProjectPager, ProjectCTA,
+  ProjectPager, ProjectCTA, STARSection, AARSection,
 } from '../../shared/ui'
 import { projects } from '../../content/projects'
 
@@ -287,6 +287,9 @@ export default function BETH() {
           </AnimatePresence>
         </Container>
       </section>
+
+      <STARSection star={project.star} />
+      <AARSection aar={project.aar} />
 
       <ProjectCTA
         title="Rethinking thermal systems"
