@@ -212,7 +212,7 @@ export default function Micromobility() {
 
       <ProjectCTA
         title="Why this matters"
-        body="This project shows how I convert human-centered policy into concrete, testable engineering requirements — the discipline that turns equitable products into ones people actually use."
+        body="This project shows how I convert human-centered policy into concrete, testable engineering requirements. That discipline is what turns equitable products into ones people actually use."
         primary={{ label: 'Get in touch', to: '/#contact' }}
       />
 

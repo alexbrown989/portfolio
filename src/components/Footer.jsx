@@ -85,7 +85,7 @@ export default function Footer() {
 
           <div className="mt-8 flex items-center justify-between">
             <span className="text-[11px] font-mono uppercase tracking-[0.18em] text-gray-600">
-              Built with intent — no vibe, all engineering.
+              Built with intent · No vibe, all engineering.
             </span>
             <button
               onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}

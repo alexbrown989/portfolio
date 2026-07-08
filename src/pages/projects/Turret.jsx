@@ -71,7 +71,7 @@ export default function Turret() {
               <div className="px-5 py-4 border-t border-line">
                 <div className="text-white font-semibold">Print timelapse</div>
                 <p className="text-sm text-gray-300 mt-1.5 leading-relaxed">
-                  Nine-part assembly fabricated via FDM printing — modular parts stay serviceable and re-printable.
+                  Nine-part assembly fabricated via FDM printing. Modular parts stay serviceable and re-printable.
                 </p>
               </div>
             </Glass>

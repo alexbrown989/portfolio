@@ -27,7 +27,7 @@ export default function InternshipBand() {
       <SectionTitle
         code="SEC 001"
         kicker="Current internship"
-        title="Verus Aerospace — Engineering Intern · Lead Intern"
+        title="Verus Aerospace · Engineering Intern (Lead Intern)"
         subtitle="Aerospace manufacturing, quality, and process improvement for flight-critical hardware in a high-mix production environment. This is the live-fire environment where GD&T, ERP configuration control, and real production physics meet."
       />
 

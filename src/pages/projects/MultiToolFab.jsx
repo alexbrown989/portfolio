@@ -52,7 +52,7 @@ export default function MultiToolFab() {
           <SectionTitle
             kicker="// Media"
             title="From raw stock to finished assembly"
-            subtitle="Two CNC videos and the finished multi-tool. If any of the media below is missing, drop the corresponding file into /public/projects/ — the layout already expects it."
+            subtitle="Two CNC videos and the finished multi-tool. If any of the media below is missing, drop the corresponding file into /public/projects/. The layout already expects it."
           />
           <div className="grid lg:grid-cols-3 gap-5">
             <Glass pad={false}>
@@ -161,7 +161,7 @@ export default function MultiToolFab() {
               { title: 'Process planning',       body: 'Order-of-operations, fixturing, and inspection strategy planned before touching a machine.' },
               { title: 'Manual + CNC machining', body: 'Comfortable moving between manual mill and CNC for the right operation on the right feature.' },
               { title: 'GD&T interpretation',    body: 'Read a full drawing package and translate flatness / parallelism / position callouts into machining strategy.' },
-              { title: 'Metrology',              body: 'Calipers, pin gauges, dial indicators, and granite surface — used to prove parts against the print.' },
+              { title: 'Metrology',              body: 'Calipers, pin gauges, dial indicators, and granite surface used to prove parts against the print.' },
               { title: 'Assembly integration',   body: 'Pivots, bushings, spacers, and fasteners integrated into an articulated assembly that actually works.' },
               { title: 'DFM communication',      body: 'Iterated with machinist feedback on tolerances and features that were expensive or fragile to produce.' },
             ].map((c) => (
@@ -183,7 +183,7 @@ export default function MultiToolFab() {
 
       <ProjectCTA
         title="Machining + inspection roles"
-        body="This project maps directly onto entry-level manufacturing engineering, quality engineering, and machinist / CNC roles. Happy to walk through the inspection log and process planning in detail."
+        body="This project maps directly onto full-time manufacturing engineering, quality engineering, and CNC roles. Happy to walk through the inspection log and process planning in detail."
         primary={{ label: 'Get in touch', to: '/#contact' }}
       />
 
