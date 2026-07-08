@@ -12,8 +12,9 @@
 import ProjectLayout from '../ProjectLayout'
 import {
   Container, PageHero, SectionTitle, Glass, MetricBox,
-  ProjectPager, ProjectCTA, STARSection, AARSection,
+  ProjectPager, ProjectCTA, STARSection, AARSection, Downloads,
 } from '../../shared/ui'
+import { SafeImage, SafeVideo } from '../../shared/Media'
 import { projects } from '../../content/projects'
 
 const project = projects.find(p => p.id === 'multitool') || {}
@@ -56,13 +57,11 @@ export default function MultiToolFab() {
           <div className="grid lg:grid-cols-3 gap-5">
             <Glass pad={false}>
               <div className="p-4">
-                <div className="aspect-[4/3] rounded-xl border border-line bg-black overflow-hidden">
-                  <video
-                    src="/projects/multitool-cnc-1.mp4"
-                    controls
-                    className="w-full h-full object-contain"
-                  />
-                </div>
+                <SafeVideo
+                  src="/projects/multitool-cnc-1.mp4"
+                  label="CNC operation · pass 1"
+                  aspect="aspect-[4/3]"
+                />
               </div>
               <div className="px-5 py-4 border-t border-line">
                 <div className="text-white font-semibold">CNC operation · pass 1</div>
@@ -74,13 +73,11 @@ export default function MultiToolFab() {
 
             <Glass pad={false}>
               <div className="p-4">
-                <div className="aspect-[4/3] rounded-xl border border-line bg-black overflow-hidden">
-                  <video
-                    src="/projects/multitool-cnc-2.mp4"
-                    controls
-                    className="w-full h-full object-contain"
-                  />
-                </div>
+                <SafeVideo
+                  src="/projects/multitool-cnc-2.mp4"
+                  label="CNC operation · pass 2"
+                  aspect="aspect-[4/3]"
+                />
               </div>
               <div className="px-5 py-4 border-t border-line">
                 <div className="text-white font-semibold">CNC operation · pass 2</div>
@@ -92,14 +89,13 @@ export default function MultiToolFab() {
 
             <Glass pad={false}>
               <div className="p-4">
-                <div className="aspect-[4/3] rounded-xl border border-line bg-black overflow-hidden">
-                  <img
-                    src={project.image || '/projects/multitool-final.jpg'}
-                    alt="Finished folding multi-tool assembly"
-                    className="w-full h-full object-contain"
-                    loading="eager"
-                  />
-                </div>
+                <SafeImage
+                  src={project.image || '/projects/multitool-final.jpg'}
+                  alt="Finished folding multi-tool assembly"
+                  label="Finished assembly"
+                  aspect="aspect-[4/3]"
+                  fit="contain"
+                />
               </div>
               <div className="px-5 py-4 border-t border-line">
                 <div className="text-white font-semibold">Finished assembly</div>
@@ -180,6 +176,10 @@ export default function MultiToolFab() {
 
       {/* AAR — the reflection */}
       <AARSection aar={project.aar} />
+
+      {/* Optional downloadable artifacts — populated when project.downloads
+          is set in src/content/projects.js. */}
+      <Downloads items={project.downloads} />
 
       <ProjectCTA
         title="Machining + inspection roles"

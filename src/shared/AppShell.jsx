@@ -1,10 +1,10 @@
 // src/shared/AppShell.jsx
-// One background & chrome layer for every page.
-// The old app used two different background stacks (one in App.jsx for /, one
-// in ProjectLayout for /projects/*) that fought each other on route changes.
-// This component is now the single source of truth for site chrome so the
-// Home → Project → About transition feels like moving inside one product.
+// One background, one nav, one boot-reveal. Every page renders inside this
+// shell so route changes feel like moving inside one product instead of
+// bouncing between separately-styled sites.
 
+import { useLocation } from 'react-router-dom'
+import { useEffect, useState } from 'react'
 import Navigation from '../components/Navigation'
 
 function BackgroundFX() {
@@ -14,7 +14,9 @@ function BackgroundFX() {
       <div className="absolute inset-0 bg-mesh" />
       {/* Fine engineering grid — masked so it fades at the edges */}
       <div className="absolute inset-0 bg-grid" />
-      {/* Two calm accent lights (not the neon orbs from before) */}
+      {/* Very subtle HUD scanlines */}
+      <div className="absolute inset-0 bg-scanlines opacity-40" />
+      {/* Two calm accent lights */}
       <div
         className="absolute -top-40 left-1/4 w-[560px] h-[560px] rounded-full blur-3xl opacity-[0.18]"
         style={{ background: 'radial-gradient(circle, rgba(10,165,199,0.35), transparent 60%)' }}
@@ -29,12 +31,37 @@ function BackgroundFX() {
   )
 }
 
-export default function AppShell({ children }) {
+// Corner crosshair marks that anchor the viewport — set-and-forget HUD detail.
+// Placed inside the sticky shell so they follow scroll and read as chrome.
+function ViewportCrosshairs() {
+  const c = 'absolute w-3 h-3 border-brand-400/40'
   return (
-    <div className="min-h-screen relative bg-surface-0 text-gray-100 antialiased">
+    <div aria-hidden className="fixed inset-4 z-40 pointer-events-none">
+      <span className={`${c} top-0 left-0 border-l border-t`} />
+      <span className={`${c} top-0 right-0 border-r border-t`} />
+      <span className={`${c} bottom-0 left-0 border-l border-b`} />
+      <span className={`${c} bottom-0 right-0 border-r border-b`} />
+    </div>
+  )
+}
+
+export default function AppShell({ children }) {
+  const { pathname } = useLocation()
+  const [key, setKey] = useState(pathname)
+
+  // Re-fire the boot-reveal animation on every route change so navigating
+  // through the site feels like a system stepping through pages, not a
+  // static SPA swap.
+  useEffect(() => { setKey(pathname) }, [pathname])
+
+  return (
+    <div className="min-h-screen relative bg-surface-0 text-gray-100 antialiased selection:bg-brand-500/25">
       <BackgroundFX />
+      <ViewportCrosshairs />
       <Navigation />
-      <main className="relative z-10">{children}</main>
+      <main key={key} className="relative z-10 boot-reveal">
+        {children}
+      </main>
     </div>
   )
 }

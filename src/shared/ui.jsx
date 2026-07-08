@@ -24,19 +24,52 @@ export function Container({ children, className = '', size = 'md' }) {
   )
 }
 
-export function Kicker({ children }) {
+// HUD-style kicker. Renders as "SEC 001 // LABEL" with a small ticker bar,
+// evoking a heads-up display without going full sci-fi. Section code is
+// optional; when omitted, only the mono label shows.
+export function Kicker({ code, children, className = '' }) {
   return (
-    <div className="text-[11px] font-mono uppercase tracking-[0.25em] text-brand-300/90">
+    <div className={`flex items-center gap-2 text-[10.5px] font-mono uppercase tracking-[0.28em] text-brand-300/90 ${className}`}>
+      <span className="inline-block w-6 h-px bg-brand-400/60" />
+      {code && <span className="text-gray-500">{code}</span>}
+      {code && <span className="text-gray-600">·</span>}
+      <span>{children}</span>
+    </div>
+  )
+}
+
+// Corner-bracket motif around any block. Used sparingly to accent hero
+// numbers, key stats, and CTAs — the visual signature that the site is
+// "instrumented" instead of decorated.
+export function CornerBrackets({ children, className = '', size = 12, color = 'rgba(34,191,224,0.55)' }) {
+  const s = `${size}px`
+  const brackets = ['top-0 left-0', 'top-0 right-0', 'bottom-0 left-0', 'bottom-0 right-0']
+  const paths = [
+    'border-l border-t',   // top-left
+    'border-r border-t',   // top-right
+    'border-l border-b',   // bottom-left
+    'border-r border-b',   // bottom-right
+  ]
+  return (
+    <div className={`relative ${className}`}>
+      {brackets.map((pos, i) => (
+        <span
+          key={pos}
+          aria-hidden
+          className={`pointer-events-none absolute ${pos} ${paths[i]}`}
+          style={{ width: s, height: s, borderColor: color }}
+        />
+      ))}
       {children}
     </div>
   )
 }
 
-export function SectionTitle({ kicker, title, subtitle, className = '' }) {
+export function SectionTitle({ kicker, code, title, subtitle, className = '' }) {
   return (
     <div className={`mb-6 ${className}`}>
-      {kicker && <Kicker>{kicker}</Kicker>}
-      <h2 className="text-2xl md:text-3xl font-bold text-white mt-1.5 tracking-tight">
+      {kicker && <Kicker code={code}>{kicker}</Kicker>}
+      <h2 className="text-2xl md:text-3xl font-bold text-white mt-3 tracking-tight">
         {title}
       </h2>
       {subtitle && (
@@ -391,6 +424,44 @@ export function AARSection({ aar, kicker = '// After Action Review', title = 'Wh
               </div>
               <p className="text-sm text-gray-300 leading-relaxed">{it.text}</p>
             </Glass>
+          ))}
+        </div>
+      </Container>
+    </section>
+  )
+}
+
+/* ------------------------------------------------------------------ */
+/* Downloads block — engineering artifacts per project                 */
+/* ------------------------------------------------------------------ */
+
+export function Downloads({ items = [], kicker = '// Artifacts', title = 'Downloadable engineering artifacts' }) {
+  if (!Array.isArray(items) || items.length === 0) return null
+  return (
+    <section className="pb-10">
+      <Container>
+        <SectionTitle kicker={kicker} title={title} />
+        <div className="grid md:grid-cols-2 gap-3">
+          {items.map((d, i) => (
+            <a
+              key={i}
+              href={d.href}
+              download={d.download ?? true}
+              className="group flex items-center justify-between gap-3 rounded-xl border border-line bg-surface-2/60 hover:border-brand-500/40 hover:bg-surface-2 transition-colors px-5 py-4"
+            >
+              <div>
+                <div className="text-white font-semibold">{d.label}</div>
+                {d.description && (
+                  <div className="text-xs text-gray-400 mt-0.5 leading-relaxed">
+                    {d.description}
+                  </div>
+                )}
+              </div>
+              <div className="text-brand-300 group-hover:text-brand-200 flex items-center gap-1.5 text-sm">
+                {d.type || 'PDF'}
+                <span className="text-lg leading-none">↧</span>
+              </div>
+            </a>
           ))}
         </div>
       </Container>

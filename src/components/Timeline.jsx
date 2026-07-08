@@ -55,9 +55,10 @@ export default function Timeline() {
   return (
     <div className="container mx-auto px-6 max-w-5xl" ref={ref}>
       <SectionTitle
-        kicker="// Professional Journey"
+        code="SEC 003"
+        kicker="Professional journey"
         title="Experience Timeline"
-        subtitle="From Navy corpsman to mechanical engineering student — operational excellence carried forward into R&D."
+        subtitle="From Navy corpsman to aerospace intern — operational excellence carried forward into R&D."
       />
 
       <div className="relative mt-10">

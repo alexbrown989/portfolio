@@ -1,18 +1,20 @@
 // src/components/Hero.jsx
-// Restrained hero. One subtle gradient, calm motion, and the same section
-// title / metric surfaces used across the rest of the site.
+// Aerospace-first hero. Anduril-inspired restraint: dark plate, HUD-style
+// status ticker leading, a single decisive gradient on the title, corner
+// brackets on the stat panel. No competing accent lights, no rainbow.
 
 import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import { ArrowRight, ArrowUpRight, Circle } from 'lucide-react'
 import { site } from '../content/siteConfig'
+import { CornerBrackets } from '../shared/ui'
 
 const container = {
   hidden: { opacity: 0 },
   show:   { opacity: 1, transition: { staggerChildren: 0.06, delayChildren: 0.05 } },
 }
 const item = {
-  hidden: { opacity: 0, y: 10 },
+  hidden: { opacity: 0, y: 8 },
   show:   { opacity: 1, y: 0, transition: { duration: 0.5, ease: 'easeOut' } },
 }
 
@@ -25,19 +27,25 @@ export default function Hero() {
         animate="show"
         className="container mx-auto px-6 max-w-6xl"
       >
-        {/* Status pill */}
-        <motion.div variants={item} className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-brand-500/30 bg-brand-500/5 backdrop-blur-sm text-brand-200 text-[11px] font-mono uppercase tracking-[0.22em]">
-          <Circle className="w-2 h-2 fill-emerald-400 stroke-none" />
-          <span>Available Summer 2026</span>
+        {/* HUD status ticker */}
+        <motion.div variants={item} className="space-y-2">
+          <div className="inline-flex items-center gap-2.5 px-3 py-1.5 rounded-full border border-brand-500/30 bg-brand-500/[0.06] backdrop-blur-sm text-brand-200 text-[11px] font-mono uppercase tracking-[0.22em]">
+            <Circle className="w-2 h-2 fill-emerald-400 stroke-none crosshair-blink" />
+            <span>{site.hero.status.primary}</span>
+          </div>
+          <div className="h-px w-40 bg-gradient-to-r from-brand-500/60 to-transparent ticker-sweep" />
+          <div className="text-[10.5px] font-mono uppercase tracking-[0.24em] text-gray-500">
+            {site.hero.status.secondary}
+          </div>
         </motion.div>
 
         {/* Title */}
         <motion.h1
           variants={item}
-          className="mt-6 text-5xl md:text-7xl font-extrabold tracking-tight leading-[1.05]"
+          className="mt-8 text-5xl md:text-7xl xl:text-8xl font-extrabold tracking-tight leading-[1.02]"
         >
           <span className="text-white">{site.hero.titleTop}</span>
-          <span className="block text-gray-400 font-semibold text-3xl md:text-5xl mt-2 tracking-tight">
+          <span className="block text-transparent bg-clip-text bg-gradient-to-r from-brand-300 via-brand-200 to-accent-400 font-semibold text-2xl md:text-3xl xl:text-4xl mt-3 tracking-[0.02em]">
             {site.hero.titleBottom}
           </span>
         </motion.h1>
@@ -50,7 +58,7 @@ export default function Hero() {
           {site.hero.subtitle}
         </motion.p>
 
-        {/* Bullets */}
+        {/* Capability bullets */}
         <motion.div variants={item} className="mt-5 flex flex-wrap gap-x-5 gap-y-2 text-sm text-gray-400">
           {site.hero.bullets.map((b) => (
             <div key={b} className="flex items-center gap-2">
@@ -62,22 +70,26 @@ export default function Hero() {
 
         {/* CTAs */}
         <motion.div variants={item} className="mt-8 flex flex-wrap gap-3">
-          <Link
-            to="/#projects"
+          <a
+            href="#internship"
+            onClick={(e) => {
+              e.preventDefault()
+              document.getElementById('internship')?.scrollIntoView({ behavior: 'smooth' })
+            }}
+            className="glow-btn inline-flex items-center gap-2 px-5 py-3 rounded-lg bg-brand-500 text-white font-semibold hover:bg-brand-400 transition-colors"
+          >
+            View internship <ArrowRight className="w-4 h-4" />
+          </a>
+          <a
+            href="#projects"
             onClick={(e) => {
               e.preventDefault()
               document.getElementById('projects')?.scrollIntoView({ behavior: 'smooth' })
             }}
-            className="glow-btn inline-flex items-center gap-2 px-5 py-3 rounded-lg bg-brand-500 text-white font-semibold hover:bg-brand-400 transition-colors"
-          >
-            Explore projects <ArrowRight className="w-4 h-4" />
-          </Link>
-          <Link
-            to="/about"
             className="inline-flex items-center gap-2 px-5 py-3 rounded-lg border border-line-strong text-gray-100 hover:border-brand-400/60 hover:text-white transition-colors"
           >
-            About me
-          </Link>
+            Explore projects
+          </a>
           <a
             href="/resume.pdf"
             target="_blank"
@@ -88,26 +100,27 @@ export default function Hero() {
           </a>
         </motion.div>
 
-        {/* Stats — one card style, tight grid, tabular numerals */}
+        {/* Stats panel with corner brackets */}
         {Array.isArray(site.hero.stats) && site.hero.stats.length > 0 && (
-          <motion.div
-            variants={item}
-            className="mt-14 grid grid-cols-2 md:grid-cols-4 gap-3 max-w-3xl"
-          >
-            {site.hero.stats.slice(0, 4).map((s) => (
-              <div
-                key={s.label}
-                className="rounded-xl border border-line bg-surface-2/60 backdrop-blur-sm px-4 py-3"
-              >
-                <div className="text-2xl md:text-3xl font-bold text-white tabular-nums leading-none">
-                  {s.value}
-                  <span className="text-brand-300/80 text-xl">{s.suffix || ''}</span>
-                </div>
-                <div className="text-[11px] uppercase tracking-[0.16em] text-gray-400 mt-2">
-                  {s.label}
-                </div>
+          <motion.div variants={item} className="mt-14 max-w-3xl">
+            <CornerBrackets className="p-4 rounded-xl border border-line/70 bg-surface-2/40 backdrop-blur-sm">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                {site.hero.stats.slice(0, 4).map((s, i) => (
+                  <div key={s.label} className="px-3 py-2">
+                    <div className="text-[10px] font-mono uppercase tracking-[0.22em] text-gray-500">
+                      {String(i + 1).padStart(2, '0')} · Metric
+                    </div>
+                    <div className="mt-1 text-2xl md:text-3xl font-bold text-white tabular-nums leading-none">
+                      {s.value}
+                      <span className="text-brand-300/80 text-xl">{s.suffix || ''}</span>
+                    </div>
+                    <div className="text-[11px] uppercase tracking-[0.14em] text-gray-400 mt-2 leading-tight">
+                      {s.label}
+                    </div>
+                  </div>
+                ))}
               </div>
-            ))}
+            </CornerBrackets>
           </motion.div>
         )}
       </motion.div>

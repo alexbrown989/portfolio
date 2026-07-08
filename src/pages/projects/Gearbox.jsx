@@ -11,8 +11,9 @@
 import ProjectLayout from '../ProjectLayout'
 import {
   Container, PageHero, SectionTitle, Glass, MetricBox,
-  ProjectPager, ProjectCTA, STARSection, AARSection,
+  ProjectPager, ProjectCTA, STARSection, AARSection, Downloads,
 } from '../../shared/ui'
+import { SafeImage } from '../../shared/Media'
 import { projects } from '../../content/projects'
 
 const project = projects.find(p => p.id === 'gearbox') || {}
@@ -61,14 +62,13 @@ export default function Gearbox() {
             ].map((m) => (
               <Glass pad={false} key={m.label}>
                 <div className="p-4">
-                  <div className="aspect-[4/3] rounded-xl border border-line bg-black overflow-hidden">
-                    <img
-                      src={m.src}
-                      alt={m.label}
-                      className="w-full h-full object-contain"
-                      loading="lazy"
-                    />
-                  </div>
+                  <SafeImage
+                    src={m.src}
+                    alt={m.label}
+                    label={m.label}
+                    aspect="aspect-[4/3]"
+                    fit="contain"
+                  />
                 </div>
                 <div className="px-5 py-3 border-t border-line text-sm text-gray-300">
                   {m.label}
@@ -142,6 +142,10 @@ export default function Gearbox() {
 
       {/* AAR reflection */}
       <AARSection aar={project.aar} />
+
+      {/* Optional downloadable artifacts — populated when project.downloads
+          is set in src/content/projects.js. */}
+      <Downloads items={project.downloads} />
 
       <ProjectCTA
         title="Mechanical design internships"
