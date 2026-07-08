@@ -199,7 +199,7 @@ export default function VibrationPCM() {
   return (
     <ProjectLayout>
       <PageHero
-        kicker="// Engineering a “Smart” Composite with Thermally Activated Damping"
+        kicker="Engineering a “Smart” Composite with Thermally Activated Damping"
         title="Vibration Analysis of Phase-Change Materials"
         subtitle={<>End-to-end R&amp;D that designed a novel composite and validated a <span className="text-brand-300 font-semibold">10× increase</span> in damping performance. Custom high-rigidity test apparatus built from the ground up.</>}
         chips={project.tech || []}
@@ -223,7 +223,8 @@ export default function VibrationPCM() {
       <section className="pb-10">
         <Container>
           <SectionTitle
-            kicker="// Hypothesis"
+            kicker="Hypothesis"
+            code="H/02"
             title="Can a material’s damping be switched on?"
             subtitle="Embed a phase-change material (like beeswax) in an epoxy matrix and thermally trigger it into a near-critically damped state on demand."
           />
@@ -242,7 +243,7 @@ export default function VibrationPCM() {
       {/* Material synthesis */}
       <section className="pb-10">
         <Container>
-          <SectionTitle kicker="// Synthesis" title="Methodical material preparation" />
+          <SectionTitle kicker="Synthesis" code="S/03" title="Methodical material preparation" />
           <div className="grid md:grid-cols-2 gap-5">
             <Glass>
               <ImageCard src="/projects/pcm_mixing_setup.jpg" alt="Numbered cups for precise mixing" aspect="aspect-[16/10]" />
@@ -267,7 +268,8 @@ export default function VibrationPCM() {
       <section className="pb-10">
         <Container>
           <SectionTitle
-            kicker="// Apparatus"
+            kicker="Apparatus"
+            code="A/04"
             title="A case study in iteration"
             subtitle="The final rig looks simple, but its monolithic structure and adaptable clamp are direct products of three deliberate failures."
           />
@@ -309,7 +311,7 @@ export default function VibrationPCM() {
       {/* Design through failure */}
       <section className="pb-10">
         <Container>
-          <SectionTitle kicker="// Iteration Log" title="Design through failure" />
+          <SectionTitle kicker="Iteration log" code="L/05" title="Design through failure" />
           <div className="grid md:grid-cols-3 gap-4">
             {[
               { t: 'Failure 1 · static vs dynamic rigidity', d: 'Off-the-shelf vises are made for holding, not vibrating. The experiment needed a vibrationally inert foundation.' },
@@ -328,7 +330,7 @@ export default function VibrationPCM() {
       {/* Experiment + results */}
       <section className="pb-10">
         <Container>
-          <SectionTitle kicker="// Results" title="Experimentation & validated results" />
+          <SectionTitle kicker="Results" code="R/06" title="Experimentation & validated results" />
           <div className="grid md:grid-cols-2 gap-5">
             <Glass>
               <ImageCard src="/projects/rig_sensor.jpg" alt="Sample in the resonance rig with sensor attached" />
@@ -357,7 +359,8 @@ export default function VibrationPCM() {
       <section className="pb-10">
         <Container>
           <SectionTitle
-            kicker="// Future Work"
+            kicker="Future work"
+            code="F/07"
             title="From proof-of-concept to engineering solution"
           />
           <Glass>

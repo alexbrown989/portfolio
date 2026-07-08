@@ -216,7 +216,7 @@ export default function Turret() {
   return (
     <ProjectLayout>
       <PageHero
-        kicker="// Foundational Platform for Autonomous Systems"
+        kicker="Foundational Platform for Autonomous Systems"
         title="Mechatronics Integration: 2-Axis Robotic Turret"
         subtitle="Designed, fabricated, and validated a multi-part robotic turret that achieves repeatable positioning under test. Built as a robust R&D platform for sensor fusion and future autonomy."
         chips={project.tech || []}
@@ -240,7 +240,8 @@ export default function Turret() {
       <section className="pb-10">
         <Container>
           <SectionTitle
-            kicker="// Design → Fabrication"
+            kicker="Design → fabrication"
+            code="D/02"
             title="From CAD to bench-ready hardware in under 24 hours"
           />
           <div className="grid lg:grid-cols-2 gap-5">
@@ -290,7 +291,8 @@ export default function Turret() {
         <section className="pb-10">
           <Container>
             <SectionTitle
-              kicker="// CAD"
+              kicker="CAD"
+              code="C/03"
               title="Interactive assembly"
               subtitle="Explore the multi-part SolidWorks assembly. Key design features: press-fit servo mounts and a stabilized dual-axis gimbal."
             />
@@ -321,7 +323,8 @@ export default function Turret() {
       <section className="pb-10">
         <Container>
           <SectionTitle
-            kicker="// Controls"
+            kicker="Controls"
+            code="C/04"
             title="Embedded control & motion profile"
           />
           <div className="grid lg:grid-cols-2 gap-5">
@@ -376,7 +379,8 @@ export default function Turret() {
       <section className="pb-10">
         <Container>
           <SectionTitle
-            kicker="// Roadmap"
+            kicker="Roadmap"
+            code="R/05"
             title="Where this platform is going"
           />
           <Glass>

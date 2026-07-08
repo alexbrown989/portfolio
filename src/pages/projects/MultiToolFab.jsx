@@ -169,7 +169,7 @@ export default function MultiToolFab() {
   return (
     <ProjectLayout>
       <PageHero
-        kicker="// Manufacturing · Machining & Metrology"
+        kicker="Manufacturing · Machining & Metrology"
         title="Folding Multi-Tool: Machining, GD&T, and Inspection"
         subtitle="Fabricated a functional folding multi-tool assembly from raw aluminum stock using manual mill + CNC operations. Held ±0.005 in precision dimensions, 0.003 in parallelism, and 0.002 in flatness against a full GD&T drawing package, and inspected every feature back to the print."
         chips={project.tech || []}
@@ -200,7 +200,8 @@ export default function MultiToolFab() {
       <section className="pb-10">
         <Container>
           <SectionTitle
-            kicker="// Media"
+            kicker="Media"
+            code="M/02"
             title="From raw stock to finished assembly"
             subtitle="Two CNC videos and the finished multi-tool. If any of the media below is missing, drop the corresponding file into /public/projects/. The layout already expects it."
           />
@@ -262,7 +263,8 @@ export default function MultiToolFab() {
       <section className="pb-10">
         <Container>
           <SectionTitle
-            kicker="// GD&T"
+            kicker="GD&T"
+            code="G/03"
             title="Tolerance envelope & inspection plan"
             subtitle="Every feature was inspected and recorded against the print. Below is the tolerance envelope and the metrology stack used to verify each callout."
           />
@@ -303,7 +305,8 @@ export default function MultiToolFab() {
       <section className="pb-10">
         <Container>
           <SectionTitle
-            kicker="// Capabilities Demonstrated"
+            kicker="Capabilities demonstrated"
+            code="C/04"
             title="What this project proves I can do"
           />
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
