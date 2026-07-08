@@ -350,6 +350,198 @@ export const knowledgeBase = [
       'May 2023 – Jan 2024, Kent WA fulfillment site. Built an Excel-based injury tracking system using ergonomic engineering principles (−20% data errors). Partnered with safety and engineering to cut emergency response times 25%. Ran wellness programs that dropped absenteeism 20% and raised engagement 15%.',
   },
 
+  /* ---------- Basic recruiter / job-related questions ---------- */
+  {
+    id: 'why-you',
+    title: 'Why hire Alex?',
+    tags: ['why', 'differentiator', 'strengths', 'fit', 'unique', 'stand out', 'hire you', 'best fit'],
+    terms: ['why should i hire you', 'why you', 'what makes you different', 'stand out', 'differentiator'],
+    patterns: [
+      'why should i hire you', 'why you', 'what makes you different',
+      'what makes you stand out', 'what is your differentiator',
+    ],
+    answer:
+      'I bring a rare pair. Five years in the U.S. Navy running high-accountability systems, and an active aerospace manufacturing internship at Verus (AS9102 FAI, GD&T, ERP configuration control) while a full-time mechanical engineering student. That means I already know how to execute inside a real production environment, I read GD&T fluently, and I have hands-on manufacturing evidence to back it up (the Multi-Tool project holds ±0.005 in). Most new-grads offer one of those; I bring all three.',
+    links: [
+      { label: 'Internship', to: '/#internship' },
+      { label: 'Projects',   to: '/#projects' },
+    ],
+  },
+  {
+    id: 'strengths',
+    title: 'Strengths',
+    tags: ['strength', 'strengths', 'best at', 'good at'],
+    terms: ['strengths', 'what are you good at', 'your best skill'],
+    patterns: ['what are your strengths', 'what is your greatest strength', 'what are you best at'],
+    answer:
+      'Ownership under load, GD&T interpretation, and process-mindedness. I inherit responsibility for systems (Verus Quality Clinic, Navy medical supply, SAME chapter) and leave them measurably better. In engineering terms: I plan the order of operations before I touch the tool, and I inspect what I build against the print.',
+  },
+  {
+    id: 'weakness',
+    title: 'Growth areas',
+    tags: ['weakness', 'weaknesses', 'growth', 'improve', 'improvement'],
+    terms: ['weakness', 'weaknesses', 'growth area', 'what do you need to work on'],
+    patterns: [
+      'what is your greatest weakness', 'what are your weaknesses',
+      'what do you need to work on', 'growth areas',
+    ],
+    answer:
+      "Formal FEA / simulation isn't yet at the level of my hands-on manufacturing experience. I've done modal work and ring-down validation on the PCM vibration project, but I want deeper ANSYS Mechanical / structural-nonlinear time before I claim it as a strength. I'm treating my Summer 2027 target role as the environment to close that gap.",
+  },
+  {
+    id: 'achievement',
+    title: 'Biggest achievement',
+    tags: ['achievement', 'proud', 'accomplishment', 'greatest'],
+    terms: ['biggest achievement', 'proudest', 'greatest accomplishment'],
+    patterns: [
+      'what is your biggest achievement', 'what are you most proud of',
+      'greatest accomplishment', 'proudest moment',
+    ],
+    answer:
+      'Being selected as Lead Intern at Verus Aerospace. It means I have the trust of engineering, quality, and production leads to onboard incoming interns and own the Quality Clinic workflow redesign. It is not a certificate, it is a live responsibility on flight-critical hardware.',
+    links: [{ label: 'Internship', to: '/#internship' }],
+  },
+  {
+    id: 'challenge',
+    title: 'Biggest challenge',
+    tags: ['challenge', 'hardest', 'difficult', 'tough', 'obstacle'],
+    terms: ['biggest challenge', 'hardest project', 'toughest'],
+    patterns: [
+      'what was your biggest challenge', 'hardest project', 'tell me about a difficult problem',
+      'toughest thing you worked on',
+    ],
+    answer:
+      'The PCM vibration rig. First two rig designs failed for non-obvious reasons: an off-the-shelf vise looked rigid but flexed dynamically, and a modular bed design added micro-movement at bolted interfaces. Getting to clean ring-down data required rejecting both, going monolithic, and inventing an open-channel clamp that accepted real cast parts. The takeaway: static rigidity is not dynamic rigidity, and every joint you add flexes.',
+    links: [{ label: 'Vibration case study', to: '/projects/vibration' }],
+  },
+  {
+    id: 'teamwork',
+    title: 'Working style',
+    tags: ['team', 'teamwork', 'collaborate', 'style', 'working style', 'work with others'],
+    terms: ['teamwork', 'working style', 'how do you work', 'collaboration'],
+    patterns: [
+      'how do you work in a team', 'tell me about your working style',
+      'give me an example of teamwork', 'do you work well with others',
+    ],
+    answer:
+      "Corpsman first. That means calm under pressure, explicit handoffs, and never leaving a teammate to hold the bag on a deliverable I own. On the gearbox project I owned the tolerance stack-up while a teammate owned the bearing calcs; we reconciled in the live CAD assembly at every design review checkpoint. On the Verus team I'm the interface between quality, engineering, and production on Quality Clinic tickets.",
+  },
+  {
+    id: 'passion',
+    title: 'What drives you',
+    tags: ['passion', 'motivation', 'drive', 'love', 'why engineering'],
+    terms: ['passion', 'what drives you', 'why engineering', 'motivation'],
+    patterns: [
+      'what are you passionate about', 'why did you choose engineering',
+      'what motivates you', 'why do you love this work',
+    ],
+    answer:
+      'I build things that matter and hold up under review. The Navy taught me that a well-designed system saves people. Engineering is the same idea at a bigger scale: aerospace hardware that flies, thermal systems that keep infrastructure alive, quality processes that stop defects before they ship. That is the through-line.',
+  },
+  {
+    id: 'salary',
+    title: 'Compensation',
+    tags: ['salary', 'pay', 'compensation', 'money', 'comp'],
+    terms: ['salary', 'compensation', 'pay range', 'expected salary'],
+    patterns: [
+      'what is your salary expectation', 'salary expectations', 'how much do you want',
+      'compensation expectations', 'expected pay',
+    ],
+    answer:
+      "Happy to discuss real numbers in an interview once I understand the role, location, and benefit structure. Broadly: I'm targeting competitive full-time entry-level engineering compensation for aerospace / defense / advanced manufacturing.",
+  },
+  {
+    id: 'references',
+    title: 'References',
+    tags: ['references', 'referrals', 'recommender'],
+    terms: ['references', 'reference letter', 'recommenders'],
+    patterns: ['do you have references', 'can you provide references', 'reference letter'],
+    answer:
+      'Yes. I can provide references from Verus Aerospace, SAME at UW Tacoma, and my Navy chain. Available on request through email once we are further into the conversation.',
+    links: [{ label: 'Email', to: 'mailto:alexbrow@uw.edu', external: true }],
+  },
+  {
+    id: 'gpa',
+    title: 'GPA / education',
+    tags: ['gpa', 'grades', 'academic', 'transcript', 'coursework'],
+    terms: ['gpa', 'grades', 'coursework', 'transcript'],
+    patterns: ['what is your gpa', 'what classes have you taken', 'coursework', 'transcript'],
+    answer:
+      "Full transcript is available on request. Coursework focuses on mechanics, thermodynamics, fluid mechanics, materials, mechatronics, and design-for-manufacturing. Where it matters, the projects on this site are the evidence I'd point to over a number.",
+  },
+  {
+    id: 'graduation',
+    title: 'Graduation',
+    tags: ['graduate', 'graduation', 'degree'],
+    terms: ['graduate', 'graduation date', 'degree'],
+    patterns: ['when do you graduate', 'graduation date', 'when will you finish school'],
+    answer:
+      'B.S. Mechanical Engineering, University of Washington Tacoma. Graduating June 2027. Available full-time starting Summer 2027.',
+  },
+  {
+    id: 'remote',
+    title: 'Remote / hybrid / onsite',
+    tags: ['remote', 'hybrid', 'onsite', 'work location'],
+    terms: ['remote', 'hybrid', 'onsite work'],
+    patterns: ['are you open to remote', 'hybrid or onsite', 'work from home'],
+    answer:
+      "Mechanical engineering is a hands-on discipline, so I default to onsite or hybrid where a real production environment or lab is available. Fully remote would only work for narrow analysis / simulation roles.",
+  },
+  {
+    id: 'travel',
+    title: 'Travel',
+    tags: ['travel', 'traveling', 'traveling for work'],
+    terms: ['travel', 'travel for work'],
+    patterns: ['are you willing to travel', 'travel for work'],
+    answer:
+      'Yes. Navy experience prepared me to travel for the mission. Open to regular domestic travel and long-term site rotations if the role calls for it.',
+  },
+  {
+    id: 'defense',
+    title: 'Aerospace / defense interest',
+    tags: ['aerospace', 'defense', 'primes', 'anduril', 'boeing', 'lockheed', 'northrop', 'spacex', 'raytheon', 'itar'],
+    terms: ['aerospace', 'defense', 'defense industry', 'aerospace industry'],
+    patterns: ['are you interested in defense', 'aerospace roles', 'do you want to work in defense'],
+    answer:
+      'Yes. Verus Aerospace is my current internship, my Navy background gave me clearance eligibility, and the projects on this site (multi-tool, gearbox, PCM composite, coastal, BET-H) are all rehearsals for high-consequence hardware work. Aerospace, defense, and advanced manufacturing are my target space for full-time.',
+  },
+  {
+    id: 'programming',
+    title: 'Programming / software',
+    tags: ['programming', 'code', 'software', 'python', 'matlab', 'c++', 'languages'],
+    terms: ['programming languages', 'coding', 'code experience'],
+    patterns: ['what languages do you code in', 'programming experience', 'do you code'],
+    answer:
+      'Not primary. Python for data cleanup and plotting, MATLAB for DEM processing / PIVLab / signal work, embedded C++ (Arduino/NodeMCU) for the turret and PCM DAQ. I use software where it earns its place in a mechanical workflow.',
+  },
+  {
+    id: 'certifications',
+    title: 'Certifications',
+    tags: ['certification', 'certified', 'cert', 'osha', 'six sigma'],
+    terms: ['certifications', 'certified'],
+    patterns: ['do you have any certifications', 'certifications'],
+    answer:
+      'Military-side: Hospital Corpsman qualifications from active-duty Navy service. Awarded the Armed Forces Service Medal. Engineering-side: no formal external certifications yet; the manufacturing / GD&T / AS9102 exposure comes through the Verus internship rather than a stand-alone cert.',
+  },
+  {
+    id: 'hobbies',
+    title: 'Outside of engineering',
+    tags: ['hobbies', 'fun', 'personal', 'outside', 'hiking', 'coach', 'soccer'],
+    terms: ['hobbies', 'outside of work', 'what do you do for fun'],
+    patterns: ['hobbies', 'what do you do for fun', 'outside of engineering'],
+    answer:
+      'Youth soccer coach, veteran-community volunteer, and SAME chapter president. Outdoors when the weather in Tacoma allows for it.',
+  },
+  {
+    id: 'ai',
+    title: 'AI / autonomy interest',
+    tags: ['ai', 'autonomy', 'ml', 'machine learning', 'lidar', 'vision'],
+    terms: ['ai', 'autonomy', 'machine learning', 'computer vision'],
+    patterns: ['are you interested in ai', 'autonomous systems', 'machine learning experience'],
+    answer:
+      "The turret project was scoped from day one as a foundation for later LiDAR + vision fusion, and I have the mechatronics chops to interface with an autonomy stack. I don't claim ML modeling as a core skill yet — that would be a growth vector inside the right role.",
+  },
+
   /* ---------- Meta ---------- */
   {
     id: 'site',

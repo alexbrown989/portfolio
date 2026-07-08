@@ -125,21 +125,68 @@ export function search(query, limit = 5) {
  * - If two-plus entries are close, return a disambiguation menu.
  * - If nothing scored well, return a helpful fallback with quick options.
  */
+// Very light intent classification for the fallback path so we route to
+// the right region of the site even when no KB entry matched.
+const INTENT_HINTS = [
+  { pattern: /\b(project|projects|portfolio|case study|case studies)\b/i,
+    label: 'Project portfolio',                         entryId: 'projects-overview' },
+  { pattern: /\b(intern|internship|verus|aerospace|quality|manufacturing|as9102|inconel|titanium)\b/i,
+    label: 'Verus Aerospace internship',               entryId: 'verus' },
+  { pattern: /\b(available|availability|start|graduate|graduating|hire|hiring|full[- ]?time|when)\b/i,
+    label: 'Availability + full-time',                 entryId: 'availability' },
+  { pattern: /\b(contact|reach|email|phone|call|text|linkedin|hire you|talk|message)\b/i,
+    label: 'How to contact Alex',                      entryId: 'contact' },
+  { pattern: /\b(resume|cv)\b/i,
+    label: 'Resume (PDF)',                             entryId: 'resume' },
+  { pattern: /\b(navy|military|corpsman|veteran|clearance|citizen)\b/i,
+    label: 'Navy / clearance',                         entryId: 'navy' },
+  { pattern: /\b(cad|solidworks|onshape|design|drawing)\b/i,
+    label: 'CAD experience',                           entryId: 'cad' },
+  { pattern: /\b(embed|arduino|nodemcu|firmware|c\+\+|microcontroller|controls|servo)\b/i,
+    label: 'Embedded / controls',                      entryId: 'embedded' },
+  { pattern: /\b(matlab|python|analysis|signal|data)\b/i,
+    label: 'Analysis stack',                           entryId: 'analysis' },
+  { pattern: /\b(salary|pay|compensation|money|comp)\b/i,
+    label: 'Compensation',                             entryId: 'salary' },
+  { pattern: /\b(travel|relocat|remote|hybrid|onsite|location|where)\b/i,
+    label: 'Location + travel',                        entryId: 'remote' },
+]
+
+function fallbackOptions(query) {
+  const opts = []
+  const seen = new Set()
+  for (const h of INTENT_HINTS) {
+    if (h.pattern.test(query) && !seen.has(h.entryId)) {
+      opts.push({ label: h.label, entryId: h.entryId })
+      seen.add(h.entryId)
+      if (opts.length >= 4) break
+    }
+  }
+  // Always fall back to a small, high-value default set so the panel
+  // never feels empty.
+  const defaults = [
+    { label: 'The internship at Verus Aerospace', entryId: 'verus' },
+    { label: 'Project portfolio',                 entryId: 'projects-overview' },
+    { label: 'Availability + full-time',          entryId: 'availability' },
+    { label: 'How to contact Alex',               entryId: 'contact' },
+  ]
+  for (const d of defaults) {
+    if (opts.length >= 4) break
+    if (!seen.has(d.entryId)) opts.push(d)
+  }
+  return opts.slice(0, 4)
+}
+
 export function respond(query) {
   const ranked = search(query, 5)
 
-  // No hits at all — smart fallback.
+  // No hits at all — smart fallback that still routes to the right region.
   if (ranked.length === 0) {
     return {
       kind: 'no-match',
       body:
-        "I don't have a specific answer for that, but I can walk you through anything on the site. Try one of these:",
-      options: [
-        { label: 'The internship at Verus Aerospace', to: '/#internship',           entryId: 'verus'    },
-        { label: 'Project portfolio',                to: '/#projects',              entryId: 'projects-overview' },
-        { label: 'Availability + full-time',         entryId: 'availability'                            },
-        { label: 'How to contact Alex',              entryId: 'contact'                                 },
-      ],
+        "I don't have that exact answer written up, but I can point you at the closest thing on the site. Try one of these:",
+      options: fallbackOptions(String(query || '')),
     }
   }
 
