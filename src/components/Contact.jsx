@@ -6,7 +6,7 @@ const DEFAULTS = {
   email: 'alexbrow@uw.edu',
   linkedinUrl: 'https://www.linkedin.com/in/alexanderchasebrown/',
   resumeUrl: '/resume.pdf',
-  badge: 'Now interviewing for Summer 2026 internships',
+  badge: 'Available Summer 2027 · Seeking full-time engineering roles',
 }
 
 export default function Contact({
@@ -27,8 +27,8 @@ export default function Contact({
           Let’s connect
         </h2>
         <p className="mt-3 text-gray-400 max-w-xl mx-auto text-[15px] leading-relaxed">
-          Open to internships across mechanical, systems, R&amp;D, and emerging tech.
-          The fastest way to reach me is email — I typically reply within a day.
+          Open to full-time roles across aerospace, mechanical, manufacturing, R&amp;D, and defense-adjacent
+          engineering. Fastest way to reach me is email; I typically reply within a day.
         </p>
 
         <div className="mt-8 flex flex-wrap items-center justify-center gap-3">

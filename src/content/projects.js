@@ -49,20 +49,20 @@ export const projects = [
         'Planned order of operations, fixturing, and inspection strategy for each part before touching a machine.',
         'Ran manual-mill and CNC operations to translate engineering drawings into physical hardware.',
         'Machined components to drawing requirements: ±0.010 in general, ±0.005 in precision, 0.003 in parallelism, 0.002 in flatness.',
-        'Verified jaw and arm features against print requirements — hole size, thickness, profile, flatness, parallelism, symmetry, and positional tolerances.',
+        'Verified jaw and arm features against print requirements: hole size, thickness, profile, flatness, parallelism, symmetry, and positional tolerances.',
         'Inspected finished parts with calipers, gauges, and dial indicators; recorded measurements in a spreadsheet to compare actual dimensions against specified tolerances.',
         'Integrated pivots, bushings, spacers, and fasteners into an articulated assembly and validated alignment, fit, movement, and function.',
       ],
       results: [
         'Delivered a working folding multi-tool that met all dimensional and GD&T requirements in the print.',
         'Built practical fluency in manufacturing process planning, GD&T interpretation, tolerance control, and inspection strategy.',
-        'Direct hands-on experience with machinist communication and design-for-manufacturability — the exact skill stack used every day at my Verus Aerospace internship.',
+        'Direct hands-on experience with machinist communication and design-for-manufacturability, the exact skill stack used every day at my Verus Aerospace internship.',
       ],
     },
     aar: {
       right:   'Process planning up front (op order + fixturing + inspection) kept fabrication predictable and repeatable.',
       wrong:   'Underestimated setup time on the first precision op; had to re-fixture to hold flatness within 0.002 in.',
-      learned: 'Machining is a communication problem as much as a mechanical one — the drawing and the operator are one system.',
+      learned: 'Machining is a communication problem as much as a mechanical one. The drawing and the operator are one system.',
     },
   },
 
@@ -99,12 +99,12 @@ export const projects = [
       ],
       results: [
         'Delivered a design-review-approved gearbox assembly with a validated interface story: shafts, gears, bearings, fasteners, and clearances all accounted for.',
-        'Strengthened practical understanding of power transmission, live assembly management, DFM, and deadline-driven team execution — the discipline that transfers into every production mechanical-design role.',
+        'Strengthened practical understanding of power transmission, live assembly management, DFM, and deadline-driven team execution. That discipline transfers into every production mechanical-design role.',
       ],
     },
     aar: {
       right:   'Working the tolerance stack-up early exposed a fit problem before it became a fabrication problem.',
-      wrong:   'Initial fastener access was tight in one quadrant of the housing — caught in review, fixed before submission.',
+      wrong:   'Initial fastener access was tight in one quadrant of the housing. Caught in review, fixed before submission.',
       learned: 'A live CAD assembly is a team communication tool, not just a modeling tool.',
     },
   },
@@ -125,7 +125,7 @@ export const projects = [
     status: 'ACTIVE',
     star: {
       situation:
-        'Personal R&D platform for autonomous systems — needed a repeatable, dual-axis actuation stack that could host future LiDAR / vision payloads.',
+        'Personal R&D platform for autonomous systems: needed a repeatable, dual-axis actuation stack that could host future LiDAR / vision payloads.',
       task:
         'Design, fabricate, and validate a multi-part robotic turret that hits stable articulation, is serviceable in printed parts, and exposes a control interface open enough for sensor fusion later.',
       actions: [
@@ -167,7 +167,7 @@ export const projects = [
       ],
       results: [
         '~10× increase in damping factor in the heated PCM composite versus control.',
-        'Achieved near-critical damping state on thermal trigger — validated the core hypothesis.',
+        'Achieved near-critical damping state on thermal trigger, validating the core hypothesis.',
         '±0.1 mm fabrication tolerance and < $500 total prototype cost.',
       ],
     },
@@ -193,7 +193,7 @@ export const projects = [
       situation:
         'Critical Pacific-island infrastructure ($45M+ exposure on Saipan) sits inside active erosion corridors, and no defensible lab-scale pipeline existed to quantify wave–coast interaction for that specific geometry.',
       task:
-        'Build a physical modelling pipeline — DEM → scale-fidelity print → tank-ready model → PIV analysis — that produces measurable, publishable coastal-defense insight for Saipan.',
+        'Build a physical modelling pipeline (DEM → scale-fidelity print → tank-ready model → PIV analysis) that produces measurable, publishable coastal-defense insight for Saipan.',
       actions: [
         'Processed bathymetry / coastal elevation in MATLAB to preserve slope fidelity through scale reduction.',
         '3D-printed the Saipan geometry at 0.2 mm layer height to preserve shoreline curvature.',
@@ -209,7 +209,7 @@ export const projects = [
     aar: {
       right:   'Polka-dot VFA significantly improved particle tracking & vector quality.',
       wrong:   'Initial prints warped; redesigned internal ribs and supports.',
-      learned: 'Physical validation is non-negotiable — CFD must meet the tank.',
+      learned: 'Physical validation is non-negotiable. CFD must meet the tank.',
     },
   },
   {
@@ -224,13 +224,13 @@ export const projects = [
     status: 'R&D',
     star: {
       situation:
-        'Elastin manages energy through entropy changes in its hydration shell — absorbing / releasing heat during reversible structural transitions without active metabolism. That principle has not been formalized as a materials-engineering framework.',
+        'Elastin manages energy through entropy changes in its hydration shell, absorbing and releasing heat during reversible structural transitions without active metabolism. That principle has not been formalized as a materials-engineering framework.',
       task:
         'Propose and defend BET-H (Biological Elastin Thermoregulation): a design framework that abstracts elastin’s entropy behavior into passive thermal systems built from PCM, graphite, carbon black, and copper.',
       actions: [
         'Extracted the thermodynamic principle from biology (abstraction, not imitation) into a material-driven thermoregulation model.',
         'Built out the material stack: PCM (~247 kJ/kg latent heat), graphite (~4300 W/m·K in-plane), carbon black (~98% solar absorption), copper (~400 W/m·K isotropic).',
-        'Ran conceptual application studies — EV battery thermal buffer, solar roofing system, Stirling dissipator — to pressure-test the framework across use cases.',
+        'Ran conceptual application studies (EV battery thermal buffer, solar roofing system, Stirling dissipator) to pressure-test the framework across use cases.',
       ],
       results: [
         'Documented framework with defensible material properties and four conceptual applications.',
@@ -264,7 +264,7 @@ export const projects = [
         'Translated each gap into a specific hardware / policy requirement: adaptive frames, cash / SMS unlock, offline failsafes, transit interoperability.',
       ],
       results: [
-        '29.0% adaptive-vehicle incentive rate · 48.8% unbanked payment support · 42.4% smartphone-free access — a quantitative baseline the field previously lacked.',
+        '29.0% adaptive-vehicle incentive rate · 48.8% unbanked payment support · 42.4% smartphone-free access: a quantitative baseline the field previously lacked.',
         'A concrete constraint set that engineering teams can build against, not a wishlist.',
       ],
     },

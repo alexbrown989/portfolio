@@ -14,21 +14,21 @@ export const timeline = [
   {
     period: 'Dec 2025 – Present',
     title: 'Engineering Intern · Lead Intern',
-    org: 'Verus Aerospace — Tacoma, WA',
+    org: 'Verus Aerospace · Tacoma, WA',
     location: 'Tacoma, WA',
     icon: 'intern',
     current: true,
     summary:
       'Aerospace manufacturing, quality, and process improvement for flight-critical hardware in a high-mix production environment. Selected as Lead Intern for onboarding and coordination of incoming interns.',
     highlights: [
-      'Maintain Engineering Masters and configuration control in Infor VISUAL ERP — revision control, traceability, and production release readiness across active aerospace programs.',
+      'Maintain Engineering Masters and configuration control in Infor VISUAL ERP: revision control, traceability, and production release readiness across active aerospace programs.',
       'Develop inspection plans and quality documentation supporting verification of critical aerospace hardware, GD&T interpretation, and AS9102 First Article Inspection activities.',
-      'Perform independent over-check inspections on Gulfstream assemblies and aerospace hardware — identifying dimensional discrepancies, defects, and documentation issues prior to release.',
-      'Lead Quality Clinic operations: tracking non-conforming hardware through rework, reassignment, and scrap disposition while improving organization, traceability, and material flow.',
+      'Perform independent over-check inspections on Gulfstream assemblies and aerospace hardware, identifying dimensional discrepancies, defects, and documentation issues prior to release.',
+      'Lead Quality Clinic operations: track non-conforming hardware through rework, reassignment, and scrap disposition while improving organization, traceability, and material flow.',
       'Redesigning Quality Clinic workflow and disposition processes to strengthen communication between engineering, quality, production, and inspection teams.',
-      'Monitor and analyze monthly manufacturing and quality KPIs — throughput, scrap trends, FOD, quality escapes, production performance — to support data-driven process improvement.',
+      'Monitor and analyze monthly manufacturing and quality KPIs (throughput, scrap trends, FOD, quality escapes, production performance) to support data-driven process improvement.',
       'Assist in the development and revision of manufacturing standards, setup docs, inspection docs, and operating procedures used across engineering, quality, and production.',
-      'Selected as Lead Intern — support onboarding, training, and coordination of incoming interns as a resource for ERP workflows, quality processes, and daily production support.',
+      'Selected as Lead Intern: support onboarding, training, and coordination of incoming interns as a resource for ERP workflows, quality processes, and daily production support.',
       'Gained exposure to multi-spindle CNC machining of titanium and Inconel components, supporting close-tolerance aerospace manufacturing at real production scale.',
     ],
     expandedInfo: {
@@ -47,7 +47,7 @@ export const timeline = [
   // ---------------------------------------------------------------------
   {
     period: 'Oct 2024 – Present',
-    title: 'President — Society of American Military Engineers (SAME)',
+    title: 'President · Society of American Military Engineers (SAME)',
     org: 'University of Washington Tacoma',
     icon: 'president',
     current: true,
@@ -74,7 +74,7 @@ export const timeline = [
   {
     period: 'Sep 2021 – Jun 2027',
     title: 'B.S. Mechanical Engineering',
-    org: 'University of Washington — Tacoma',
+    org: 'University of Washington · Tacoma',
     icon: 'degree',
     current: true,
     summary: 'Mechanics, systems, and R&D focus with hands-on lab prototyping and leadership.',
@@ -103,7 +103,7 @@ export const timeline = [
   {
     period: 'May 2023 – Jan 2024',
     title: 'Onsite Medical Representative',
-    org: 'Amazon — Kent, WA',
+    org: 'Amazon · Kent, WA',
     icon: 'amazon',
     summary:
       'Data-driven safety improvements and response optimization for a high-throughput fulfillment site.',
@@ -130,7 +130,7 @@ export const timeline = [
   // ---------------------------------------------------------------------
   {
     period: 'Aug 2018 – May 2023',
-    title: 'Hospital Corpsman — Engineering & Operations',
+    title: 'Hospital Corpsman · Engineering & Operations',
     org: 'United States Navy',
     icon: 'navy',
     summary:
@@ -159,7 +159,7 @@ export const timeline = [
 // Volunteering & service — collapsed dropdown on the Timeline.
 export const volunteering = [
   {
-    label: 'Leadership & Service — SAME President',
+    label: 'Leadership & Service · SAME President',
     details: [
       'Organized cross-discipline events aligning student capabilities with industry needs.',
       'Built bridges between the veteran community and engineering programs.',
@@ -167,7 +167,7 @@ export const volunteering = [
     ],
   },
   {
-    label: 'Youth Soccer Coach — Community Engagement',
+    label: 'Youth Soccer Coach · Community Engagement',
     details: [
       'Mentored 8 first-time players, fostering confidence and discipline.',
       'Developed team dynamics across a 12-game season.',
@@ -175,7 +175,7 @@ export const volunteering = [
     ],
   },
   {
-    label: 'Veteran Mentorship — Career Transitions',
+    label: 'Veteran Mentorship · Career Transitions',
     details: [
       'Guided fellow veterans transitioning to engineering careers.',
       'Shared expertise on leveraging military experience in civilian roles.',

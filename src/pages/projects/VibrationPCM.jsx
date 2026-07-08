@@ -172,9 +172,9 @@ export default function VibrationPCM() {
 
           <div className="grid md:grid-cols-3 gap-4 mt-5">
             {[
-              { t: 'Monolithic design',    d: 'Multi-part concepts were rejected — every joint introduced flex and noise that compromised data fidelity.' },
+              { t: 'Monolithic design',    d: 'Multi-part concepts were rejected. Every joint introduced flex and noise that compromised data fidelity.' },
               { t: 'Adaptable fixturing',  d: 'Replaced a "perfect slot" with an open-topped channel that handles real-world sample variation without losing stability.' },
-              { t: '3D-aware CAD',         d: 'A hidden bolt collision only appeared in 3D section views — caught before fabrication to protect the dataset.' },
+              { t: '3D-aware CAD',         d: 'A hidden bolt collision only appeared in 3D section views. Caught before fabrication to protect the dataset.' },
             ].map((c) => (
               <Glass key={c.t}>
                 <div className="text-white font-semibold">{c.t}</div>
@@ -191,9 +191,9 @@ export default function VibrationPCM() {
           <SectionTitle kicker="// Iteration Log" title="Design through failure" />
           <div className="grid md:grid-cols-3 gap-4">
             {[
-              { t: 'Failure 1 — static vs. dynamic rigidity', d: 'Off-the-shelf vises are made for holding, not vibrating. The experiment needed a vibrationally inert foundation.' },
-              { t: 'Failure 2 — every joint flexes',          d: 'A modular, bed-sized design seemed convenient — but bolted interfaces added micro-movement and corrupted readings.' },
-              { t: 'Failure 3 — the precision trap',          d: 'A closed, perfect slot didn’t accept real cast parts. The open-channel clamp balanced tolerance with stability.' },
+              { t: 'Failure 1 · static vs dynamic rigidity', d: 'Off-the-shelf vises are made for holding, not vibrating. The experiment needed a vibrationally inert foundation.' },
+              { t: 'Failure 2 · every joint flexes',         d: 'A modular, bed-sized design seemed convenient, but bolted interfaces added micro-movement and corrupted readings.' },
+              { t: 'Failure 3 · the precision trap',         d: 'A closed, perfect slot didn’t accept real cast parts. The open-channel clamp balanced tolerance with stability.' },
             ].map((c) => (
               <Glass key={c.t}>
                 <div className="text-white font-semibold">{c.t}</div>
@@ -244,7 +244,7 @@ export default function VibrationPCM() {
               <li><b className="text-white">Enhance rigor:</b> PID-controlled Peltier heating + FFT-based analysis.</li>
               <li><b className="text-white">Next-gen materials:</b> laminated composites with viscoelastic cores to beat commercial damping sheets.</li>
               <li><b className="text-white">Proof-of-technology:</b> self-quieting electronics panel demonstrator.</li>
-              <li><b className="text-white">Computational validation:</b> predictive FEA model matched to experimental ring-down data — the next R&D step.</li>
+              <li><b className="text-white">Computational validation:</b> predictive FEA model matched to experimental ring-down data. The next R&D step.</li>
             </ul>
           </Glass>
         </Container>

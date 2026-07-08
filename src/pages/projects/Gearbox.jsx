@@ -52,7 +52,7 @@ export default function Gearbox() {
           <SectionTitle
             kicker="// CAD"
             title="Live assembly & design snapshots"
-            subtitle="The CAD assembly was maintained live across the whole quarter — shaft alignment, gear placement, bearing fitment, and fastener access all validated in one file before final submission."
+            subtitle="The CAD assembly was maintained live across the whole quarter. Shaft alignment, gear placement, bearing fitment, and fastener access were all validated in one file before final submission."
           />
           <div className="grid md:grid-cols-3 gap-5">
             {[
@@ -148,8 +148,8 @@ export default function Gearbox() {
       <Downloads items={project.downloads} />
 
       <ProjectCTA
-        title="Mechanical design internships"
-        body="This project is a clean fit for entry-level mechanical design and integration roles: CAD-heavy, calculation-defensible, and reviewed by real engineers. Happy to walk through the stack-up or torque math in depth."
+        title="Mechanical design roles"
+        body="This project is a clean fit for full-time mechanical design and integration roles: CAD-heavy, calculation-defensible, and reviewed by real engineers. Happy to walk through the stack-up or torque math in depth."
         primary={{ label: 'Get in touch', to: '/#contact' }}
       />
 

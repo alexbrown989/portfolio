@@ -19,12 +19,12 @@ export const site = {
     status: {
       // Aerospace-first framing: the strongest credential leads.
       primary: 'Interning · Verus Aerospace · Manufacturing & Quality',
-      secondary: 'Tacoma, WA · Available Summer 2026 · Open to relocate',
+      secondary: 'Tacoma, WA · Seeking full-time engineering roles · Available Summer 2027',
     },
     titleTop: 'Alex Brown',
     titleBottom: 'Mechanical Engineering · Aerospace-Focused',
     subtitle:
-      'Mechanical engineering student and U.S. Navy veteran. Currently interning at Verus Aerospace supporting flight-critical hardware — AS9102 First Article Inspection, GD&T, Infor VISUAL ERP configuration control, and Quality Clinic operations. Hands-on machining, mechatronics, and R&D case studies below.',
+      'Mechanical engineering student and U.S. Navy veteran. Currently supporting flight-critical hardware at Verus Aerospace: AS9102 First Article Inspection, GD&T, Infor VISUAL ERP configuration control, and Quality Clinic operations. Hands-on machining, mechatronics, and R&D case studies below.',
     bullets: [
       'AS9102 FAI',
       'GD&T · Metrology',
@@ -32,12 +32,32 @@ export const site = {
       'Mechatronics · Controls',
       'CFD / PIV · Thermal R&D',
     ],
-    // Four load-bearing numbers. No filler.
-    stats: [
-      { label: 'Precision tolerance held', value: '±0.005', suffix: ' in' },
-      { label: 'PIV accuracy gain',        value: '40',     suffix: '%'   },
-      { label: 'Damping improvement',      value: '10',     suffix: '×'   },
-      { label: 'Years operating',          value: '6',      suffix: '+'   },
+    // System readout replaces the vanity-metric grid. See Hero.jsx.
+    readout: [
+      {
+        label: 'Current mission',
+        primary: 'Aerospace manufacturing & quality',
+        secondary: 'Verus Aerospace · Tacoma, WA · Lead Intern',
+        tone: 'brand',
+      },
+      {
+        label: 'Prior service',
+        primary: 'U.S. Navy Corpsman · 5 years',
+        secondary: 'Armed Forces Service Medal · $102K supply system · 92% training compliance',
+        tone: 'idle',
+      },
+      {
+        label: 'Domains online',
+        primary: 'Aerospace · Manufacturing · Mechatronics · R&D',
+        secondary: 'GD&T · AS9102 · CNC · SolidWorks · MATLAB · Embedded',
+        tone: 'idle',
+      },
+      {
+        label: 'Availability',
+        primary: 'Full-time · Summer 2027',
+        secondary: 'Willing to relocate · Clearance-eligible · U.S. citizen',
+        tone: 'ok',
+      },
     ],
   },
 

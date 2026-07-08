@@ -5,10 +5,10 @@ import { Link } from 'react-router-dom'
 import { Container } from '../shared/ui'
 
 const bullets = [
-  { label: 'Operational impact',   text: 'Managed $102K supply systems and led teams to 92% training compliance.' },
-  { label: 'Advanced R&D',         text: 'Improved fluid measurement accuracy by 40% through PIV workflow redesign.' },
-  { label: 'Hands-on prototyping', text: 'Built 5+ complex systems: autonomous robotics, zero-energy thermal regulation, vibration rigs.' },
-  { label: 'Proven leadership',    text: 'Grew engineering-society membership by 30% as SAME president.' },
+  { label: 'Aerospace present',    text: 'Lead Intern at Verus Aerospace: AS9102 FAI, Infor VISUAL ERP configuration control, Quality Clinic operations.' },
+  { label: 'Operational history',  text: 'Managed a $102K medical supply system to 20% downtime reduction and 92% training compliance across 57 personnel.' },
+  { label: 'Advanced R&D',         text: 'Improved fluid-measurement accuracy 40% through a novel PIV Visual Field Architecture on the Saipan coastal study.' },
+  { label: 'Hands-on prototyping', text: 'Machined a folding multi-tool to ±0.005 in against a full GD&T print. Designed the reduction gearbox behind a 1-DOF robotic elbow.' },
 ]
 
 export default function Manifesto() {
@@ -30,9 +30,10 @@ export default function Manifesto() {
         className="relative rounded-2xl border border-line bg-surface-2/60 backdrop-blur-sm p-6 md:p-8"
       >
         <p className="text-gray-200 leading-relaxed text-[16px]">
-          I build mission-critical systems shaped by five years in the U.S. Navy and a deep focus on
-          hands-on engineering R&amp;D. I translate complex theory into functional hardware that
-          performs under pressure.
+          Five years in the U.S. Navy taught me to run high-stakes systems under real accountability.
+          Now that mindset is inside an active aerospace-manufacturing internship at Verus Aerospace,
+          working through GD&amp;T, AS9102, and production physics on flight-critical hardware, backed
+          by a portfolio of hands-on machining, mechatronics, and thermal R&amp;D projects.
         </p>
 
         <ul className="mt-5 grid md:grid-cols-2 gap-3">
@@ -47,7 +48,7 @@ export default function Manifesto() {
         </ul>
 
         <p className="mt-6 text-brand-300 font-medium text-sm">
-          Seeking a high-impact mechanical engineering internship for Summer 2026.
+          Seeking full-time mechanical engineering roles starting Summer 2027.
         </p>
 
         <div className="mt-6 flex justify-center">
