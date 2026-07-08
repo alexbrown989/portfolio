@@ -50,14 +50,14 @@ function TimelineEntry({ item, idx, expanded, setExpanded }) {
       initial={{ opacity: 0, x: -16 }}
       animate={inView ? { opacity: 1, x: 0 } : {}}
       transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-      className="relative pl-16 md:pl-20"
+      className="relative pl-14 md:pl-20"
       ref={cardRef}
     >
-      {/* Icon node */}
-      <div className="absolute left-0 top-0 flex items-center gap-3">
+      {/* Icon node — sits over the rail, no label beside it */}
+      <div className="absolute left-0 top-0">
         <div className="relative">
-          <div className="w-11 h-11 rounded-lg bg-surface-2 border border-brand-500/40 grid place-items-center shadow-card">
-            <Icon className="w-5 h-5 text-brand-300" />
+          <div className="w-10 h-10 md:w-11 md:h-11 rounded-lg bg-surface-2 border border-brand-500/40 grid place-items-center shadow-card">
+            <Icon className="w-4 h-4 md:w-5 md:h-5 text-brand-300" />
           </div>
           {item.current && (
             <span className="absolute -top-1 -right-1 flex h-3 w-3">
@@ -66,21 +66,22 @@ function TimelineEntry({ item, idx, expanded, setExpanded }) {
             </span>
           )}
         </div>
-        <div className="hidden md:block text-[10.5px] font-mono uppercase tracking-[0.22em] text-gray-500">
-          Node · {String(idx + 1).padStart(2, '0')}
-        </div>
       </div>
 
       {/* Card */}
       <motion.div
         whileHover={{ y: -2 }}
         transition={{ duration: 0.2 }}
-        className={`mt-14 md:mt-14 rounded-2xl border ${
+        className={`rounded-2xl border ${
           isOpen ? 'border-brand-500/40' : 'border-line hover:border-line-strong'
         } bg-surface-2/60 backdrop-blur-sm p-5 md:p-6 transition-colors`}
       >
-        {/* Header strip */}
-        <div className="flex flex-wrap items-center gap-2">
+        {/* Header strip — node code + period + active pill */}
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5">
+          <span className="text-[10.5px] font-mono uppercase tracking-[0.22em] text-gray-500">
+            Node · {String(idx + 1).padStart(2, '0')}
+          </span>
+          <span className="hidden md:inline text-[10.5px] font-mono text-gray-700">|</span>
           <span className="text-[10.5px] font-mono uppercase tracking-[0.22em] text-brand-300/90">
             {item.period}
           </span>
@@ -89,9 +90,6 @@ function TimelineEntry({ item, idx, expanded, setExpanded }) {
               Active
             </span>
           )}
-          <span className="ml-auto text-[10.5px] font-mono uppercase tracking-[0.22em] text-gray-500">
-            Phase {String(idx + 1).padStart(2, '0')}
-          </span>
         </div>
 
         <h3 className="text-lg md:text-xl font-bold text-white mt-1.5 tracking-tight">

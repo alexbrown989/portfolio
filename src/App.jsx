@@ -73,7 +73,7 @@ function LoadingFallback({ message = 'Loading…' }) {
 function HomeContent() {
   return (
     <>
-      <section id="hero" className="min-h-[92vh] flex items-center">
+      <section id="hero" className="min-h-[92vh] pt-24 md:pt-20 pb-12 flex items-center">
         <ErrorBoundary name="Hero"><Hero /></ErrorBoundary>
       </section>
 

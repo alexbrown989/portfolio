@@ -1,10 +1,8 @@
 // src/components/Hero.jsx
-// Aerospace-first hero with real motion.
 //
-// - Mouse-parallax on the accent lights
-// - Staggered fade+lift on the copy
-// - One-shot ticker sweep on the status line
-// - Corner-bracketed system readout replaces the vanity metric grid
+// Center-aligned aerospace-first hero. Mouse-parallax on the accent
+// lights, staggered fade-in, HUD system readout replacing the vanity
+// metric grid.
 
 import { useEffect, useRef, useState } from 'react'
 import { motion, useReducedMotion } from 'framer-motion'
@@ -21,9 +19,6 @@ const item = {
   show:   { opacity: 1, y: 0, transition: { duration: 0.55, ease: [0.22, 1, 0.36, 1] } },
 }
 
-// Read the mouse position relative to the hero container and expose a small
-// normalized offset. Used to gently parallax the accent lights and the
-// system readout. Respects prefers-reduced-motion.
 function useMouseParallax(ref, strength = 12) {
   const [xy, setXy] = useState({ x: 0, y: 0 })
   const reduce = useReducedMotion()
@@ -58,20 +53,20 @@ function ReadoutRow({ row, index, xy }) {
     brand: 'text-brand-300',
     ok:    'text-emerald-300',
     warn:  'text-amber-300',
-    idle:  'text-gray-300',
+    idle:  'text-gray-100',
   }
   return (
     <motion.div
       variants={item}
-      className="grid grid-cols-[110px_1fr] gap-4 py-2.5 border-b border-line last:border-b-0"
-      style={{ transform: `translate3d(${xy.x * 0.15}px, ${xy.y * 0.1}px, 0)` }}
+      className="grid grid-cols-[92px_1fr] md:grid-cols-[120px_1fr] gap-3 md:gap-5 py-3 text-left border-b border-line last:border-b-0"
+      style={{ transform: `translate3d(${xy.x * 0.12}px, ${xy.y * 0.08}px, 0)` }}
     >
       <div className="text-[10.5px] font-mono uppercase tracking-[0.22em] text-gray-500 pt-0.5">
         <span className="text-brand-300/70 mr-1.5">{String(index).padStart(2, '0')}</span>
         {row.label}
       </div>
       <div>
-        <div className={`text-[15px] font-semibold ${toneMap[row.tone] || 'text-white'}`}>
+        <div className={`text-[14px] md:text-[15px] font-semibold ${toneMap[row.tone] || 'text-white'}`}>
           {row.primary}
         </div>
         {row.secondary && (
@@ -86,14 +81,14 @@ function ReadoutRow({ row, index, xy }) {
 
 export default function Hero() {
   const hostRef = useRef(null)
-  const xy = useMouseParallax(hostRef, 16)
+  const xy = useMouseParallax(hostRef, 14)
 
   return (
     <div ref={hostRef} className="relative w-full">
-      {/* Mouse-parallax accent lights sit under the hero content */}
+      {/* Mouse-parallax accent lights */}
       <motion.div
         aria-hidden
-        className="pointer-events-none absolute -top-24 -left-24 w-[520px] h-[520px] rounded-full blur-3xl opacity-[0.18]"
+        className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full blur-3xl opacity-[0.14]"
         style={{
           background: 'radial-gradient(circle, rgba(10,165,199,0.45), transparent 60%)',
           x: xy.x * -1.5, y: xy.y * -1.5,
@@ -101,9 +96,9 @@ export default function Hero() {
       />
       <motion.div
         aria-hidden
-        className="pointer-events-none absolute -bottom-40 -right-24 w-[480px] h-[480px] rounded-full blur-3xl opacity-[0.16]"
+        className="pointer-events-none absolute -bottom-40 -right-24 w-[440px] h-[440px] rounded-full blur-3xl opacity-[0.10]"
         style={{
-          background: 'radial-gradient(circle, rgba(99,102,241,0.5), transparent 60%)',
+          background: 'radial-gradient(circle, rgba(148,163,184,0.5), transparent 60%)',
           x: xy.x * 1.5, y: xy.y * 1.5,
         }}
       />
@@ -112,15 +107,15 @@ export default function Hero() {
         variants={container}
         initial="hidden"
         animate="show"
-        className="container mx-auto px-6 max-w-6xl relative"
+        className="container mx-auto px-6 max-w-4xl relative flex flex-col items-center text-center"
       >
-        {/* HUD status ticker */}
-        <motion.div variants={item} className="space-y-2">
-          <div className="inline-flex items-center gap-2.5 px-3 py-1.5 rounded-full border border-brand-500/30 bg-brand-500/[0.06] backdrop-blur-sm text-brand-200 text-[11px] font-mono uppercase tracking-[0.22em]">
+        {/* HUD status pill — sits well below the sticky nav */}
+        <motion.div variants={item} className="flex flex-col items-center gap-2 mt-8 md:mt-0">
+          <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full border border-brand-500/40 bg-surface-2/80 backdrop-blur-md text-brand-100 text-[11px] font-mono uppercase tracking-[0.22em] shadow-[0_8px_30px_rgba(10,165,199,0.15)]">
             <Circle className="w-2 h-2 fill-emerald-400 stroke-none crosshair-blink" />
             <span>{site.hero.status.primary}</span>
           </div>
-          <div className="h-px w-40 bg-gradient-to-r from-brand-500/60 to-transparent ticker-sweep" />
+          <div className="h-px w-40 bg-gradient-to-r from-transparent via-brand-500/60 to-transparent ticker-sweep" />
           <div className="text-[10.5px] font-mono uppercase tracking-[0.24em] text-gray-500">
             {site.hero.status.secondary}
           </div>
@@ -129,7 +124,7 @@ export default function Hero() {
         {/* Title */}
         <motion.h1
           variants={item}
-          className="mt-8 text-5xl md:text-7xl xl:text-8xl font-extrabold tracking-tight leading-[1.02]"
+          className="mt-7 text-5xl md:text-7xl xl:text-8xl font-extrabold tracking-tight leading-[1.02]"
         >
           <span className="text-white">{site.hero.titleTop}</span>
           <span className="block text-transparent bg-clip-text bg-gradient-to-r from-brand-300 via-brand-200 to-accent-400 font-semibold text-2xl md:text-3xl xl:text-4xl mt-3 tracking-[0.02em]">
@@ -138,12 +133,15 @@ export default function Hero() {
         </motion.h1>
 
         {/* Subtitle */}
-        <motion.p variants={item} className="mt-6 text-base md:text-lg text-gray-300 leading-relaxed max-w-2xl">
+        <motion.p
+          variants={item}
+          className="mt-6 text-base md:text-lg text-gray-300 leading-relaxed max-w-2xl"
+        >
           {site.hero.subtitle}
         </motion.p>
 
         {/* Capability bullets */}
-        <motion.div variants={item} className="mt-5 flex flex-wrap gap-x-5 gap-y-2 text-sm text-gray-400">
+        <motion.div variants={item} className="mt-5 flex flex-wrap justify-center gap-x-4 gap-y-2 text-sm text-gray-400">
           {site.hero.bullets.map((b) => (
             <div key={b} className="flex items-center gap-2">
               <span className="w-1 h-1 rounded-full bg-brand-400" />
@@ -153,7 +151,7 @@ export default function Hero() {
         </motion.div>
 
         {/* CTAs */}
-        <motion.div variants={item} className="mt-8 flex flex-wrap gap-3">
+        <motion.div variants={item} className="mt-8 flex flex-wrap justify-center gap-3">
           <a
             href="/#internship"
             onClick={(e) => {
@@ -188,9 +186,9 @@ export default function Hero() {
           </a>
         </motion.div>
 
-        {/* System readout — categorical anchors, not vanity metrics */}
+        {/* System readout */}
         {Array.isArray(site.hero.readout) && site.hero.readout.length > 0 && (
-          <motion.div variants={item} className="mt-14 max-w-3xl">
+          <motion.div variants={item} className="mt-14 w-full">
             <CornerBrackets className="rounded-xl border border-line/70 bg-surface-2/40 backdrop-blur-sm px-5 py-4">
               <div className="flex items-center gap-2 text-[10.5px] font-mono uppercase tracking-[0.24em] text-brand-300/90 mb-2">
                 <span className="inline-block w-6 h-px bg-brand-400/60" />

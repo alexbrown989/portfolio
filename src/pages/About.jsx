@@ -1,26 +1,50 @@
 // src/pages/About.jsx
+//
+// Cleaned-up About. Tighter hierarchy, HUD kickers per section, richer
+// hero photo panel, mobile-friendly stat + capability grids.
+
 import { lazy, Suspense, useMemo } from 'react'
 import { motion } from 'framer-motion'
+import { Anchor, ShieldCheck, GraduationCap, Wrench, Award, MapPin } from 'lucide-react'
 import ProjectLayout from './ProjectLayout'
 import {
-  Container, PageHero, SectionTitle, Glass,
+  Container, PageHero, SectionTitle, Glass, MetricBox, CornerBrackets,
 } from '../shared/ui'
 
 const Contact = lazy(() => import('../components/Contact'))
 const Footer  = lazy(() => import('../components/Footer'))
 
+/* ------------------------------------------------------------------- */
+/* Content                                                              */
+/* ------------------------------------------------------------------- */
+
 const story = [
-  `My engineering journey began not in a classroom, but in high-stakes clinical settings as a U.S. Navy Corpsman. For five years I learned lessons no lecture hall can teach. The military instilled a deep sense of ownership and a mission-first focus. I learned to execute with precision when the stakes were high, to lead with composure, and to understand that the success of any system ultimately comes down to its impact on people. Managing a complex medical supply system and developing safety protocols taught me to see the world through the lens of an engineer, optimizing processes where failure was not an option.`,
-  `That background is the bedrock of how I approach engineering today. I am not just a student; I am a builder, driven by curiosity about how things work and a compulsion to make them better. My work is a constant dialogue between the theoretical and the tangible: translating a spark of an idea, from a new theory on passive thermodynamics to a two-axis autonomous turret, into a fully functional prototype. That obsession with the entire lifecycle of creation, from LTspice circuits to composite materials, is what fuels me.`,
-  `Today that mindset lives inside my current internship at Verus Aerospace in Tacoma, where I support manufacturing, quality, and process improvement for flight-critical hardware. I maintain Engineering Masters and configuration control in Infor VISUAL ERP, develop inspection plans, run AS9102 First Article Inspection activities, and perform independent over-check inspections on Gulfstream assemblies. As the Lead Intern I also coordinate onboarding for incoming interns and lead the Quality Clinic, tracking non-conforming hardware through disposition and redesigning the workflow that keeps engineering, quality, and production aligned. It is the environment where operations, GD&T, and real production physics meet, and it is exactly where I want to be.`,
-  `What sets me apart is the fusion of lived operational experience and rigorous hands-on R&D. While many learn theory, I have applied systems thinking in environments where the human cost of a design flaw is immediate and real. I am now looking for the opportunity to bring that blend of leadership and technical skill to a full-time engineering team tackling the world's most critical problems, where the challenges are steep, the mission is critical, and the goal is to build what comes next.`,
+  `My engineering journey began not in a classroom, but in high-stakes clinical settings as a U.S. Navy Corpsman. For five years I learned lessons no lecture hall can teach. The military instilled ownership and a mission-first focus. I learned to execute with precision when the stakes were high, to lead with composure, and to understand that the success of any system ultimately comes down to its impact on people.`,
+  `That background is the bedrock of how I approach engineering today. I am not just a student; I am a builder, driven by curiosity about how things work and a compulsion to make them better. My work is a constant dialogue between the theoretical and the tangible: translating a spark of an idea, from a new theory on passive thermodynamics to a two-axis autonomous turret, into fully functional hardware.`,
+  `Today that mindset lives inside my internship at Verus Aerospace in Tacoma, WA. I support flight-critical hardware through AS9102 First Article Inspection activities, Infor VISUAL ERP configuration control, and independent over-check inspections on Gulfstream assemblies. As the Lead Intern I also coordinate onboarding for incoming interns and lead the Quality Clinic. Aerospace manufacturing is where operations, GD&T, and real production physics meet, and it is exactly where I want to be.`,
+  `Looking forward, I am seeking a full-time engineering role starting Summer 2027 where operational maturity, hands-on manufacturing fluency, and R&D depth all pull in the same direction.`,
 ]
 
-const stats = [
-  { value: '-20%', label: 'Operational downtime', caption: 'via logistics engineering' },
-  { value: '92%',  label: 'Training compliance',  caption: '57 personnel' },
-  { value: '-30%', label: 'Procedural errors',    caption: 'systematic analysis' },
-  { value: '200+', label: 'Surgical procedures',  caption: 'zero critical failures' },
+const kpis = [
+  { value: '-20%',  label: 'Operational downtime',   sub: 'via logistics engineering' },
+  { value: '92%',   label: 'Training compliance',    sub: '57 personnel · Navy' },
+  { value: '-30%',  label: 'Procedural errors',      sub: 'systematic SOP redesign' },
+  { value: '200+',  label: 'Surgical procedures',    sub: 'zero critical failures' },
+]
+
+const capabilities = [
+  { Icon: Wrench,        title: 'Manufacturing',    body: 'Manual mill + CNC · GD&T · AS9102 FAI · metrology · Infor VISUAL ERP.' },
+  { Icon: ShieldCheck,   title: 'Quality',          body: 'Inspection planning · over-check inspections · non-conforming disposition · KPI monitoring.' },
+  { Icon: GraduationCap, title: 'Mechanical R&D',   body: 'SolidWorks / Onshape · tolerance stack-up · MATLAB / Python · Arduino / NodeMCU / LTspice.' },
+  { Icon: Anchor,        title: 'Operational',      body: '5 yr USN Corpsman · leadership under load · SOP authorship · cross-functional coordination.' },
+]
+
+const availability = [
+  { label: 'Available', value: 'Summer 2027 · Full-time' },
+  { label: 'Based',     value: 'Tacoma, WA' },
+  { label: 'Relocate',  value: 'Yes, anywhere in the U.S.' },
+  { label: 'Clearance', value: 'U.S. citizen · eligible' },
+  { label: 'Priority',  value: 'Aerospace · defense-adjacent · advanced manufacturing · R&D' },
 ]
 
 const portfolioLines = [
@@ -34,131 +58,143 @@ const portfolioLines = [
   'Equity Engineering: co-authoring a study on inclusive micromobility design.',
 ]
 
-const leadership = [
-  'Grew SAME membership by 30% with hands-on technical workshops.',
-  'Managed a >$10K budget with military-grade rigor.',
-  'Connected 50+ students to industry partners and internships.',
-]
-
-const amazon = [
-  'Built ergonomic analytics that reduced error by 20%.',
-  'Optimized emergency response pathways that cut response time by 25%.',
-  'Maintained 100% compliance through process improvement.',
-]
-
-function StatCard({ value, label, caption, i }) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 8 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, amount: 0.3 }}
-      transition={{ delay: i * 0.05 }}
-      className="rounded-2xl border border-line bg-surface-2/60 backdrop-blur-sm p-5"
-    >
-      <div className="text-3xl font-extrabold text-white tabular-nums">{value}</div>
-      <div className="text-sm text-gray-200 mt-1">{label}</div>
-      <div className="text-xs text-gray-400 mt-0.5">{caption}</div>
-    </motion.div>
-  )
-}
-
-function ResearchCard({ title, detail, i }) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 8 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, amount: 0.3 }}
-      transition={{ delay: i * 0.05 }}
-      className="rounded-2xl border border-line bg-surface-2/60 backdrop-blur-sm p-5 hover:border-brand-500/40 transition-colors"
-    >
-      <div className="text-white font-semibold">{title}</div>
-      <div className="text-sm text-gray-300 mt-1 leading-relaxed">{detail}</div>
-    </motion.div>
-  )
-}
+/* ------------------------------------------------------------------- */
+/* Page                                                                 */
+/* ------------------------------------------------------------------- */
 
 export default function About() {
-  const portfolio = useMemo(() => {
-    return portfolioLines.map((line) => {
+  const portfolio = useMemo(
+    () => portfolioLines.map((line) => {
       const [title, ...rest] = line.split(':')
       return { title: title.trim(), detail: rest.join(':').trim() }
-    })
-  }, [])
+    }),
+    []
+  )
 
   return (
     <ProjectLayout>
       <PageHero
         kicker="About · Full profile"
-        code="SEC 004"
+        code="SEC 04"
         title="From Navy Corpsman to Aerospace Engineer"
         subtitle="Five years of high-stakes Navy operations, then a decisive turn into mechanical engineering R&D, now inside an active aerospace manufacturing and quality role at Verus Aerospace."
       />
 
-      {/* Story + photo */}
+      {/* Story + photo panel */}
       <section className="pb-10">
         <Container>
-          <div className="grid lg:grid-cols-[1.1fr_400px] gap-8 items-start">
-            <div className="leading-relaxed space-y-5">
+          <div className="grid lg:grid-cols-[1.15fr_380px] gap-8 items-start">
+            <div className="space-y-4 max-w-[64ch]">
               {story.map((p, i) => (
-                <p key={i} className={`text-gray-200 ${i === 0 ? 'text-[16px]' : 'text-[15px]'}`}>
+                <motion.p
+                  key={i}
+                  initial={{ opacity: 0, y: 8 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, amount: 0.2 }}
+                  transition={{ duration: 0.4, delay: i * 0.04 }}
+                  className={`text-gray-200 leading-relaxed ${i === 0 ? 'text-[16px]' : 'text-[15px]'}`}
+                >
                   {p}
-                </p>
+                </motion.p>
               ))}
             </div>
             <motion.figure
               initial={{ opacity: 0, y: 10 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.3 }}
-              className="relative rounded-2xl overflow-hidden border border-line bg-surface-2 shadow-card"
+              className="relative"
             >
-              <img
-                src="/projects/navy.jpg"
-                alt="U.S. Navy · Hospital Corpsman"
-                className="w-full h-[520px] object-cover object-center"
-                loading="eager"
-              />
-              <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-surface-1 to-transparent" />
+              <CornerBrackets className="rounded-2xl overflow-hidden border border-line bg-surface-2 shadow-card">
+                <div className="relative">
+                  <img
+                    src="/projects/navy.jpg"
+                    alt="U.S. Navy · Hospital Corpsman"
+                    className="w-full h-[420px] md:h-[520px] object-cover object-center"
+                    loading="eager"
+                  />
+                  <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-surface-1 to-transparent" />
+                  <div className="absolute inset-x-0 bottom-0 p-4">
+                    <div className="text-[10.5px] font-mono uppercase tracking-[0.22em] text-brand-300/90">
+                      Prior service
+                    </div>
+                    <div className="text-white font-semibold text-sm mt-0.5">
+                      U.S. Navy Corpsman · 2018 – 2023
+                    </div>
+                    <div className="text-[11px] text-gray-400 mt-0.5 inline-flex items-center gap-1.5">
+                      <Award className="w-3.5 h-3.5" />
+                      Armed Forces Service Medal
+                    </div>
+                  </div>
+                </div>
+              </CornerBrackets>
             </motion.figure>
           </div>
         </Container>
       </section>
 
-      {/* Active R&D */}
+      {/* Capabilities grid */}
       <section className="pb-10">
         <Container>
-          <SectionTitle kicker="// Active R&D" title="Current research portfolio" />
-          <div className="grid md:grid-cols-2 gap-4">
-            {portfolio.map((p, i) => <ResearchCard key={i} title={p.title} detail={p.detail} i={i} />)}
-          </div>
-        </Container>
-      </section>
-
-      {/* Impact numbers */}
-      <section className="pb-10">
-        <Container>
-          <SectionTitle kicker="// Impact" title="The numbers that matter" />
+          <SectionTitle
+            kicker="Capabilities"
+            code="C/01"
+            title="What I bring to a team"
+          />
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
-            {stats.map((s, i) => <StatCard key={i} {...s} i={i} />)}
+            {capabilities.map(({ Icon, title, body }, i) => (
+              <motion.div
+                key={title}
+                initial={{ opacity: 0, y: 8 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.3 }}
+                transition={{ delay: i * 0.05 }}
+                className="rounded-xl border border-line bg-surface-2/60 backdrop-blur-sm p-4 hover:border-brand-500/40 transition-colors"
+              >
+                <Icon className="w-5 h-5 text-brand-300" />
+                <div className="text-white font-semibold mt-2">{title}</div>
+                <p className="text-[13px] text-gray-400 mt-1.5 leading-relaxed">{body}</p>
+              </motion.div>
+            ))}
           </div>
         </Container>
       </section>
 
-      {/* Leadership / Amazon */}
+      {/* Impact KPIs */}
       <section className="pb-10">
         <Container>
-          <div className="grid lg:grid-cols-2 gap-5">
-            <Glass>
-              <SectionTitle kicker="// Leadership" title="SAME (UWT)" />
-              <ul className="space-y-2 text-[15px] text-gray-200 list-disc pl-5 leading-relaxed">
-                {leadership.map((l, i) => <li key={i}>{l}</li>)}
-              </ul>
-            </Glass>
-            <Glass>
-              <SectionTitle kicker="// Ops & Analytics" title="Amazon (2023 – 2024)" />
-              <ul className="space-y-2 text-[15px] text-gray-200 list-disc pl-5 leading-relaxed">
-                {amazon.map((l, i) => <li key={i}>{l}</li>)}
-              </ul>
-            </Glass>
+          <SectionTitle
+            kicker="Impact"
+            code="I/02"
+            title="Numbers that hold up under review"
+          />
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+            {kpis.map(k => <MetricBox key={k.label} {...k} />)}
+          </div>
+        </Container>
+      </section>
+
+      {/* Portfolio bullets */}
+      <section className="pb-10">
+        <Container>
+          <SectionTitle
+            kicker="Active R&D + Manufacturing"
+            code="P/03"
+            title="Current research portfolio"
+          />
+          <div className="grid md:grid-cols-2 gap-3">
+            {portfolio.map((p, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 8 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.3 }}
+                transition={{ delay: i * 0.04 }}
+                className="rounded-xl border border-line bg-surface-2/60 backdrop-blur-sm p-4 hover:border-brand-500/40 transition-colors"
+              >
+                <div className="text-white font-semibold">{p.title}</div>
+                <p className="text-[13.5px] text-gray-300 leading-relaxed mt-1">{p.detail}</p>
+              </motion.div>
+            ))}
           </div>
         </Container>
       </section>
@@ -166,15 +202,27 @@ export default function About() {
       {/* Availability */}
       <section className="pb-10">
         <Container>
-          <Glass>
-            <SectionTitle kicker="// Availability" title="Ready to contribute" />
-            <ul className="grid sm:grid-cols-2 gap-3 text-[15px] text-gray-200">
-              <li>Available: <span className="font-semibold text-white">Summer 2027</span> for full-time engineering roles.</li>
-              <li>Location: <span className="font-semibold text-white">Flexible, willing to relocate.</span></li>
-              <li>Security: <span className="font-semibold text-white">Able to obtain and maintain a U.S. security clearance.</span></li>
-              <li>Focus: <span className="font-semibold text-white">High-impact engineering challenges.</span></li>
-            </ul>
-          </Glass>
+          <SectionTitle
+            kicker="Availability"
+            code="A/04"
+            title="Ready to contribute"
+          />
+          <CornerBrackets className="rounded-2xl border border-line bg-surface-2/60 backdrop-blur-sm p-5 md:p-6">
+            <div className="grid sm:grid-cols-2 gap-y-3 gap-x-6">
+              {availability.map(row => (
+                <div key={row.label} className="grid grid-cols-[100px_1fr] gap-3 py-1">
+                  <div className="text-[10.5px] font-mono uppercase tracking-[0.22em] text-gray-500 pt-0.5">
+                    {row.label}
+                  </div>
+                  <div className="text-[14px] text-white font-semibold">{row.value}</div>
+                </div>
+              ))}
+            </div>
+            <div className="mt-4 pt-4 border-t border-line text-xs text-gray-400 inline-flex items-center gap-1.5">
+              <MapPin className="w-3.5 h-3.5 text-brand-300" />
+              Willing to relocate for the right role.
+            </div>
+          </CornerBrackets>
         </Container>
       </section>
 
