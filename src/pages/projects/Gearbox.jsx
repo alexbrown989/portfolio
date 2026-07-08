@@ -196,7 +196,7 @@ export default function Gearbox() {
   return (
     <ProjectLayout>
       <PageHero
-        kicker="// Mechanical Systems Design"
+        kicker="Mechanical Systems Design"
         title="Reduction Gearbox for a 1-DOF Robotic Elbow"
         subtitle="Small-team, quarter-long design project: gear-ratio selection, shaft + bearing sizing, tolerance stack-up, and live CAD assembly management up to design review. Delivered a manufacturable, assemblable gearbox for a 1-DOF robotic elbow joint."
         chips={project.tech || []}
@@ -227,7 +227,8 @@ export default function Gearbox() {
       <section className="pb-10">
         <Container>
           <SectionTitle
-            kicker="// CAD"
+            kicker="CAD"
+            code="C/02"
             title="Live assembly & design snapshots"
             subtitle="The CAD assembly was maintained live across the whole quarter. Shaft alignment, gear placement, bearing fitment, and fastener access were all validated in one file before final submission."
           />
@@ -260,7 +261,8 @@ export default function Gearbox() {
       <section className="pb-10">
         <Container>
           <SectionTitle
-            kicker="// Calculations"
+            kicker="Calculations"
+            code="M/03"
             title="Mechanical design work behind the CAD"
             subtitle="CAD is the artifact; the calculations are what make it defensible in a design review."
           />
@@ -298,7 +300,8 @@ export default function Gearbox() {
       <section className="pb-10">
         <Container>
           <SectionTitle
-            kicker="// DFM"
+            kicker="DFM"
+            code="D/04"
             title="Design-for-manufacturing & assembly"
             subtitle="Every design choice was pressure-tested against ‘could this actually be fabricated, assembled, and inspected?’"
           />

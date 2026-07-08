@@ -6,7 +6,7 @@ import {
   ProjectPager, ProjectCTA, STARSection, AARSection,
 } from '../../shared/ui'
 import { projects } from '../../content/projects'
-import { useInView } from 'framer-motion'
+import { motion, useInView } from 'framer-motion'
 import { Accessibility, Wallet, SmartphoneNfc, TrainFront } from 'lucide-react'
 
 const project = projects.find(p => p.id === 'micromobility') || {}
@@ -71,7 +71,7 @@ function EquitySimulator() {
               const active = canRide(r)
               const fill = active ? (r.gap ? r.color : '#22bfe0') : 'rgba(148,163,184,0.18)'
               return (
-                <fmotion.div
+                <motion.div
                   key={i}
                   className="aspect-square rounded-sm"
                   initial={false}
@@ -227,7 +227,7 @@ export default function Micromobility() {
   return (
     <ProjectLayout>
       <PageHero
-        kicker="// From Human Needs to Hardware Requirements"
+        kicker="From Human Needs to Hardware Requirements"
         title="Engineering for Equitable Urban Mobility"
         subtitle="Co-authored peer-reviewed study translating qualitative equity policy from 250+ U.S. programs into actionable engineering constraints for inclusive vehicle design."
         chips={project.tech || []}
@@ -251,7 +251,8 @@ export default function Micromobility() {
       <section className="pb-10">
         <Container>
           <SectionTitle
-            kicker="// The Challenge"
+            kicker="The challenge"
+            code="C/02"
             title="From policy to pavement"
             subtitle="Coding hundreds of municipal documents into machine-usable analytical constructs, then turning those constructs into requirements engineers can build against."
           />
@@ -288,7 +289,8 @@ export default function Micromobility() {
       <section className="pb-10">
         <Container>
           <SectionTitle
-            kicker="// Quantifying the Gap"
+            kicker="Quantifying the gap"
+            code="Q/03"
             title="Where U.S. programs fall short"
             subtitle="Analysis of 250+ programs shows measurable gaps. Leading cities are progressing, but nationally there are clear targets for engineering and policy intervention."
           />
@@ -309,7 +311,8 @@ export default function Micromobility() {
       <section className="pb-10">
         <Container>
           <SectionTitle
-            kicker="// Result"
+            kicker="Result"
+            code="R/04"
             title="Translating gaps into engineering constraints"
           />
           <div className="grid md:grid-cols-3 gap-4">

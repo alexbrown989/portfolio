@@ -70,7 +70,7 @@ export default function Contact({
 export function ContactSection() {
   return (
     <div>
-      <SectionTitle kicker="// Contact" title="Let’s connect" />
+      <SectionTitle kicker="Contact" title="Let’s connect" />
       <Contact />
     </div>
   )
