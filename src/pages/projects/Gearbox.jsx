@@ -8,6 +8,8 @@
 //   gearbox-cad-2.jpg    — CAD assembly screenshot #2
 //   gearbox-review.jpg   — (optional) design review artifact / annotated CAD
 
+import { useEffect, useRef, useState } from 'react'
+import { useReducedMotion } from 'framer-motion'
 import ProjectLayout from '../ProjectLayout'
 import {
   Container, PageHero, SectionTitle, Glass, MetricBox,
@@ -17,6 +19,168 @@ import { SafeImage } from '../../shared/Media'
 import { projects } from '../../content/projects'
 
 const project = projects.find(p => p.id === 'gearbox') || {}
+
+/* ------------------------------------------------------------------- */
+/* Signature interactive: meshed gears + ratio                          */
+/* ------------------------------------------------------------------- */
+
+// Draw a spur gear as a rosette path (simple involute approximation is
+// overkill for a visual — this is stylized).
+function gearPath({ cx, cy, r, teeth, toothH = 6 }) {
+  const step = (Math.PI * 2) / (teeth * 2)
+  let d = ''
+  for (let i = 0; i <= teeth * 2; i++) {
+    const a = i * step
+    const rad = i % 2 === 0 ? r : r - toothH
+    const x = cx + Math.cos(a) * rad
+    const y = cy + Math.sin(a) * rad
+    d += `${i === 0 ? 'M' : 'L'} ${x.toFixed(2)} ${y.toFixed(2)} `
+  }
+  return d + 'Z'
+}
+
+function GearMeshSim() {
+  const [driverTeeth, setDriverTeeth] = useState(12)
+  const [drivenTeeth, setDrivenTeeth] = useState(48)
+  const [rpmIn, setRpmIn] = useState(3000)
+  const ratio = drivenTeeth / driverTeeth
+  const rpmOut = rpmIn / ratio
+  const torqueMultiplier = ratio.toFixed(2)
+
+  const [phase, setPhase] = useState(0) // radians on driver
+  const raf = useRef(0)
+  const t0 = useRef(0)
+  const reduce = useReducedMotion()
+
+  useEffect(() => {
+    if (reduce) return
+    const step = (now) => {
+      if (!t0.current) t0.current = now
+      const dt = (now - t0.current) / 1000
+      t0.current = now
+      // Driver spins at rpmIn; scale down for visibility.
+      setPhase(p => p + (rpmIn / 60) * Math.PI * 2 * dt * 0.06)
+      raf.current = requestAnimationFrame(step)
+    }
+    raf.current = requestAnimationFrame(step)
+    return () => cancelAnimationFrame(raf.current)
+  }, [rpmIn, reduce])
+
+  // Geometry — visual only; radii scale roughly with tooth count.
+  const driverR = 34 + driverTeeth * 1.4
+  const drivenR = 34 + drivenTeeth * 1.4
+  const cxA = 130, cxB = 130 + driverR + drivenR - 4, cy = 200
+  const driverAngle = phase * (180 / Math.PI)
+  const drivenAngle = -phase * (driverTeeth / drivenTeeth) * (180 / Math.PI)
+
+  return (
+    <div className="rounded-xl border border-line bg-surface-3/60 overflow-hidden">
+      <div className="grid md:grid-cols-[1fr_260px]">
+        <div className="p-4">
+          <svg viewBox="0 0 500 400" className="w-full h-72 bg-black/40 rounded-lg border border-line">
+            <defs>
+              <radialGradient id="gb-driver">
+                <stop offset="0%" stopColor="#22bfe0" stopOpacity="0.9" />
+                <stop offset="100%" stopColor="#0e6a82" />
+              </radialGradient>
+              <radialGradient id="gb-driven">
+                <stop offset="0%" stopColor="#94a3b8" stopOpacity="0.9" />
+                <stop offset="100%" stopColor="#334155" />
+              </radialGradient>
+            </defs>
+
+            {/* Driver */}
+            <g transform={`translate(${cxA}, ${cy}) rotate(${driverAngle})`}>
+              <path
+                d={gearPath({ cx: 0, cy: 0, r: driverR, teeth: driverTeeth, toothH: 7 })}
+                fill="url(#gb-driver)" stroke="rgba(34,191,224,0.9)" strokeWidth="1"
+              />
+              <circle cx="0" cy="0" r="12" fill="#0f172a" stroke="rgba(34,191,224,0.9)" strokeWidth="1.5" />
+              <line x1="0" y1="0" x2={driverR - 14} y2="0" stroke="rgba(34,191,224,0.95)" strokeWidth="2" />
+            </g>
+
+            {/* Driven */}
+            <g transform={`translate(${cxB}, ${cy}) rotate(${drivenAngle})`}>
+              <path
+                d={gearPath({ cx: 0, cy: 0, r: drivenR, teeth: drivenTeeth, toothH: 7 })}
+                fill="url(#gb-driven)" stroke="rgba(148,163,184,0.9)" strokeWidth="1"
+              />
+              <circle cx="0" cy="0" r="14" fill="#0f172a" stroke="rgba(148,163,184,0.9)" strokeWidth="1.5" />
+              <line x1="0" y1="0" x2={drivenR - 16} y2="0" stroke="rgba(226,232,240,0.9)" strokeWidth="2" />
+            </g>
+
+            {/* Labels */}
+            <text x={cxA} y={cy + driverR + 22} textAnchor="middle" fontFamily="ui-monospace, JetBrains Mono, monospace"
+              fontSize="10" fill="rgba(34,191,224,0.85)" style={{ letterSpacing: '0.14em', textTransform: 'uppercase' }}>
+              Driver · {driverTeeth}T
+            </text>
+            <text x={cxB} y={cy + drivenR + 22} textAnchor="middle" fontFamily="ui-monospace, JetBrains Mono, monospace"
+              fontSize="10" fill="rgba(148,163,184,0.85)" style={{ letterSpacing: '0.14em', textTransform: 'uppercase' }}>
+              Driven · {drivenTeeth}T
+            </text>
+          </svg>
+        </div>
+
+        <div className="p-4 md:border-l border-line space-y-4">
+          <div>
+            <div className="text-[10.5px] font-mono uppercase tracking-[0.22em] text-gray-500 mb-1">
+              Driver teeth · {driverTeeth}
+            </div>
+            <input
+              type="range" min="8" max="24" value={driverTeeth}
+              onChange={(e) => setDriverTeeth(Number(e.target.value))}
+              className="w-full accent-brand-500"
+              aria-label="Driver gear tooth count"
+            />
+          </div>
+          <div>
+            <div className="text-[10.5px] font-mono uppercase tracking-[0.22em] text-gray-500 mb-1">
+              Driven teeth · {drivenTeeth}
+            </div>
+            <input
+              type="range" min="24" max="72" value={drivenTeeth}
+              onChange={(e) => setDrivenTeeth(Number(e.target.value))}
+              className="w-full accent-brand-500"
+              aria-label="Driven gear tooth count"
+            />
+          </div>
+          <div>
+            <div className="text-[10.5px] font-mono uppercase tracking-[0.22em] text-gray-500 mb-1">
+              Input RPM · {rpmIn}
+            </div>
+            <input
+              type="range" min="500" max="6000" step="100" value={rpmIn}
+              onChange={(e) => setRpmIn(Number(e.target.value))}
+              className="w-full accent-brand-500"
+              aria-label="Input RPM"
+            />
+          </div>
+
+          <div className="pt-3 border-t border-line grid grid-cols-2 gap-2 text-center">
+            <div>
+              <div className="text-[10px] font-mono uppercase tracking-[0.18em] text-gray-500">Reduction ratio</div>
+              <div className="text-lg font-bold text-brand-200 tabular-nums">{ratio.toFixed(2)} : 1</div>
+            </div>
+            <div>
+              <div className="text-[10px] font-mono uppercase tracking-[0.18em] text-gray-500">Output RPM</div>
+              <div className="text-lg font-bold text-white tabular-nums">{Math.round(rpmOut)}</div>
+            </div>
+            <div>
+              <div className="text-[10px] font-mono uppercase tracking-[0.18em] text-gray-500">Torque × in</div>
+              <div className="text-lg font-bold text-white tabular-nums">{torqueMultiplier}</div>
+            </div>
+            <div>
+              <div className="text-[10px] font-mono uppercase tracking-[0.18em] text-gray-500">Mesh sanity</div>
+              <div className={`text-sm font-semibold ${drivenTeeth / driverTeeth < 1.5 ? 'text-amber-300' : 'text-emerald-300'}`}>
+                {drivenTeeth / driverTeeth < 1.5 ? 'Low ratio' : 'OK'}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
 
 const calcs = [
   { name: 'Gear ratio selection',         detail: 'Chose reduction ratio from the joint torque + speed spec; balanced size against efficiency.' },
@@ -45,6 +209,19 @@ export default function Gearbox() {
 
       {/* STAR — recruiter-facing overview */}
       <STARSection star={project.star} title="Overview" />
+
+      {/* Signature interactive */}
+      <section className="pb-10">
+        <Container>
+          <SectionTitle
+            kicker="Interactive"
+            code="I/01"
+            title="Gear-mesh · reduction & torque"
+            subtitle="Drag the tooth counts. Watch the ratio, output RPM, and torque multiplier update live. The driver spins at the input RPM you set; the driven gear rotates opposite, at the correct reduction."
+          />
+          <GearMeshSim />
+        </Container>
+      </section>
 
       {/* CAD media */}
       <section className="pb-10">
