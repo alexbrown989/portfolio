@@ -106,21 +106,23 @@ in between = evidence.
 
 - **No PDF resume link is tested.** The Resume button exists but the file
   should be re-generated to match the site's ordering.
-- **No GitHub link** on the site. Even if you don't push much, a link to
-  your GitHub with a couple of pinned repos beats a black hole.
 - **No downloadable engineering artifacts.** For the multi-tool and
   gearbox, plan to attach one PDF each: an inspection log for the
   multi-tool, a design-review deck (or annotated CAD PDF) for the
   gearbox. Recruiters love these because they prove the story.
-- **No metric anchoring on the Home page.** The Hero stats (40+
-  prototypes, 6+ years, 40% PIV, 10× damping) are good but generic.
-  Add one aerospace-specific number: e.g. "AS9102 FAI activities
-  supported · Multi-spindle Ti/Inconel exposure."
+- **No metric anchoring on the Home page.** The Hero stats have been
+  re-anchored to aerospace-relevant numbers (±0.005 in tolerance held,
+  40% PIV accuracy gain, 10× damping improvement, 6+ years operating).
+- **No GitHub link** on the site. This is intentional per your call —
+  keeping the site off GitHub until there is a curated set of pinned
+  repositories worth linking to. Revisit this when you have 2–3 public
+  repos that would survive a manager reading them.
 
-### 3.5 Two projects are still drafts
+### 3.5 One project is still R&D-only
 
-`fea-validation` and `beth` need more concrete evidence. See §7 for
-priorities.
+`beth` is a framework, not an experiment. See §7 for how it's
+positioned. The prior `fea-validation` DRAFT has been removed to keep
+the public grid free of incomplete work.
 
 ---
 
@@ -160,23 +162,59 @@ refined once you have more time.
 
 ---
 
-## 5. Concrete changes already in this PR
+## 5. Concrete changes already in this PR chain
 
-- Ternary project fully removed (page, route, catalog, About reference).
-- **Multi-Tool Fabrication** project added (`/projects/multitool`) with
-  STAR, tolerance table, capability matrix, and media placeholders for
-  two CNC videos + one final photo.
-- **Reduction Gearbox** project added (`/projects/gearbox`) with STAR,
-  design-calculation table, DFM band, and CAD-image placeholders.
-- **Verus Aerospace internship** now leads the Timeline with the full
-  bullet set from LinkedIn, Lead-Intern designation, and expanded
-  metadata (AS9102, Infor VISUAL ERP, Ti/Inconel CNC, etc.).
-- **STAR + AAR primitives** added to `src/shared/ui.jsx` and rendered
-  on every project page.
-- **STAR content backfilled** for Turret, Vibration, Coastal, BETH, and
-  Micromobility so every case study opens with the same structure.
-- **About page** rewritten to lead with the Verus internship story and
-  reflects the new project mix.
+### Design system + IA
+- Unified color tokens, one shared UI kit, one AppShell background.
+- STAR + AAR primitives rendered on every project page.
+- Every existing project backfilled with STAR content.
+- Corner-bracket motif, HUD kickers with section codes (SEC 001 …),
+  viewport crosshairs, subtle scanlines, boot-reveal animation on
+  route change. Anduril-inspired but restrained — instruments the site
+  as chrome, doesn't decorate it.
+- Real 404 page (`/pages/NotFound.jsx`) with system-integrity framing.
+
+### Home page
+- **Aerospace-first Hero**: leading status pill reads
+  "Interning · Verus Aerospace · Manufacturing & Quality".
+- **Dedicated `#internship` band** between Manifesto and Projects:
+  Verus card with STAR-style summary + capabilities matrix.
+- Hero stats re-anchored to aerospace-relevant metrics.
+
+### Projects
+- Ternary project fully removed (incomplete).
+- FEA-Validation project fully removed (draft removed per your call).
+- **Multi-Tool Fabrication** (`/projects/multitool`) — STAR, tolerance
+  table, capabilities matrix, graceful media fallback that shows the
+  expected filename until real assets are dropped.
+- **Reduction Gearbox** (`/projects/gearbox`) — STAR, design-calc table,
+  DFM band, graceful CAD-image fallback.
+- Cards now carry a `P/xx` index tag, category chip, status pill, and
+  corner-bracket hover accent.
+
+### Timeline
+- Verus Aerospace as leading entry (Dec 2025 – Present, Lead Intern).
+- Icons refactored from emoji to lucide-react.
+
+### About
+- Middle paragraph rewritten to lead with the Verus internship.
+- Portfolio bullet list re-ordered so aerospace / manufacturing / design
+  entries lead; R&D and systems entries follow.
+
+### Security + platform
+- `vercel.json` now sets Content-Security-Policy, HSTS,
+  X-Frame-Options: DENY, X-Content-Type-Options: nosniff,
+  Referrer-Policy, Permissions-Policy, Cross-Origin isolation, and
+  cache-control per asset class.
+- `public/robots.txt`, `public/sitemap.xml`, `public/humans.txt`, and
+  `public/.well-known/security.txt` added.
+- `public/site.webmanifest` for standalone-install support.
+- Custom SVG favicon replacing the Vite default.
+- Full Open Graph + Twitter card meta tags in `index.html`.
+- `<noscript>` fallback that points to the resume PDF and email.
+- Unused dependencies removed (maplibre-gl, react-pdf, recharts,
+  three-stdlib). Rollup override bumped to `^4.59.0` to clear known
+  dev-only advisories. Production audit: 0 vulnerabilities.
 
 ---
 
@@ -184,65 +222,39 @@ refined once you have more time.
 
 Ordered by impact.
 
-### 6.1 Hero: aerospace-first framing (30 min)
+### 6.1 Trust artifacts (highest priority)
 
-- Replace `Available Summer 2026` status pill with:
-  `Currently interning at Verus Aerospace · Aerospace Manufacturing & Quality`
-- Add a second, smaller pill: `Available Summer 2026 · open to relocate`
-- Swap `titleBottom` from `Mechanical Engineer / Builder` to
-  `Mechanical Engineering · Aerospace-Focused`
-- Update `site.hero.stats` to include one aerospace-anchored metric.
-
-### 6.2 Home page: dedicated Internship band (1–2 h)
-
-Add a section between `Manifesto` and `Projects` called `#internship`:
-
-```
-// Current Internship
-Verus Aerospace — Lead Intern
-[status pill] [dates]
-[STAR-style summary card]
-[Two callouts: AS9102 activities · Gulfstream over-check]
-[CTA: View full timeline entry →]
-```
-
-This is the highest-ROI change on the entire site.
-
-### 6.3 Trust artifacts
-
-- **Add a GitHub link** to the Contact block and Footer socials.
 - **Publish an updated resume PDF** whose section order matches the site
-  (Internship → Projects → Education → Service).
-- **Attach one downloadable artifact per project**:
+  (Verus internship → Projects → Education → Service).
+- **Attach one downloadable artifact per project** (schema slot already
+  wired via `project.downloads` — see `ProjectDetail.jsx`):
   - Multi-Tool: inspection log (spreadsheet export → PDF).
   - Gearbox: annotated CAD PDF or design-review deck.
   - Coastal: PIV validation summary.
   - Vibration: bench notebook page or scope-trace export.
 
-### 6.4 Media discipline
+### 6.2 Media discipline
 
-- Every project card should have a real cover image at 16:10, no text on
-  it, no logo overlay. If a project doesn't have one yet, use a clean
-  hero image of the finished object.
-- Videos autoplay muted on hover only. Never on page load.
+- Every project card has a real cover image at 16:10, no text on it,
+  no logo overlay. If a project doesn't have one yet, the `SafeImage`
+  primitive shows a HUD-styled placeholder with the expected path
+  instead of a broken icon.
 - Prefer photos of the finished object over CAD renders whenever both
   exist.
 
-### 6.5 Content pipeline
+### 6.3 Content pipeline
 
-- Move `TODO(alex)` comments in `src/content/projects.js` and
-  `src/content/timeline.js` into a `PORTFOLIO_TODO.md` at the repo root
-  so you can see all outstanding placeholders in one place.
-- Add a `draft: true` filter to the Projects grid so DRAFT projects can
-  be temporarily hidden from public view before an interview cycle.
+- Any remaining `TODO(alex)` comments in `src/content/*` should
+  eventually move into a `PORTFOLIO_TODO.md` at the repo root so all
+  outstanding placeholders live in one place.
 
-### 6.6 Analytics + polish
+### 6.4 Analytics + polish
 
-- Add a lightweight analytics pixel (Plausible, Umami, or Vercel
+- Add a privacy-respecting analytics tag (Plausible, Umami, or Vercel
   Analytics) so you can see which case studies recruiters actually read.
   Every follow-up decision should be data-driven.
-- Add `og:image` meta tags per route so the site previews well when a
-  recruiter shares your URL in Slack.
+- Ship a real `og.png` (1200×630) social preview at `/public/og.png`.
+  The meta tag in `index.html` already points at it.
 - Test on mobile Safari with reduced-motion enabled — this catches
   90% of production-only bugs.
 
@@ -335,21 +347,42 @@ is easier when the site did the heavy lifting.
 
 ## 9. Ship-list, in order
 
-- [x] Remove ternary project (this PR).
-- [x] Add Multi-Tool and Gearbox with STAR (this PR).
-- [x] Add Verus Aerospace to Timeline (this PR).
-- [x] Backfill STAR on existing projects (this PR).
-- [x] Write this document (this PR).
-- [ ] **Drop real assets** for Multi-Tool (`/public/projects/multitool-*`)
-      and Gearbox (`/public/projects/gearbox-*`).
-- [ ] **Add GitHub link** to Contact + Footer.
-- [ ] **Regenerate resume PDF** to match site ordering.
-- [ ] **Aerospace-first Hero rewrite** (§6.1).
-- [ ] **Dedicated `#internship` band** on Home (§6.2).
-- [ ] Downloadable engineering artifacts per project (§6.3).
-- [ ] Analytics + og:image (§6.6).
-- [ ] Decide on BETH repositioning; decide on FEA-Validation fate.
+Already shipped:
+- [x] Remove ternary project.
+- [x] Remove FEA-Validation draft.
+- [x] Add Multi-Tool and Gearbox with STAR.
+- [x] Add Verus Aerospace to Timeline.
+- [x] Backfill STAR on existing projects.
+- [x] Aerospace-first Hero rewrite.
+- [x] Dedicated `#internship` band on Home.
+- [x] Real 404 page.
+- [x] Security headers (CSP, HSTS, X-Frame-Options, Permissions-Policy,
+      Cross-Origin isolation).
+- [x] robots.txt, sitemap.xml, security.txt, humans.txt.
+- [x] Open Graph + Twitter meta tags.
+- [x] Custom favicon + web manifest.
+- [x] Graceful media fallbacks (`SafeImage` / `SafeVideo`).
+- [x] Anduril-inspired chrome: corner brackets, HUD kickers with section
+      codes, viewport crosshairs, subtle scanlines, boot-reveal.
+- [x] Drop unused deps; production `npm audit` clean.
+- [x] Write this document.
 
-Working the top four items on the "not yet done" list will move this
-portfolio from "well-designed student site" to "credible aerospace /
-manufacturing candidate site." Everything below that is polish.
+Left for you (Alex):
+- [ ] **Drop real assets** for Multi-Tool
+      (`/public/projects/multitool-final.jpg`, `multitool-cnc-1.mp4`,
+      `multitool-cnc-2.mp4`) and Gearbox
+      (`/public/projects/gearbox-render.jpg`, `gearbox-cad-1.jpg`,
+      `gearbox-cad-2.jpg`). Layout renders cleanly without them; the
+      moment they land, the pages populate.
+- [ ] **Regenerate resume PDF** to `/public/resume.pdf` with the new
+      section ordering (Verus → Projects → Education → Service).
+- [ ] **Ship an og.png** social preview to `/public/og.png` (1200×630).
+- [ ] Downloadable engineering artifacts per project (§6.1) —
+      populate `project.downloads` in `src/content/projects.js`.
+- [ ] Analytics tag (§6.4) once ready.
+- [ ] Decide on BETH repositioning (framework vs. instrumented experiment).
+
+Working the top three items on the "left for you" list will move this
+portfolio from "well-designed candidate site" to "fully populated,
+credible aerospace / manufacturing candidate site." Everything else is
+polish that can happen on-cycle with a job hunt.
