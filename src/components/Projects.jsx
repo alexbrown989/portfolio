@@ -1,224 +1,163 @@
-import { useState, useEffect, useRef } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+// src/components/Projects.jsx
+// Restrained project grid — no fake "live metrics", no wash-out gradient over
+// the images. Each card is a straight information object: cover, chips,
+// title, one-line summary, and a single CTA into the detail page.
+
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
+import { motion } from 'framer-motion'
+import { ArrowRight } from 'lucide-react'
 import { projects } from '../content/projects'
+import { SectionTitle, Chip, StatusPill } from '../shared/ui'
+import { SafeImage } from '../shared/Media'
 
-// Map any ids that have a custom hand-built page
-const customRoutes = new Set(['beth', 'coastal', 'micromobility', 'turret', 'vibration'])
+// Ids that have a hand-built detail page. All go through /projects/:id in
+// the router (see App.jsx), so a single href pattern is fine.
+const CUSTOM_ROUTES = new Set([
+  'beth', 'coastal', 'micromobility', 'turret', 'vibration',
+  'multitool', 'gearbox',
+])
 
-const statusConfig = {
-  ACTIVE:     { color:'bg-amber-500/15 text-amber-300 border-amber-300/30', pulse:true,  label:'ACTIVE' },
-  DEPLOYED:   { color:'bg-emerald-500/15 text-emerald-300 border-emerald-300/30', pulse:true,  label:'DEPLOYED' },
-  COMPLETED:  { color:'bg-sky-500/15 text-sky-300 border-sky-300/30', pulse:false, label:'COMPLETED' },
-  'R&D':      { color:'bg-purple-500/15 text-purple-300 border-purple-300/30', pulse:true,  label:'R&D' },
+const STATUS = {
+  ACTIVE:    { tone: 'brand',  pulse: true,  label: 'Active' },
+  DEPLOYED:  { tone: 'ok',     pulse: true,  label: 'Deployed' },
+  COMPLETED: { tone: 'idle',   pulse: false, label: 'Completed' },
+  DRAFT:     { tone: 'warn',   pulse: false, label: 'Draft' },
+  'R&D':     { tone: 'brand',  pulse: true,  label: 'R&D' },
 }
 
-const gradientMaps = {
-  thermal:'from-orange-500/20 via-red-600/20 to-pink-600/20',
-  fluid:'from-blue-500/20 via-cyan-600/20 to-teal-600/20',
-  structural:'from-purple-500/20 via-indigo-600/20 to-blue-600/20',
-  computational:'from-green-500/20 via-emerald-600/20 to-cyan-600/20',
-  default:'from-gray-500/20 via-gray-600/20 to-gray-700/20',
+// Prefetch bundles on hover so navigation feels instant.
+async function prefetch(id) {
+  switch (id) {
+    case 'beth':          return import('../pages/projects/BETH.jsx')
+    case 'coastal':       return import('../pages/projects/Coastal.jsx')
+    case 'micromobility': return import('../pages/projects/Micromobility.jsx')
+    case 'turret':        return import('../pages/projects/Turret.jsx')
+    case 'vibration':     return import('../pages/projects/VibrationPCM.jsx')
+    case 'multitool':     return import('../pages/projects/MultiToolFab.jsx')
+    case 'gearbox':       return import('../pages/projects/Gearbox.jsx')
+    default:              return
+  }
 }
 
-export default function Projects(){
-  const [openId, setOpenId] = useState(null)
-  const [hoveredId, setHoveredId] = useState(null)
-  const [liveMetrics, setLiveMetrics] = useState({})
+function ProjectCard({ project, index }) {
+  const [hovered, setHovered] = useState(false)
+  const status = STATUS[project.status] || STATUS.COMPLETED
+  const href = `/projects/${project.id}`
+  const indexLabel = String(index + 1).padStart(2, '0')
+
+  return (
+    <motion.article
+      initial={{ opacity: 0, y: 16 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.2 }}
+      transition={{ delay: index * 0.04, duration: 0.4 }}
+      onMouseEnter={() => {
+        setHovered(true)
+        if (CUSTOM_ROUTES.has(project.id)) prefetch(project.id)
+      }}
+      onMouseLeave={() => setHovered(false)}
+      className="group relative rounded-2xl overflow-hidden border border-line bg-surface-2/60 backdrop-blur-sm shadow-card hover:border-brand-500/40 hover:shadow-card-hover transition-[border-color,box-shadow,transform] duration-200"
+    >
+      {/* Corner brackets — HUD accent */}
+      {['top-2 left-2 border-l border-t','top-2 right-2 border-r border-t','bottom-2 left-2 border-l border-b','bottom-2 right-2 border-r border-b']
+        .map((pos) => (
+          <span
+            key={pos}
+            aria-hidden
+            className={`pointer-events-none absolute ${pos} w-2.5 h-2.5 border-brand-400/0 group-hover:border-brand-400/60 transition-colors duration-200`}
+          />
+        ))}
+
+      <Link to={href} className="block">
+        {/* Cover */}
+        <div className="relative aspect-[16/10] overflow-hidden bg-surface-3">
+          <SafeImage
+            src={project.image}
+            alt=""
+            label={project.title}
+            aspect="aspect-[16/10]"
+            className="border-0 rounded-none"
+          />
+          {/* Subtle bottom fade */}
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-surface-2 to-transparent" />
+          {/* Index tag top-left */}
+          <div className="absolute top-3 left-3 inline-flex items-center gap-1.5 px-2 py-0.5 text-[10px] font-mono uppercase tracking-[0.22em] rounded bg-surface-0/70 backdrop-blur border border-brand-500/25 text-brand-200">
+            <span className="text-gray-500">P/</span>
+            {indexLabel}
+          </div>
+          {/* Status pill top-right */}
+          {project.status && (
+            <div className="absolute top-3 right-3">
+              <StatusPill label={status.label} tone={status.tone} pulse={status.pulse} />
+            </div>
+          )}
+          {/* Category chip bottom-left */}
+          {project.category && (
+            <div className="absolute bottom-3 left-3">
+              <Chip>{project.category}</Chip>
+            </div>
+          )}
+        </div>
+
+        <div className="p-5">
+          <h3 className="text-lg font-semibold text-white tracking-tight leading-snug">
+            {project.title}
+          </h3>
+          {project.summary && (
+            <p className="text-sm text-gray-400 mt-2 leading-relaxed line-clamp-3">
+              {project.summary}
+            </p>
+          )}
+
+          {Array.isArray(project.tech) && project.tech.length > 0 && (
+            <div className="mt-4 flex flex-wrap gap-1.5">
+              {project.tech.slice(0, 4).map((t) => (
+                <span
+                  key={t}
+                  className="text-[11px] px-2 py-0.5 rounded border border-line text-gray-300"
+                >
+                  {t}
+                </span>
+              ))}
+            </div>
+          )}
+
+          <div className="mt-5 flex items-center justify-between text-sm">
+            <span className="text-brand-300 font-medium inline-flex items-center gap-1 group-hover:text-brand-200 transition-colors">
+              View case study
+              <ArrowRight
+                className={`w-4 h-4 transition-transform ${hovered ? 'translate-x-0.5' : ''}`}
+              />
+            </span>
+            {project.year && (
+              <span className="text-[11px] font-mono uppercase tracking-[0.2em] text-gray-500">
+                {project.year}
+              </span>
+            )}
+          </div>
+        </div>
+      </Link>
+    </motion.article>
+  )
+}
+
+export default function Projects() {
   const items = Array.isArray(projects) ? projects : []
-  const cardRefs = useRef({})
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const m = {}
-      items.forEach(p => {
-        if (p.metrics) {
-          m[p.id] = {
-            ...p.metrics,
-            temperature: p.metrics.temperature ? (parseFloat(p.metrics.temperature)+(Math.random()-0.5)*2).toFixed(1) : null,
-            efficiency:  p.metrics.efficiency  ? (parseFloat(p.metrics.efficiency)+(Math.random()-0.5)*5).toFixed(1) : null,
-            dataRate:    p.metrics.dataRate    ? (parseFloat(p.metrics.dataRate)+Math.random()*100).toFixed(0) : null,
-          }
-        }
-      })
-      setLiveMetrics(m)
-    }, 3000)
-    return () => clearInterval(interval)
-  }, [items])
-
-  const handleMouseMove = (e, id) => {
-    const card = cardRefs.current[id]; if (!card) return
-    const r = card.getBoundingClientRect()
-    const x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height
-    const rotateY = (x - 0.5) * 14, rotateX = (y - 0.5) * -14 // gentler tilt
-    card.style.transform = `perspective(1000px) rotateY(${rotateY}deg) rotateX(${rotateX}deg) scale(1.015)`
-  }
-  const handleMouseLeave = (id) => { const c = cardRefs.current[id]; if (c) c.style.transform = 'perspective(1000px) rotateY(0) rotateX(0) scale(1)' }
-
-  const getProjectGradient = (p) => {
-    if (p.category?.toLowerCase().includes('thermal')) return gradientMaps.thermal
-    if (p.category?.toLowerCase().includes('fluid'))   return gradientMaps.fluid
-    if (p.category?.toLowerCase().includes('struct'))  return gradientMaps.structural
-    if (p.category?.toLowerCase().includes('comput'))  return gradientMaps.computational
-    if (p.tech?.some(t => t.toLowerCase().includes('thermal'))) return gradientMaps.thermal
-    if (p.tech?.some(t => t.toLowerCase().includes('piv') || t.toLowerCase().includes('fluid'))) return gradientMaps.fluid
-    return gradientMaps.default
-  }
-
-  // Prefetch custom page bundle on hover for instant navigation
-  const prefetchIfCustom = async (id) => {
-    switch (id) {
-      case 'beth':          return import('../pages/projects/BETH.jsx')
-      case 'coastal':       return import('../pages/projects/Coastal.jsx')
-      case 'micromobility': return import('../pages/projects/Micromobility.jsx')
-      case 'turret':        return import('../pages/projects/Turret.jsx')
-      case 'vibration':     return import('../pages/projects/VibrationPCM.jsx')
-      default:              return
-    }
-  }
 
   return (
     <div>
-      {/* Section Header */}
-      <div className="mb-8">
-        <div className="flex items-center gap-3 mb-4">
-          <div className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse" />
-          <h2 className="text-3xl font-semibold">Engineering Projects</h2>
-        </div>
-        <p className="text-gray-400 max-w-2xl">Real-world engineering solutions with live monitoring capabilities</p>
-      </div>
+      <SectionTitle
+        code="SEC 002"
+        kicker="Selected work"
+        title="Engineering Projects"
+        subtitle="Case studies from R&D and hands-on manufacturing. Every project ties a hypothesis to a build, a measurement, and a lesson."
+      />
 
-      <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-6">
-        {items.map((p, index) => {
-          const img = typeof p.image === 'string' ? p.image : ''
-          const status = statusConfig[p.status] || statusConfig.COMPLETED
-          const gradient = getProjectGradient(p)
-          const metrics = liveMetrics[p.id] || p.metrics || {}
-
-          // Decide the link
-          const isCustom = customRoutes.has(p.id)
-          const href = isCustom ? `/projects/${p.id}` : `/projects/${p.id}` // same URL, but custom route overrides generic in App.jsx
-
-          return (
-            <motion.article key={p.id || index}
-              ref={el => cardRefs.current[p.id] = el}
-              initial={{ opacity:0, y:20 }} animate={{ opacity:1, y:0 }} transition={{ delay:index*0.06 }}
-              onMouseMove={(e)=>handleMouseMove(e,p.id)} onMouseLeave={()=>handleMouseLeave(p.id)}
-              onMouseEnter={() => { setHoveredId(p.id); if (isCustom) prefetchIfCustom(p.id) }}
-              className="relative rounded-2xl overflow-hidden border border-white/10 bg-white/5 backdrop-blur transition-all duration-300"
-              style={{ transformStyle:'preserve-3d', transition:'transform .25s ease-out' }}>
-
-              {/* Gradient overlay */}
-              <div className={`absolute inset-0 bg-gradient-to-br ${gradient} opacity-50 pointer-events-none`}
-                   style={{ transform:'translateZ(-10px)' }} />
-
-              {/* Cover */}
-              <div
-                className="relative h-64 md:h-64 xl:h-60 overflow-hidden bg-gray-900"
-                style={img ? {
-                  backgroundImage: `url(${img})`,
-                  backgroundSize: 'cover',
-                  backgroundPosition: 'center 60%',
-                  backgroundRepeat: 'no-repeat'
-                } : undefined}
-              >
-                <AnimatePresence>
-                  {hoveredId === p.id && (
-                    <motion.div initial={{ opacity:0 }} animate={{ opacity:1 }} exit={{ opacity:0 }}
-                      className="absolute inset-0 pointer-events-none"
-                      style={{ backgroundImage:'linear-gradient(rgba(0,255,231,0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(0,255,231,0.08) 1px, transparent 1px)', backgroundSize:'22px 22px' }} />
-                  )}
-                </AnimatePresence>
-                {p.category && (
-                  <div className="absolute top-3 left-3 px-2 py-1 bg-black/50 backdrop-blur rounded text-xs text-cyan-400 font-mono">{p.category}</div>
-                )}
-              </div>
-
-              <div className="relative p-5">
-                <div className="flex items-center gap-2 mb-3 flex-wrap">
-                  {Array.isArray(p.tech) && p.tech.slice(0,3).map(t => (
-                    <span key={t} className="px-2 py-0.5 text-xs border border-white/10 rounded text-gray-300 hover:border-cyan-400/50 transition-colors">{t}</span>
-                  ))}
-                  {p.status && (
-                    <span className={`ml-auto px-2 py-0.5 text-xs border rounded flex items-center gap-1 ${status.color}`}>
-                      {status.pulse && <span className="w-1.5 h-1.5 bg-current rounded-full animate-pulse" />}{status.label}
-                    </span>
-                  )}
-                </div>
-
-                <h3 className="text-lg font-semibold mb-2">{p.title || 'Untitled Project'}</h3>
-                <p className="text-sm text-gray-300">{p.summary || ''}</p>
-
-                {Object.keys(metrics).length > 0 && (
-                  <motion.div initial={{ opacity:0, height:0 }} animate={{ opacity: hoveredId === p.id ? 1 : .7, height:'auto' }} className="mt-3 p-2 bg-black/30 rounded-lg">
-                    <div className="text-xs font-mono text-cyan-400/70 mb-1">LIVE METRICS</div>
-                    <div className="grid grid-cols-2 gap-2">
-                      {Object.entries(metrics).slice(0,4).map(([k,v]) => (
-                        <div key={k} className="text-xs">
-                          <span className="text-gray-500">{k}:</span>
-                          <span className="ml-1 text-cyan-400 font-semibold">
-                            {v}{k.includes('temp') && '°C'}{k.includes('efficiency') && '%'}{k.includes('rate') && '/s'}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                  </motion.div>
-                )}
-
-                {/* small inline links */}
-                <div className="mt-3 flex flex-wrap gap-3">
-                  {Array.isArray(p.links) && p.links.map(l => (
-                    <motion.a key={l.label} href={l.href} whileHover={{ x:3 }} className="text-cyan-400 hover:text-cyan-300 text-sm flex items-center gap-1 transition-colors">
-                      {l.label}<span className="text-xs">→</span>
-                    </motion.a>
-                  ))}
-                </div>
-
-                {/* Glowing CTA to routed page */}
-                <div className="mt-4">
-                  <Link
-                    to={href}
-                    className="inline-flex items-center gap-2 px-4 py-2 rounded-lg
-                               bg-gradient-to-r from-cyan-600 to-blue-700 text-white font-medium
-                               shadow-[0_8px_24px_rgba(56,189,248,.35)] hover:shadow-[0_12px_36px_rgba(56,189,248,.45)]
-                               hover:-translate-y-0.5 active:translate-y-0 transition-all"
-                  >
-                    View Full Info ↗
-                  </Link>
-                </div>
-
-                {(p.aar && (p.aar.right || p.aar.wrong || p.aar.learned)) && (
-                  <motion.button onClick={()=>setOpenId(openId===p.id?null:p.id)} whileHover={{ scale:1.05 }} whileTap={{ scale:.95 }}
-                    className="mt-4 px-3 py-1 text-xs bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/30 rounded-full text-cyan-400 transition-all">
-                    {openId===p.id ? 'Hide AAR ↑' : 'View AAR ↓'}
-                  </motion.button>
-                )}
-
-                <AnimatePresence>
-                  {openId===p.id && (
-                    <motion.div initial={{ opacity:0, height:0, y:-10 }} animate={{ opacity:1, height:'auto', y:0 }} exit={{ opacity:0, height:0, y:-10 }}
-                      transition={{ type:'spring', stiffness:300, damping:30 }} className="mt-4 border-t border-white/10 pt-4 text-sm">
-                      <div className="space-y-3">
-                        <div className="text-cyan-300 font-mono text-xs mb-2">/// AFTER ACTION REVIEW ///</div>
-                        {p.aar?.right && (<div className="pl-3 border-l-2 border-green-500/50"><span className="text-green-400 text-xs font-semibold block mb-1">✓ What Went Right</span><p className="text-gray-300 text-xs">{String(p.aar.right)}</p></div>)}
-                        {p.aar?.wrong && (<div className="pl-3 border-l-2 border-red-500/50"><span className="text-red-400 text-xs font-semibold block mb-1">✗ What Went Wrong</span><p className="text-gray-300 text-xs">{String(p.aar.wrong)}</p></div>)}
-                        {p.aar?.learned && (<div className="pl-3 border-l-2 border-yellow-500/50"><span className="text-yellow-400 text-xs font-semibold block mb-1">★ Lessons Learned</span><p className="text-gray-300 text-xs">{String(p.aar.learned)}</p></div>)}
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
-
-              <AnimatePresence>
-                {hoveredId === p.id && (
-                  <motion.div initial={{ opacity:0 }} animate={{ opacity:1 }} exit={{ opacity:0 }}
-                    className="absolute inset-0 rounded-2xl pointer-events-none"
-                    style={{ boxShadow:'0 20px 40px rgba(0, 255, 231, 0.12), 0 10px 20px rgba(139, 92, 246, 0.08)' }} />
-                )}
-              </AnimatePresence>
-            </motion.article>
-          )
-        })}
+      <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-5">
+        {items.map((p, i) => (
+          <ProjectCard key={p.id || i} project={p} index={i} />
+        ))}
       </div>
     </div>
   )

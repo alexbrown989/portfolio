@@ -2,11 +2,52 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite + React</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="theme-color" content="#05070d" />
+
+    <!-- Icons -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/favicon.svg" />
+    <link rel="manifest" href="/site.webmanifest" />
+
+    <!-- Primary meta -->
+    <title>Alex Brown · Mechanical Engineer</title>
+    <meta name="description" content="Alex Brown — mechanical engineering student and Navy veteran currently interning at Verus Aerospace in Tacoma, WA. Aerospace manufacturing and quality, plus hands-on machining, GD&T, mechatronics, and thermal R&D case studies." />
+    <meta name="author" content="Alex Brown" />
+    <meta name="keywords" content="Alex Brown, mechanical engineer, aerospace, Verus Aerospace, GD&T, AS9102, machining, PIV, PCM, mechatronics, UW Tacoma, Navy veteran" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Alex Brown · Mechanical Engineer" />
+    <meta property="og:title" content="Alex Brown · Mechanical Engineer" />
+    <meta property="og:description" content="Navy veteran turned mechanical engineer. Currently interning at Verus Aerospace — aerospace manufacturing, GD&T, AS9102 FAI, and hands-on R&D." />
+    <meta property="og:url" content="https://alexbrown.engineering/" />
+    <meta property="og:image" content="https://alexbrown.engineering/og.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+
+    <!-- Twitter card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Alex Brown · Mechanical Engineer" />
+    <meta name="twitter:description" content="Navy veteran turned mechanical engineer. Currently interning at Verus Aerospace." />
+    <meta name="twitter:image" content="https://alexbrown.engineering/og.png" />
+
+    <!-- Preconnect for fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <!-- SPA scripts must be enabled to view; degrade gracefully if not -->
   </head>
   <body>
+    <noscript>
+      <div style="padding:2rem;max-width:640px;margin:2rem auto;font-family:system-ui,sans-serif;color:#e5e7eb;background:#0a0f1a;border:1px solid #22bfe0;border-radius:12px;">
+        <h1 style="margin-top:0;color:#fff;">JavaScript required</h1>
+        <p>This portfolio is a client-rendered SPA. Enable JavaScript, or read the static
+          <a style="color:#22bfe0" href="/resume.pdf">PDF resume</a>
+          or reach out at <a style="color:#22bfe0" href="mailto:alexbrow@uw.edu">alexbrow@uw.edu</a>.</p>
+      </div>
+    </noscript>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>

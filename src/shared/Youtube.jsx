@@ -17,7 +17,7 @@ export default function YouTube({ url, id, title = 'YouTube video', className = 
   const poster = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`
 
   return (
-    <div className={`relative w-full aspect-video rounded-2xl overflow-hidden border border-white/10 bg-black ${className}`}>
+    <div className={`relative w-full aspect-video rounded-2xl overflow-hidden border border-line bg-black ${className}`}>
       {!playing ? (
         <button
           type="button"

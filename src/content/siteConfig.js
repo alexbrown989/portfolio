@@ -1,38 +1,45 @@
+// src/content/siteConfig.js
 export const site = {
   brand: {
     name: 'Alex Brown',
-    logoEmoji: '⚙',
-    tagline: 'Mechanical • Defense • R&D • Energy',
+    logoInitials: 'AB',
+    tagline: 'Aerospace · Manufacturing · R&D',
   },
 
-  // About is a real route; the others are homepage anchors
+  // About is a real route; the others are homepage anchors.
   nav: [
-    { href: '#hero',     label: 'Home' },
-    { href: '#projects', label: 'Projects' },
-    { href: '/about',    label: 'About' },
-    { href: '#contact',  label: 'Contact' },
+    { href: '#hero',        label: 'Home' },
+    { href: '#internship',  label: 'Internship' },
+    { href: '#projects',    label: 'Projects' },
+    { href: '/about',       label: 'About' },
+    { href: '#contact',     label: 'Contact' },
   ],
 
   hero: {
-    titleTop: 'ALEX BROWN',
-    titleBottom: 'MECHANICAL ENGINEERING',
+    status: {
+      // Aerospace-first framing: the strongest credential leads.
+      primary: 'Interning · Verus Aerospace · Manufacturing & Quality',
+      secondary: 'Tacoma, WA · Available Summer 2026 · Open to relocate',
+    },
+    titleTop: 'Alex Brown',
+    titleBottom: 'Mechanical Engineering · Aerospace-Focused',
     subtitle:
-      'Aspiring mechanical engineer with a builder’s bias: rapid prototyping, data-driven validation, and mission-ready systems across energy, materials, R&D, and defense tech.',
-    bullets: ['Mech Design', 'Lab Prototyping', 'Controls & Data', 'CFD/PIV'],
-    ctas: [
-      { href: '#projects', label: 'Explore Projects', intent: 'primary' },
-      { href: '#contact',  label: 'Get In Touch',     intent: 'secondary' },
+      'Mechanical engineering student and U.S. Navy veteran. Currently interning at Verus Aerospace supporting flight-critical hardware — AS9102 First Article Inspection, GD&T, Infor VISUAL ERP configuration control, and Quality Clinic operations. Hands-on machining, mechatronics, and R&D case studies below.',
+    bullets: [
+      'AS9102 FAI',
+      'GD&T · Metrology',
+      'Manual + CNC machining',
+      'Mechatronics · Controls',
+      'CFD / PIV · Thermal R&D',
     ],
+    // Four load-bearing numbers. No filler.
     stats: [
-      { label: 'Prototypes Built',          value: '40', suffix: '+' },
-      { label: 'Lab Systems Run',           value: '12' },
-      { label: 'Years Operating',           value: '6',  suffix: '+' },
-      { label: 'Clinical Error Reduction',  value: '30', suffix: '%' },
-      { label: 'Systems Shipped/Deployed',  value: '10', suffix: '+' },
-      { label: 'Events Led (SAME/UWT)',     value: '15', suffix: '+' },
-      { label: 'SOPs & Protocols Authored', value: '10', suffix: '+' },
+      { label: 'Precision tolerance held', value: '±0.005', suffix: ' in' },
+      { label: 'PIV accuracy gain',        value: '40',     suffix: '%'   },
+      { label: 'Damping improvement',      value: '10',     suffix: '×'   },
+      { label: 'Years operating',          value: '6',      suffix: '+'   },
     ],
   },
 
-  features: {showTimeline: true },
+  features: { showTimeline: true, showInternshipBand: true },
 }

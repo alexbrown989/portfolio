@@ -1,88 +1,77 @@
 // src/components/Contact.jsx
-import { motion } from 'framer-motion'
+import { Mail, Linkedin, FileDown, Circle } from 'lucide-react'
+import { SectionTitle } from '../shared/ui'
 
-/**
- * Minimal, internship-focused contact section.
- * - No siteConfig dependency
- * - No form fields or "why me" copy
- * - Buttons: Email, LinkedIn, (optional) Résumé
- *
- * Optional props:
- *   <Contact email="you@school.edu"
- *            linkedinUrl="https://..."
- *            resumeUrl="/resume.pdf"
- *            badge="Open to Summer/Fall internships" />
- */
 const DEFAULTS = {
   email: 'alexbrow@uw.edu',
   linkedinUrl: 'https://www.linkedin.com/in/alexanderchasebrown/',
-  resumeUrl: 'resume.pdf', // put a file in /public if you want this button visible
-  badge: 'Now interviewing for internships',
+  resumeUrl: '/resume.pdf',
+  badge: 'Now interviewing for Summer 2026 internships',
 }
 
 export default function Contact({
-  email,
-  linkedinUrl,
-  resumeUrl,
-  badge,
+  email = DEFAULTS.email,
+  linkedinUrl = DEFAULTS.linkedinUrl,
+  resumeUrl = DEFAULTS.resumeUrl,
+  badge = DEFAULTS.badge,
 }) {
-  const EMAIL = email ?? DEFAULTS.email
-  const LINKEDIN = linkedinUrl ?? DEFAULTS.linkedinUrl
-  const RESUME = resumeUrl ?? DEFAULTS.resumeUrl
-  const BADGE = badge ?? DEFAULTS.badge
-
   return (
     <section aria-labelledby="contact-title">
-      <div className="max-w-4xl mx-auto text-center">
-        {/* Badge */}
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-emerald-400/40 text-emerald-300 text-xs font-mono">
-          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-          {BADGE}
+      <div className="max-w-3xl mx-auto text-center">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-emerald-400/40 bg-emerald-500/[0.06] text-emerald-300 text-[11px] font-mono uppercase tracking-[0.18em]">
+          <Circle className="w-2 h-2 fill-emerald-400 stroke-none" />
+          {badge}
         </div>
 
-        {/* Heading + subcopy (tight, non-cringe) */}
-        <h2 id="contact-title" className="mt-4 text-4xl md:text-5xl font-bold">
+        <h2 id="contact-title" className="mt-5 text-3xl md:text-4xl font-bold text-white tracking-tight">
           Let’s connect
         </h2>
-        <p className="mt-3 text-gray-400">
-          Open to roles across mechanical, systems, R&amp;D, and emerging tech.
+        <p className="mt-3 text-gray-400 max-w-xl mx-auto text-[15px] leading-relaxed">
+          Open to internships across mechanical, systems, R&amp;D, and emerging tech.
+          The fastest way to reach me is email — I typically reply within a day.
         </p>
 
-        {/* Buttons */}
         <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-          <motion.a
-            whileHover={{ scale: 1.03, y: -2 }}
-            whileTap={{ scale: 0.98 }}
-            href={`mailto:${EMAIL}`}
-            className="px-5 py-3 rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-semibold"
+          <a
+            href={`mailto:${email}`}
+            className="glow-btn inline-flex items-center gap-2 px-5 py-3 rounded-lg bg-brand-500 text-white font-semibold hover:bg-brand-400 transition-colors"
           >
-            Email
-          </motion.a>
-
-          <motion.a
-            whileHover={{ scale: 1.03, y: -2 }}
-            whileTap={{ scale: 0.98 }}
-            href={LINKEDIN}
+            <Mail className="w-4 h-4" />
+            {email}
+          </a>
+          <a
+            href={linkedinUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="px-5 py-3 rounded-lg bg-[#0A66C2] text-white font-semibold hover:brightness-110"
+            className="inline-flex items-center gap-2 px-5 py-3 rounded-lg border border-line-strong text-gray-100 hover:border-brand-400/60 hover:text-white transition-colors"
           >
+            <Linkedin className="w-4 h-4 text-brand-300" />
             LinkedIn
-          </motion.a>
-
-          {RESUME && (
-            <motion.a
-              whileHover={{ scale: 1.03, y: -2 }}
-              whileTap={{ scale: 0.98 }}
-              href={RESUME}
+          </a>
+          {resumeUrl && (
+            <a
+              href={resumeUrl}
               target="_blank"
-              className="px-5 py-3 rounded-lg border border-white/15 text-gray-200 hover:border-cyan-400/50 hover:text-white"
+              rel="noreferrer"
+              className="inline-flex items-center gap-2 px-5 py-3 rounded-lg border border-line text-gray-300 hover:text-white hover:border-brand-400/60 transition-colors"
             >
+              <FileDown className="w-4 h-4" />
               Resume (PDF)
-            </motion.a>
+            </a>
           )}
         </div>
       </div>
     </section>
+  )
+}
+
+// Also export a titled variant if Contact needs its own SectionTitle header
+// (kept in the same file to keep imports simple).
+export function ContactSection() {
+  return (
+    <div>
+      <SectionTitle kicker="// Contact" title="Let’s connect" />
+      <Contact />
+    </div>
   )
 }
