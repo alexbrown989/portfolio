@@ -9,12 +9,13 @@ import { motion } from 'framer-motion'
 import { ArrowRight } from 'lucide-react'
 import { projects } from '../content/projects'
 import { SectionTitle, Chip, StatusPill } from '../shared/ui'
+import { SafeImage } from '../shared/Media'
 
 // Ids that have a hand-built detail page. All go through /projects/:id in
 // the router (see App.jsx), so a single href pattern is fine.
 const CUSTOM_ROUTES = new Set([
   'beth', 'coastal', 'micromobility', 'turret', 'vibration',
-  'multitool', 'gearbox', 'fea-validation',
+  'multitool', 'gearbox',
 ])
 
 const STATUS = {
@@ -35,7 +36,6 @@ async function prefetch(id) {
     case 'vibration':     return import('../pages/projects/VibrationPCM.jsx')
     case 'multitool':     return import('../pages/projects/MultiToolFab.jsx')
     case 'gearbox':       return import('../pages/projects/Gearbox.jsx')
-    case 'fea-validation':return import('../pages/projects/FEAValidation.jsx')
     default:              return
   }
 }
@@ -44,6 +44,7 @@ function ProjectCard({ project, index }) {
   const [hovered, setHovered] = useState(false)
   const status = STATUS[project.status] || STATUS.COMPLETED
   const href = `/projects/${project.id}`
+  const indexLabel = String(index + 1).padStart(2, '0')
 
   return (
     <motion.article
@@ -58,39 +59,49 @@ function ProjectCard({ project, index }) {
       onMouseLeave={() => setHovered(false)}
       className="group relative rounded-2xl overflow-hidden border border-line bg-surface-2/60 backdrop-blur-sm shadow-card hover:border-brand-500/40 hover:shadow-card-hover transition-[border-color,box-shadow,transform] duration-200"
     >
+      {/* Corner brackets — HUD accent */}
+      {['top-2 left-2 border-l border-t','top-2 right-2 border-r border-t','bottom-2 left-2 border-l border-b','bottom-2 right-2 border-r border-b']
+        .map((pos) => (
+          <span
+            key={pos}
+            aria-hidden
+            className={`pointer-events-none absolute ${pos} w-2.5 h-2.5 border-brand-400/0 group-hover:border-brand-400/60 transition-colors duration-200`}
+          />
+        ))}
+
       <Link to={href} className="block">
-        {/* Cover — clean image, no gradient wash. A subtle fade at the bottom
-            keeps the chip strip readable. */}
+        {/* Cover */}
         <div className="relative aspect-[16/10] overflow-hidden bg-surface-3">
-          {project.image ? (
-            <img
-              src={project.image}
-              alt=""
-              loading="lazy"
-              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
-              style={{ objectPosition: 'center 55%' }}
-            />
-          ) : (
-            <div className="w-full h-full bg-mesh" />
-          )}
+          <SafeImage
+            src={project.image}
+            alt=""
+            label={project.title}
+            aspect="aspect-[16/10]"
+            className="border-0 rounded-none"
+          />
           {/* Subtle bottom fade */}
-          <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-surface-2 to-transparent" />
-          {/* Category chip top-left */}
-          {project.category && (
-            <div className="absolute top-3 left-3">
-              <Chip>{project.category}</Chip>
-            </div>
-          )}
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-surface-2 to-transparent" />
+          {/* Index tag top-left */}
+          <div className="absolute top-3 left-3 inline-flex items-center gap-1.5 px-2 py-0.5 text-[10px] font-mono uppercase tracking-[0.22em] rounded bg-surface-0/70 backdrop-blur border border-brand-500/25 text-brand-200">
+            <span className="text-gray-500">P/</span>
+            {indexLabel}
+          </div>
           {/* Status pill top-right */}
           {project.status && (
             <div className="absolute top-3 right-3">
               <StatusPill label={status.label} tone={status.tone} pulse={status.pulse} />
             </div>
           )}
+          {/* Category chip bottom-left */}
+          {project.category && (
+            <div className="absolute bottom-3 left-3">
+              <Chip>{project.category}</Chip>
+            </div>
+          )}
         </div>
 
         <div className="p-5">
-          <h3 className="text-lg font-semibold text-white tracking-tight">
+          <h3 className="text-lg font-semibold text-white tracking-tight leading-snug">
             {project.title}
           </h3>
           {project.summary && (
@@ -120,7 +131,9 @@ function ProjectCard({ project, index }) {
               />
             </span>
             {project.year && (
-              <span className="text-xs font-mono text-gray-500">{project.year}</span>
+              <span className="text-[11px] font-mono uppercase tracking-[0.2em] text-gray-500">
+                {project.year}
+              </span>
             )}
           </div>
         </div>
@@ -135,9 +148,10 @@ export default function Projects() {
   return (
     <div>
       <SectionTitle
-        kicker="// Selected Work"
+        code="SEC 002"
+        kicker="Selected work"
         title="Engineering Projects"
-        subtitle="Case studies from R&D — every project ties a hypothesis to a build, a measurement, and a lesson."
+        subtitle="Case studies from R&D and hands-on manufacturing. Every project ties a hypothesis to a build, a measurement, and a lesson."
       />
 
       <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-5">

@@ -244,7 +244,7 @@ export default function VibrationPCM() {
               <li><b className="text-white">Enhance rigor:</b> PID-controlled Peltier heating + FFT-based analysis.</li>
               <li><b className="text-white">Next-gen materials:</b> laminated composites with viscoelastic cores to beat commercial damping sheets.</li>
               <li><b className="text-white">Proof-of-technology:</b> self-quieting electronics panel demonstrator.</li>
-              <li><b className="text-white">Computational validation:</b> predictive FEA model matched to experimental ring-down (see the <a className="text-brand-300 hover:text-brand-200 underline decoration-brand-500/50 underline-offset-2" href="/projects/fea-validation">FEA validation project</a>).</li>
+              <li><b className="text-white">Computational validation:</b> predictive FEA model matched to experimental ring-down data — the next R&D step.</li>
             </ul>
           </Glass>
         </Container>

@@ -8,11 +8,12 @@ import AppShell from './shared/AppShell'
 import Hero from './components/Hero'
 
 /* ----- Lazy modules ----- */
-const Projects      = lazy(() => import('./components/Projects'))
-const Contact       = lazy(() => import('./components/Contact'))
-const Footer        = lazy(() => import('./components/Footer'))
-const Manifesto     = lazy(() => import('./components/Manifesto'))
-const Timeline      = lazy(() => import('./components/Timeline'))
+const Projects        = lazy(() => import('./components/Projects'))
+const Contact         = lazy(() => import('./components/Contact'))
+const Footer          = lazy(() => import('./components/Footer'))
+const Manifesto       = lazy(() => import('./components/Manifesto'))
+const Timeline        = lazy(() => import('./components/Timeline'))
+const InternshipBand  = lazy(() => import('./components/InternshipBand'))
 const AboutPage     = lazy(() => import('./pages/About'))
 
 const ProjectDetail = lazy(() => import('./pages/ProjectDetail'))
@@ -21,9 +22,9 @@ const Coastal       = lazy(() => import('./pages/projects/Coastal.jsx'))
 const Micromobility = lazy(() => import('./pages/projects/Micromobility.jsx'))
 const Turret        = lazy(() => import('./pages/projects/Turret.jsx'))
 const VibrationPCM  = lazy(() => import('./pages/projects/VibrationPCM.jsx'))
-const FEAValidation = lazy(() => import('./pages/projects/FEAValidation.jsx'))
 const MultiToolFab  = lazy(() => import('./pages/projects/MultiToolFab.jsx'))
 const Gearbox       = lazy(() => import('./pages/projects/Gearbox.jsx'))
+const NotFound      = lazy(() => import('./pages/NotFound.jsx'))
 
 /* ----- Error boundary ----- */
 class ErrorBoundary extends Component {
@@ -80,6 +81,14 @@ function HomeContent() {
         <Suspense fallback={null}>
           <section id="manifesto" className="py-20">
             <Manifesto />
+          </section>
+        </Suspense>
+      </ErrorBoundary>
+
+      <ErrorBoundary name="InternshipBand">
+        <Suspense fallback={null}>
+          <section id="internship" className="py-24 md:py-28">
+            <InternshipBand />
           </section>
         </Suspense>
       </ErrorBoundary>
@@ -156,12 +165,11 @@ export default function App() {
         <Route path="/projects/vibration-pcm"  element={withBoundary('VibrationPCM',  <VibrationPCM />)} />
         <Route path="/projects/multitool"      element={withBoundary('MultiToolFab',  <MultiToolFab />)} />
         <Route path="/projects/gearbox"        element={withBoundary('Gearbox',       <Gearbox />)} />
-        <Route path="/projects/fea-validation" element={withBoundary('FEAValidation', <FEAValidation />)} />
 
         {/* Generic fallback for anything data-driven */}
         <Route path="/projects/:id" element={withBoundary('ProjectDetail', <ProjectDetail />)} />
 
-        <Route path="*" element={<HomeContent />} />
+        <Route path="*" element={withBoundary('NotFound', <NotFound />)} />
       </Routes>
     </AppShell>
   )

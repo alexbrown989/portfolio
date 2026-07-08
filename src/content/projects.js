@@ -9,9 +9,15 @@
 // Schema per project:
 //   { id, title, category, year, summary, image, tech, status,
 //     video? / youtube? / stl?,
-//     star?:   { situation, task, actions[], results[] },
-//     aar?:    { right, wrong, learned },
+//     star?:      { situation, task, actions[], results[] },
+//     aar?:       { right, wrong, learned },
+//     downloads?: [ { label, href, description?, type? } ],
 //     ...page-specific extras }
+//
+// Drop artifacts (PDF drawings, inspection logs, design reviews) into
+// /public/projects/downloads/ and reference them via `downloads`. The
+// Multi-Tool and Gearbox pages already render the Downloads block; the
+// generic ProjectDetail page renders it in the aside.
 
 export const projects = [
   // ---------------------------------------------------------------------
@@ -261,28 +267,6 @@ export const projects = [
         '29.0% adaptive-vehicle incentive rate · 48.8% unbanked payment support · 42.4% smartphone-free access — a quantitative baseline the field previously lacked.',
         'A concrete constraint set that engineering teams can build against, not a wishlist.',
       ],
-    },
-  },
-
-  // ---------------------------------------------------------------------
-  // FEA & ring-down validation — natural extension of the vibration project.
-  // Left as DRAFT until real ANSYS runs land.
-  // ---------------------------------------------------------------------
-  {
-    id: 'fea-validation',
-    title: 'FEA-Predicted Damping vs. Experimental Ring-Down',
-    category: 'Simulation & Test',
-    year: '2025',
-    summary:
-      'Building a predictive FEA model of the PCM-composite beam and correlating modal frequencies + damping ratios against measured ring-down curves.',
-    image: '/projects/alex-thermals.jpg',
-    tech: ['ANSYS / FEA', 'Modal Analysis', 'Python', 'MATLAB'],
-    status: 'DRAFT',
-    draft: true,
-    aar: {
-      right:   'Meshed geometry and material assignments captured the first two modes within 5% of measurement.',
-      wrong:   'Initial linear damping model under-predicted amplitude decay at elevated temperature.',
-      learned: 'Temperature-dependent loss factors are the bottleneck; simulation must inherit them from experiment.',
     },
   },
 ]
