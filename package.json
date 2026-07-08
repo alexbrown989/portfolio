@@ -10,21 +10,17 @@
     "preview": "vite preview"
   },
   "overrides": {
-    "rollup": "4.21.0"
+    "rollup": "^4.59.0"
   },
   "dependencies": {
     "@react-three/drei": "^10.7.6",
     "@react-three/fiber": "^9.3.0",
     "framer-motion": "^12.23.12",
     "lucide-react": "^0.543.0",
-    "maplibre-gl": "^5.7.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "react-pdf": "^10.1.0",
     "react-router-dom": "^7.9.1",
-    "recharts": "^3.2.0",
-    "three": "^0.180.0",
-    "three-stdlib": "^2.36.0"
+    "three": "^0.180.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.33.0",

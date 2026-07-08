@@ -1,6 +1,5 @@
 /* Imports MUST come first */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
-@import "maplibre-gl/dist/maplibre-gl.css";
 
 @tailwind base;
 @tailwind components;
@@ -62,12 +61,50 @@ body {
 }
 
 /* ---------------------------------------------------------------- */
+/* Custom scrollbar — matches surface palette                        */
+/* ---------------------------------------------------------------- */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: #05070d; }
+::-webkit-scrollbar-thumb {
+  background: #141b2c;
+  border: 2px solid #05070d;
+  border-radius: 8px;
+}
+::-webkit-scrollbar-thumb:hover { background: #1e2a45; }
+html { scrollbar-color: #141b2c #05070d; scrollbar-width: thin; }
+
+/* ---------------------------------------------------------------- */
 /* Utilities used across pages                                       */
 /* ---------------------------------------------------------------- */
 @keyframes floatY {
   0%, 100% { transform: translateY(0) }
   50%      { transform: translateY(-10px) }
 }
+
+/* Boot-reveal — sections wipe in from below like a HUD readout */
+@keyframes bootReveal {
+  0%   { opacity: 0; transform: translateY(6px); clip-path: inset(0 0 100% 0); }
+  60%  { opacity: 1; clip-path: inset(0 0 0 0); }
+  100% { opacity: 1; transform: translateY(0); clip-path: inset(0 0 0 0); }
+}
+.boot-reveal { animation: bootReveal 0.7s ease-out both; }
+
+/* Ticker sweep — thin accent line that sweeps once on mount */
+@keyframes tickerSweep {
+  0%   { transform: scaleX(0); transform-origin: left; }
+  60%  { transform: scaleX(1); transform-origin: left; }
+  61%  { transform-origin: right; }
+  100% { transform: scaleX(0); transform-origin: right; }
+}
+.ticker-sweep { animation: tickerSweep 1.6s ease-in-out; }
+
+/* Cursor-crosshair blink for readouts */
+@keyframes crosshairBlink {
+  0%, 45%   { opacity: 1; }
+  50%, 95%  { opacity: 0.2; }
+  100%      { opacity: 1; }
+}
+.crosshair-blink { animation: crosshairBlink 1.6s steps(2, end) infinite; }
 
 /* Subtle glow ring for primary CTAs; tuned for the brand palette */
 .glow-btn {
@@ -103,4 +140,43 @@ body {
   background-size: 48px 48px;
   background-position: -1px -1px;
   mask-image: radial-gradient(ellipse 80% 60% at 50% 30%, #000 40%, transparent 100%);
+}
+
+/* Very fine scanline overlay — the HUD signature. Kept far under
+   perceptual threshold on purpose. */
+.bg-scanlines {
+  background-image: repeating-linear-gradient(
+    to bottom,
+    rgba(255,255,255,0.018) 0px,
+    rgba(255,255,255,0.018) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+  mix-blend-mode: overlay;
+}
+
+/* Edge tick-marks — barely visible measurement lines along viewport edges */
+.bg-edge-ticks {
+  background-image:
+    /* left column */
+    linear-gradient(to right, rgba(34,191,224,0.5) 0, rgba(34,191,224,0.5) 8px, transparent 8px),
+    /* right column */
+    linear-gradient(to left, rgba(34,191,224,0.5) 0, rgba(34,191,224,0.5) 8px, transparent 8px);
+  background-position: 0 50%, 100% 50%;
+  background-size: 24px 1px, 24px 1px;
+  background-repeat: no-repeat;
+}
+
+/* Media graceful-degrade — when a video/img fails to load we still
+   present a real card with a message instead of a broken icon. */
+img[data-fallback], video[data-fallback] {
+  background-color: #0f1523;
+}
+img[data-fallback]::after, video[data-fallback]::after {
+  content: attr(data-fallback);
+  position: absolute; inset: 0;
+  display: grid; place-items: center;
+  color: rgba(148,163,184,0.6);
+  font-family: ui-monospace, 'JetBrains Mono', monospace;
+  font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase;
 }

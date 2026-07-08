@@ -1,0 +1,9 @@
+/* TEAM */
+Author: Alex Brown
+Contact: alexbrow [at] uw.edu
+Location: Tacoma, WA
+
+/* SITE */
+Standards: HTML5, CSS3
+Components: React, Vite, Tailwind CSS, framer-motion, @react-three/fiber, lucide-react
+Software: Built and deployed from a small git repo — no CMS, no telemetry, no user data.

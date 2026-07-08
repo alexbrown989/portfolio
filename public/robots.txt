@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+
+# No crawling of raw source assets
+Disallow: /models/
+Disallow: /assets/
+
+Sitemap: https://alexbrown.engineering/sitemap.xml
