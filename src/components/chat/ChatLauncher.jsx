@@ -6,7 +6,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import { MessageSquare, X, Send, ArrowRight, RotateCcw, Sparkles } from 'lucide-react'
 import { respond, getById } from './matcher'
 import { suggestedPrompts } from '../../content/knowledgeBase'
@@ -145,20 +145,35 @@ function UserMessage({ text }) {
 
 /* ---------------- Main ---------------- */
 
+// How long (ms) the launcher shows its intro attention ping on each page
+// load. After this, the button sits perfectly still.
+const INTRO_PING_MS = 10000
+
 export default function ChatLauncher() {
   const [open, setOpen] = useState(false)
   const [hasSeen, setHasSeen] = useState(true)
+  const [showIntroPing, setShowIntroPing] = useState(false)
   const [messages, setMessages] = useState([])
   const [pending, setPending] = useState(false)
   const [input, setInput] = useState('')
   const inputRef = useRef(null)
   const listRef = useRef(null)
   const reduce = useReducedMotion()
+  const { pathname } = useLocation()
 
   useEffect(() => {
     try { setHasSeen(localStorage.getItem(STORAGE_KEY) === '1') }
     catch { /* localStorage blocked; treat as unseen */ }
   }, [])
+
+  // Blink for the first ~10 seconds of every page. Not continuous, not
+  // annoying. Restarts on route change so a fresh page gets a fresh nudge.
+  useEffect(() => {
+    if (open || reduce) return
+    setShowIntroPing(true)
+    const t = setTimeout(() => setShowIntroPing(false), INTRO_PING_MS)
+    return () => clearTimeout(t)
+  }, [pathname, open, reduce])
 
   useEffect(() => {
     const onKey = (e) => {
@@ -224,18 +239,18 @@ export default function ChatLauncher() {
 
   return (
     <>
-      {/* Launcher */}
+      {/* Launcher — perfectly still after the initial ping */}
       <motion.button
         aria-label={open ? 'Close chat' : "Open chat with Alex's assistant"}
         onClick={() => setOpen(v => !v)}
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.8, duration: 0.4 }}
+        transition={{ delay: 0.4, duration: 0.4 }}
         whileTap={{ scale: 0.96 }}
         className="fixed z-50 bottom-4 right-4 md:bottom-6 md:right-6 group inline-flex items-center gap-2 rounded-full pl-3 pr-4 py-3 bg-brand-500 text-white shadow-[0_10px_40px_rgba(10,165,199,0.35)] hover:bg-brand-400 transition-colors"
       >
-        {/* Continuous halo pulse so the launcher is always visibly alive */}
-        {!open && (
+        {/* Intro ping — 10s of blinking per page load, then still */}
+        {!open && showIntroPing && (
           <span aria-hidden className="pointer-events-none absolute inset-0 rounded-full">
             <span className="absolute inset-0 rounded-full bg-brand-400/40 animate-ping" />
           </span>
@@ -247,7 +262,7 @@ export default function ChatLauncher() {
           <span className="text-sm font-semibold whitespace-nowrap">
             {open ? 'Close' : 'Ask about Alex'}
           </span>
-          {!hasSeen && !open && (
+          {!hasSeen && !open && showIntroPing && (
             <span className="relative flex h-2 w-2 ml-0.5">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white/70" />
               <span className="relative inline-flex rounded-full h-2 w-2 bg-white" />
