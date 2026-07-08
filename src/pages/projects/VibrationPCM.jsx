@@ -1,5 +1,5 @@
 // src/pages/projects/VibrationPCM.jsx
-import { lazy, Suspense, useMemo } from 'react'
+import { lazy, Suspense, useMemo, useState } from 'react'
 import { motion } from 'framer-motion'
 import ProjectLayout from '../ProjectLayout'
 import {
@@ -10,6 +10,114 @@ import { projects } from '../../content/projects'
 
 const STLViewer = lazy(() => import('../../shared/STLViewer.jsx'))
 const project = projects.find(p => p.id === 'vibration') || {}
+
+/* ------------------------------------------------------------------- */
+/* Signature interactive: damping slider                                */
+/* ------------------------------------------------------------------- */
+//
+// User drags a slider from "cold control (light damping)" to "PCM
+// heated (heavy damping)" and the ring-down waveform reshapes in real
+// time. Damping ratio ζ is derived from the slider and shown in the
+// readout. Below-crit at low ζ, near-critical at high ζ.
+
+function DampingSlider() {
+  const [z, setZ] = useState(0.6) // 0 = control, 1 = full PCM effect
+  const zeta = 0.005 + z * 0.145  // damping ratio: 0.005 → 0.15
+  const freq = 12                 // sample frequency (fixed for display)
+  const samples = 320
+
+  const path = useMemo(() => {
+    let d = `M 0 60`
+    for (let x = 0; x <= samples; x++) {
+      const t = x / samples * 6.28 * 5
+      const env = Math.exp(-zeta * x * 0.16)
+      const y = 60 - Math.sin(t * (freq / 10)) * env * 45
+      d += ` L ${x} ${y.toFixed(2)}`
+    }
+    return d
+  }, [zeta])
+
+  const envelopePath = useMemo(() => {
+    let d = `M 0 60`
+    for (let x = 0; x <= samples; x++) {
+      const env = Math.exp(-zeta * x * 0.16) * 45
+      d += ` L ${x} ${(60 - env).toFixed(2)}`
+    }
+    for (let x = samples; x >= 0; x--) {
+      const env = Math.exp(-zeta * x * 0.16) * 45
+      d += ` L ${x} ${(60 + env).toFixed(2)}`
+    }
+    return d + ' Z'
+  }, [zeta])
+
+  const state =
+    z < 0.15 ? { name: 'Control · cold', tone: 'text-gray-300', desc: 'Under-damped ring-down' }
+    : z > 0.75 ? { name: 'PCM · heated', tone: 'text-brand-200', desc: 'Near-critical decay' }
+    :         { name: 'Transition',      tone: 'text-amber-200', desc: 'PCM softening in the composite matrix' }
+
+  return (
+    <div className="rounded-xl border border-line bg-surface-3/60 overflow-hidden">
+      <div className="p-4">
+        <svg viewBox={`0 0 ${samples} 120`} preserveAspectRatio="none" className="w-full h-40 md:h-48 bg-black/40 rounded-lg border border-line">
+          {/* Grid */}
+          {[30, 60, 90].map(y => (
+            <line key={y} x1="0" x2={samples} y1={y} y2={y} stroke="#334155" strokeWidth="0.4" strokeDasharray="2 3" />
+          ))}
+          {[80, 160, 240].map(x => (
+            <line key={x} x1={x} x2={x} y1="0" y2="120" stroke="#334155" strokeWidth="0.4" strokeDasharray="2 3" />
+          ))}
+          {/* Envelope */}
+          <path d={envelopePath} fill="rgba(34,191,224,0.10)" />
+          {/* Waveform */}
+          <motion.path
+            d={path}
+            stroke="#22bfe0"
+            strokeWidth="1.5"
+            fill="none"
+            style={{ filter: 'drop-shadow(0 0 4px rgba(34,191,224,0.4))' }}
+            animate={{ opacity: [0.6, 1, 0.9] }}
+            transition={{ duration: 2.4, repeat: Infinity }}
+          />
+        </svg>
+      </div>
+
+      <div className="px-4 pb-4">
+        <div className="flex items-center gap-3">
+          <span className="text-[11px] font-mono uppercase tracking-[0.18em] text-gray-500">Cold</span>
+          <input
+            type="range"
+            min="0" max="1000"
+            value={Math.round(z * 1000)}
+            onChange={(e) => setZ(Number(e.target.value) / 1000)}
+            aria-label="Damping (0 = cold control, 1 = heated PCM composite)"
+            className="flex-1 accent-brand-500"
+          />
+          <span className="text-[11px] font-mono uppercase tracking-[0.18em] text-brand-200">Heated PCM</span>
+        </div>
+
+        <div className="mt-3 grid grid-cols-3 gap-2 text-center">
+          <div>
+            <div className="text-[10px] font-mono uppercase tracking-[0.18em] text-gray-500">Damping ratio ζ</div>
+            <div className="text-sm font-semibold text-white tabular-nums">{zeta.toFixed(3)}</div>
+          </div>
+          <div>
+            <div className="text-[10px] font-mono uppercase tracking-[0.18em] text-gray-500">Decay time · to 10%</div>
+            <div className="text-sm font-semibold text-white tabular-nums">
+              {(Math.log(10) / (zeta * freq)).toFixed(2)} s
+            </div>
+          </div>
+          <div>
+            <div className="text-[10px] font-mono uppercase tracking-[0.18em] text-gray-500">Regime</div>
+            <div className={`text-sm font-semibold ${state.tone}`}>{state.name}</div>
+          </div>
+        </div>
+        <p className="text-[11px] text-gray-500 mt-2 leading-relaxed">
+          {state.desc}. Slide from cold control to heated PCM composite to see the ring-down envelope collapse.
+        </p>
+      </div>
+    </div>
+  )
+}
 
 /* ---------------------- Media helper ---------------------- */
 function ImageCard({ src, alt, aspect = 'aspect-[4/3]' }) {
@@ -97,6 +205,19 @@ export default function VibrationPCM() {
         chips={project.tech || []}
         status={{ label: 'Active', tone: 'brand', pulse: true }}
       />
+
+      {/* Signature interactive */}
+      <section className="pb-10">
+        <Container>
+          <SectionTitle
+            kicker="Interactive"
+            code="I/01"
+            title="Ring-down · slide from control to heated PCM"
+            subtitle="Damping ratio ζ increases as the PCM composite is thermally triggered. The waveform decays visibly faster and the envelope collapses toward the axis."
+          />
+          <DampingSlider />
+        </Container>
+      </section>
 
       {/* Hypothesis */}
       <section className="pb-10">

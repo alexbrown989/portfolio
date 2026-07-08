@@ -1,5 +1,6 @@
 // src/pages/projects/Coastal.jsx
-import { lazy, Suspense } from 'react'
+import { lazy, Suspense, useEffect, useState } from 'react'
+import { motion, useReducedMotion } from 'framer-motion'
 import ProjectLayout from '../ProjectLayout'
 import YouTube from '../../shared/Youtube'
 import { projects } from '../../content/projects'
@@ -11,6 +12,210 @@ import {
 const STLViewer = lazy(() => import('../../shared/STLViewer.jsx'))
 
 const project = projects.find(p => p.id === 'coastal')
+
+/* ------------------------------------------------------------------- */
+/* Signature interactive: seawall wave sim                              */
+/* ------------------------------------------------------------------- */
+//
+// SVG scene with a rolling wave that either crashes over an unprotected
+// shoreline or is dissipated by a scaled seawall. Toggle switches the
+// scenario and the readouts change accordingly. Cartoon geometry, not
+// CFD — the point is to make the coastal-defense case immediately
+// legible.
+
+function CoastalWaveSim() {
+  const [defended, setDefended] = useState(true)
+  const [t, setT] = useState(0)
+  const reduce = useReducedMotion()
+
+  useEffect(() => {
+    if (reduce) return
+    let raf, start
+    const step = (now) => {
+      if (!start) start = now
+      setT(((now - start) / 3400) % 1)
+      raf = requestAnimationFrame(step)
+    }
+    raf = requestAnimationFrame(step)
+    return () => cancelAnimationFrame(raf)
+  }, [reduce])
+
+  // Wave crest advances left → right. Wave amplitude visually attenuates
+  // past the seawall when defended.
+  const crestX = 20 + t * 340
+
+  // Attenuation depends on defended state and how far past the seawall we are.
+  const seawallX = 240
+  const pastWall = crestX > seawallX
+  const attenuation =
+    defended && pastWall
+      ? Math.max(0, 1 - (crestX - seawallX) / 60)
+      : 1
+  const crestHeight = 32 * (defended && pastWall ? attenuation : 1)
+
+  return (
+    <div className="rounded-xl border border-line bg-surface-3/60 overflow-hidden">
+      <svg viewBox="0 0 400 200" className="w-full h-64">
+        <defs>
+          <linearGradient id="sky" x1="0" x2="0" y1="0" y2="1">
+            <stop offset="0%"   stopColor="#0f172a" />
+            <stop offset="100%" stopColor="#0a0f1a" />
+          </linearGradient>
+          <linearGradient id="water" x1="0" x2="0" y1="0" y2="1">
+            <stop offset="0%"   stopColor="#0e7490" stopOpacity="0.9" />
+            <stop offset="100%" stopColor="#083344" stopOpacity="1" />
+          </linearGradient>
+          <linearGradient id="crest" x1="0" x2="0" y1="0" y2="1">
+            <stop offset="0%" stopColor="#7dd3fc" />
+            <stop offset="100%" stopColor="#22bfe0" />
+          </linearGradient>
+          <linearGradient id="ground" x1="0" x2="0" y1="0" y2="1">
+            <stop offset="0%" stopColor={defended ? '#a3a3a3' : '#7f1d1d'} />
+            <stop offset="100%" stopColor={defended ? '#374151' : '#450a0a'} />
+          </linearGradient>
+        </defs>
+
+        {/* Sky */}
+        <rect x="0" y="0" width="400" height="120" fill="url(#sky)" />
+        {/* Sun / hazy light */}
+        <circle cx="60" cy="40" r="16" fill="rgba(253,224,71,0.14)" />
+        {/* Water */}
+        <rect x="0" y="120" width="400" height="60" fill="url(#water)" />
+
+        {/* Base ocean wavelets */}
+        <path
+          d={`M 0 120 ${Array.from({ length: 30 }, (_, i) =>
+            `Q ${i * 14 + 7} ${120 + (i % 2 ? 4 : -4)} ${i * 14 + 14} 120`,
+          ).join(' ')} L 400 200 L 0 200 Z`}
+          fill="rgba(34,191,224,0.12)"
+        />
+
+        {/* Advancing crest */}
+        <motion.path
+          d={`
+            M ${crestX - 40} 120
+            Q ${crestX - 20} ${120 - crestHeight}
+              ${crestX}     120
+            Q ${crestX + 20} ${120 + crestHeight * 0.4}
+              ${crestX + 40} 120
+            Z
+          `}
+          fill="url(#crest)"
+          animate={{ opacity: pastWall && defended ? attenuation : 1 }}
+        />
+        {/* Crest foam */}
+        <motion.path
+          d={`M ${crestX - 22} ${120 - crestHeight * 0.75} Q ${crestX - 10} ${120 - crestHeight * 1.1} ${crestX} ${120 - crestHeight * 0.75}`}
+          stroke="#f8fafc" strokeWidth="1.5" fill="none"
+          opacity={pastWall && defended ? attenuation : 1}
+        />
+
+        {/* Shoreline / ground */}
+        <path
+          d="M 300 120 L 400 120 L 400 200 L 300 200 Z"
+          fill="url(#ground)"
+        />
+
+        {/* Erosion markings when not defended */}
+        {!defended && (
+          <>
+            {Array.from({ length: 4 }, (_, i) => (
+              <motion.path
+                key={i}
+                d={`M ${310 + i * 20} 125 l 6 -3 l -3 8 l 5 -2`}
+                stroke="#fca5a5" strokeWidth="1.2" fill="none" strokeLinecap="round"
+                animate={{ opacity: [0.2, 1, 0.2] }}
+                transition={{ duration: 1.4, repeat: Infinity, delay: i * 0.15 }}
+              />
+            ))}
+          </>
+        )}
+
+        {/* Building on the shoreline */}
+        <rect x="340" y="80" width="42" height="40" fill="#1f2937" stroke="rgba(148,163,184,0.35)" />
+        <rect x="348" y="90"  width="7" height="9" fill="#22bfe0" opacity="0.5" />
+        <rect x="365" y="90"  width="7" height="9" fill="#22bfe0" opacity="0.5" />
+        <rect x="348" y="105" width="7" height="9" fill="#22bfe0" opacity="0.5" />
+        <rect x="365" y="105" width="7" height="9" fill="#22bfe0" opacity="0.5" />
+
+        {/* Seawall */}
+        {defended && (
+          <>
+            <rect x={seawallX - 6} y="70" width="12" height="60" rx="1.5" fill="#334155" stroke="#22bfe0" strokeWidth="1.2" />
+            <text
+              x={seawallX} y="66"
+              textAnchor="middle"
+              fontFamily="ui-monospace, JetBrains Mono, monospace"
+              fontSize="8"
+              fill="rgba(148,163,184,0.9)"
+              style={{ letterSpacing: '0.14em', textTransform: 'uppercase' }}
+            >
+              Seawall
+            </text>
+          </>
+        )}
+
+        {/* Legend */}
+        <g transform="translate(12, 180)">
+          <text fontFamily="ui-monospace, JetBrains Mono, monospace" fontSize="9" fill="rgba(226,232,240,0.75)" style={{ letterSpacing: '0.14em', textTransform: 'uppercase' }}>
+            Scenario · {defended ? 'defended' : 'undefended'}
+          </text>
+        </g>
+      </svg>
+
+      {/* Controls + metrics */}
+      <div className="grid grid-cols-1 md:grid-cols-[1fr_auto] gap-4 p-4 border-t border-line">
+        <div>
+          <div className="text-[10.5px] font-mono uppercase tracking-[0.22em] text-gray-500 mb-1.5">
+            Toggle scenario
+          </div>
+          <div className="inline-flex rounded-lg border border-line overflow-hidden">
+            <button
+              onClick={() => setDefended(true)}
+              className={`px-3 py-1.5 text-xs font-medium transition-colors ${
+                defended
+                  ? 'bg-brand-500/15 text-brand-200'
+                  : 'text-gray-400 hover:text-white'
+              }`}
+            >
+              With seawall
+            </button>
+            <button
+              onClick={() => setDefended(false)}
+              className={`px-3 py-1.5 text-xs font-medium transition-colors border-l border-line ${
+                !defended
+                  ? 'bg-red-500/15 text-red-200'
+                  : 'text-gray-400 hover:text-white'
+              }`}
+            >
+              Without
+            </button>
+          </div>
+        </div>
+        <div className="grid grid-cols-3 gap-2 text-center min-w-0">
+          <div>
+            <div className="text-[10px] font-mono uppercase tracking-[0.18em] text-gray-500">Wave energy at shore</div>
+            <div className={`text-sm font-semibold ${defended ? 'text-brand-200' : 'text-red-300'}`}>
+              {defended ? '↓ 37%' : 'Baseline'}
+            </div>
+          </div>
+          <div>
+            <div className="text-[10px] font-mono uppercase tracking-[0.18em] text-gray-500">Vorticity</div>
+            <div className={`text-sm font-semibold ${defended ? 'text-brand-200' : 'text-red-300'}`}>
+              {defended ? '↓ 42%' : 'Baseline'}
+            </div>
+          </div>
+          <div>
+            <div className="text-[10px] font-mono uppercase tracking-[0.18em] text-gray-500">Infra risk</div>
+            <div className={`text-sm font-semibold ${defended ? 'text-brand-200' : 'text-red-300'}`}>
+              {defended ? 'Reduced' : '$45M exposure'}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
 
 const metrics = [
   { value: '↓ 37%', label: 'Wave energy at shoreline' },
@@ -30,11 +235,25 @@ export default function Coastal() {
         status={{ label: 'Active', tone: 'brand', pulse: true }}
       />
 
+      {/* Signature interactive: seawall wave simulation */}
+      <section className="pb-10">
+        <Container>
+          <SectionTitle
+            kicker="Interactive"
+            code="I/01"
+            title="Wave impact · with seawall vs without"
+            subtitle="Cartoon simulation. Toggle the scenario to see how the same wave interacts with a shoreline that has a scaled seawall versus one that does not."
+          />
+          <CoastalWaveSim />
+        </Container>
+      </section>
+
       {/* Crisis */}
       <section className="pb-10">
         <Container>
           <SectionTitle
-            kicker="// Context"
+            kicker="Context"
+            code="C/02"
             title="Infrastructure at risk"
             subtitle="Critical Pacific-island infrastructure sits inside active erosion corridors. Existing coastal-defense guidance is either qualitative or over-generalized; a defensible design pipeline for Saipan-specific geometry did not exist."
           />

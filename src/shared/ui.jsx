@@ -215,8 +215,8 @@ export function BackToProjects({ label = 'Back to Projects', className = '' }) {
   )
 }
 
-// Prev / Next navigation across the project catalog so users can flow through
-// case studies without bouncing back to the grid every time.
+// Prev / Next navigation across the project catalog, styled as an obvious
+// footer band so it visually separates from the case-study body.
 export function ProjectPager({ currentId }) {
   const list = Array.isArray(projects) ? projects : []
   const idx = list.findIndex(p => p.id === currentId)
@@ -224,25 +224,24 @@ export function ProjectPager({ currentId }) {
   const prev = list[(idx - 1 + list.length) % list.length]
   const next = list[(idx + 1) % list.length]
 
-  const Card = ({ project, direction }) => {
-    if (!project) return <div />
+  const PagerCard = ({ project, direction }) => {
     const isNext = direction === 'next'
     return (
       <Link
         to={`/projects/${project.id}`}
-        className="group flex-1 rounded-2xl border border-line bg-surface-2/60 hover:border-brand-500/40 hover:bg-surface-2 transition-all duration-200 p-5"
+        className={`group relative flex-1 rounded-xl border border-line bg-surface-2/50 hover:border-brand-500/40 hover:bg-surface-2 transition-all duration-200 p-5 ${isNext ? 'md:text-right' : ''}`}
       >
-        <div className={`text-[11px] font-mono uppercase tracking-[0.2em] text-brand-300/80 flex items-center gap-1 ${isNext ? 'justify-end' : ''}`}>
-          {!isNext && <ArrowLeft className="w-3.5 h-3.5" />}
-          {isNext ? 'Next Project' : 'Previous Project'}
-          {isNext && <ArrowRight className="w-3.5 h-3.5" />}
+        <div className={`text-[10.5px] font-mono uppercase tracking-[0.22em] text-gray-500 flex items-center gap-1.5 ${isNext ? 'md:justify-end' : ''}`}>
+          {!isNext && <ArrowLeft className="w-3.5 h-3.5 text-brand-300" />}
+          {isNext ? 'Next case study' : 'Previous case study'}
+          {isNext && <ArrowRight className="w-3.5 h-3.5 text-brand-300" />}
         </div>
-        <div className={`mt-1 text-white font-semibold ${isNext ? 'text-right' : ''}`}>
+        <div className="mt-1 text-white font-semibold text-[15px] leading-snug">
           {project.title}
         </div>
-        {project.summary && (
-          <div className={`mt-1 text-xs text-gray-400 line-clamp-2 ${isNext ? 'text-right' : ''}`}>
-            {project.summary}
+        {project.category && (
+          <div className="mt-1 text-[11px] font-mono uppercase tracking-[0.18em] text-brand-300/80">
+            {project.category}
           </div>
         )}
       </Link>
@@ -250,17 +249,23 @@ export function ProjectPager({ currentId }) {
   }
 
   return (
-    <section className="pb-14">
-      <Container>
-        <div className="grid md:grid-cols-2 gap-4">
-          <Card project={prev} direction="prev" />
-          <Card project={next} direction="next" />
+    <footer
+      aria-label="Project pager"
+      className="mt-16 border-t border-line bg-surface-1/40 backdrop-blur-sm"
+    >
+      <Container className="py-8">
+        <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
+          <div className="text-[10.5px] font-mono uppercase tracking-[0.22em] text-gray-500">
+            Case study {String(idx + 1).padStart(2, '0')} of {String(list.length).padStart(2, '0')}
+          </div>
+          <BackToProjects label="All projects" />
         </div>
-        <div className="mt-6">
-          <BackToProjects />
+        <div className="grid md:grid-cols-2 gap-3">
+          <PagerCard project={prev} direction="prev" />
+          <PagerCard project={next} direction="next" />
         </div>
       </Container>
-    </section>
+    </footer>
   )
 }
 
