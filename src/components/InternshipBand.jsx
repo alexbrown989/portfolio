@@ -3,11 +3,28 @@
 // out of the timeline collapse so the strongest credential is visible in
 // the first scroll.
 
+import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
-import { Anchor, Building2, ShieldCheck, Cpu, Gauge, ClipboardCheck, ArrowRight } from 'lucide-react'
+import { Anchor, Building2, ShieldCheck, Cpu, Gauge, ClipboardCheck, ArrowRight, Timer } from 'lucide-react'
 import { Container, SectionTitle, CornerBrackets, StatusPill, Glass } from '../shared/ui'
 import { timeline } from '../content/timeline'
+
+// Verus start date — matches the timeline entry period. Anchored to the
+// first of the month so 'days on mission' reads as a whole number.
+const MISSION_START = new Date('2025-12-01T00:00:00Z')
+
+function useMissionClock() {
+  const [now, setNow] = useState(() => new Date())
+  useEffect(() => {
+    const id = setInterval(() => setNow(new Date()), 60_000)
+    return () => clearInterval(id)
+  }, [])
+  const dt = now - MISSION_START
+  const days = Math.max(0, Math.floor(dt / 86_400_000))
+  const hrs  = Math.max(0, Math.floor((dt % 86_400_000) / 3_600_000))
+  return { days, hrs }
+}
 
 const CAPS = [
   { Icon: ClipboardCheck, label: 'AS9102 FAI',                    detail: 'First Article Inspection support on flight-critical hardware.' },
@@ -21,6 +38,7 @@ const CAPS = [
 export default function InternshipBand() {
   const verus = timeline.find(t => (t.org || '').toLowerCase().includes('verus')) || {}
   const highlights = (verus.highlights || []).slice(0, 5)
+  const { days, hrs } = useMissionClock()
 
   return (
     <Container>
@@ -44,6 +62,13 @@ export default function InternshipBand() {
               <StatusPill label="Active · Dec 2025 – Present" tone="brand" pulse />
               <span className="text-[10.5px] font-mono uppercase tracking-[0.24em] text-gray-500">
                 Tacoma, WA · Aerospace Manufacturing
+              </span>
+              <span
+                className="ml-auto inline-flex items-center gap-1.5 text-[10.5px] font-mono uppercase tracking-[0.22em] text-brand-300"
+                title="Time since mission start"
+              >
+                <Timer className="w-3 h-3" />
+                T+ {days}d {String(hrs).padStart(2, '0')}h
               </span>
             </div>
 

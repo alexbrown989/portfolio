@@ -8,6 +8,7 @@ import { AnimatePresence, motion, useScroll, useSpring } from 'framer-motion'
 import Navigation from '../components/Navigation'
 import ChatLauncher from '../components/chat/ChatLauncher'
 import useKonami from './useKonami'
+import { printConsoleWelcome } from './consoleWelcome'
 
 function BackgroundFX() {
   return (
@@ -107,6 +108,7 @@ export default function AppShell({ children }) {
   useKonami(() => setClassified(true))
 
   useEffect(() => { setKey(pathname) }, [pathname])
+  useEffect(() => { printConsoleWelcome() }, [])
 
   return (
     <div className={`min-h-screen relative bg-surface-0 text-gray-100 antialiased selection:bg-brand-500/25 ${classified ? 'classified-mode' : ''}`}>

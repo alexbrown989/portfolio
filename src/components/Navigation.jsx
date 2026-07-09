@@ -105,15 +105,18 @@ export default function Navigation() {
             <ResumeLink variant="ghost" className="ml-1" />
           </div>
 
-          {/* Mobile toggle */}
-          <button
-            onClick={() => setMobileOpen(v => !v)}
-            className="md:hidden relative w-10 h-10 grid place-items-center rounded-lg border border-line hover:border-brand-400/60 transition-colors"
-            aria-label="Toggle menu"
-            aria-expanded={mobileOpen}
-          >
-            {mobileOpen ? <X className="w-5 h-5 text-brand-300" /> : <Menu className="w-5 h-5 text-brand-300" />}
-          </button>
+          {/* Mobile toolbar — orbit widget stays accessible alongside menu */}
+          <div className="md:hidden flex items-center gap-1.5">
+            <OrbitWidget />
+            <button
+              onClick={() => setMobileOpen(v => !v)}
+              className="relative w-10 h-10 grid place-items-center rounded-lg border border-line hover:border-brand-400/60 transition-colors"
+              aria-label="Toggle menu"
+              aria-expanded={mobileOpen}
+            >
+              {mobileOpen ? <X className="w-5 h-5 text-brand-300" /> : <Menu className="w-5 h-5 text-brand-300" />}
+            </button>
+          </div>
         </div>
 
         {/* Mobile menu */}

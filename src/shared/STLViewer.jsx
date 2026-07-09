@@ -2,10 +2,11 @@
 // Clean three.js STL viewer with balanced three-point lighting so parts read
 // as physical objects, not "shiny cyan mystery blobs".
 
-import React, { Suspense, useEffect, useMemo, useRef } from 'react'
+import React, { Suspense, useCallback, useEffect, useMemo, useRef } from 'react'
 import { Canvas, useLoader, useThree } from '@react-three/fiber'
 import { OrbitControls, Bounds, Html, useBounds } from '@react-three/drei'
 import { STLLoader } from 'three/examples/jsm/loaders/STLLoader.js'
+import { RotateCcw } from 'lucide-react'
 
 function ViewerError({ error, src }) {
   return (
@@ -40,18 +41,62 @@ function Model({ src, layFlat = true, color = '#c8d1de' }) {
   )
 }
 
-function DoubleClickReset({ controlsRef }) {
+// Bridge component — captures the Bounds API and OrbitControls ref inside
+// the R3F canvas and exposes them to the outer DOM Reset button via a
+// callback prop. Also wires up a working dblclick + `r` shortcut inside
+// the canvas.
+function ResetBridge({ controlsRef, registerReset }) {
   const api = useBounds()
   const { gl } = useThree()
+
+  const doReset = useCallback(() => {
+    controlsRef.current?.reset?.()
+    // Wait a frame so controls.reset() has settled, then re-fit.
+    requestAnimationFrame(() => api.refresh().fit())
+  }, [api, controlsRef])
+
   useEffect(() => {
-    const handler = () => {
-      api.fit()
-      controlsRef.current?.reset?.()
+    registerReset(doReset)
+    return () => registerReset(null)
+  }, [registerReset, doReset])
+
+  useEffect(() => {
+    const canvas = gl.domElement
+    // dblclick — bind on both canvas and its parent so we catch it even
+    // if OrbitControls swallows a click inside.
+    const onDbl = (e) => { e.preventDefault(); doReset() }
+    canvas.addEventListener('dblclick', onDbl)
+    canvas.parentElement?.addEventListener('dblclick', onDbl)
+    // Keyboard: `r` resets when the viewer is focused / hovered.
+    const onKey = (e) => {
+      if ((e.key === 'r' || e.key === 'R') && !e.metaKey && !e.ctrlKey) {
+        // Only trigger if pointer is over the canvas
+        const rect = canvas.getBoundingClientRect()
+        const withinCanvas = window.__lastMouse &&
+          window.__lastMouse.x >= rect.left && window.__lastMouse.x <= rect.right &&
+          window.__lastMouse.y >= rect.top  && window.__lastMouse.y <= rect.bottom
+        if (withinCanvas) doReset()
+      }
     }
-    gl.domElement.addEventListener('dblclick', handler)
-    return () => gl.domElement.removeEventListener('dblclick', handler)
-  }, [api, gl, controlsRef])
+    window.addEventListener('keydown', onKey)
+    return () => {
+      canvas.removeEventListener('dblclick', onDbl)
+      canvas.parentElement?.removeEventListener('dblclick', onDbl)
+      window.removeEventListener('keydown', onKey)
+    }
+  }, [gl, doReset])
+
   return null
+}
+
+// Small helper — tracks the mouse globally so we can decide if the user
+// pressed `r` while hovering over any given viewer.
+if (typeof window !== 'undefined' && !window.__abMouseHookInstalled) {
+  window.__abMouseHookInstalled = true
+  window.__lastMouse = { x: 0, y: 0 }
+  window.addEventListener('mousemove', (e) => {
+    window.__lastMouse = { x: e.clientX, y: e.clientY }
+  }, { passive: true })
 }
 
 export default function STLViewer({
@@ -68,6 +113,7 @@ export default function STLViewer({
 }) {
   const key = useMemo(() => `stl-${src}`, [src])
   const controlsRef = useRef(null)
+  const resetFnRef  = useRef(null)
 
   if (typeof window === 'undefined' || !globalThis.document) {
     return (
@@ -92,11 +138,22 @@ export default function STLViewer({
         </div>
       )}
 
+      {/* Reset button — DOM-level, wired to the Bounds API through resetFnRef. */}
+      <button
+        type="button"
+        onClick={() => resetFnRef.current?.()}
+        aria-label="Reset view"
+        title="Reset view (R or double-click)"
+        className="absolute z-10 top-2 right-2 inline-flex items-center gap-1.5 px-2 py-1 rounded-md border border-line bg-surface-1/85 backdrop-blur text-[10.5px] font-mono uppercase tracking-[0.18em] text-gray-300 hover:text-white hover:border-brand-500/50 transition-colors"
+      >
+        <RotateCcw className="w-3.5 h-3.5" /> Reset
+      </button>
+
       <MiniBoundary src={src}>
         <Canvas key={key} shadows dpr={[1, 2]} camera={{ position: cameraPosition, fov: 45, zoom }}>
           <color attach="background" args={[background]} />
 
-          {/* Three-point lighting: soft fill, main key, cool rim */}
+          {/* Three-point lighting */}
           <ambientLight intensity={0.55} />
           <hemisphereLight args={['#8fb0d0', '#0a0f1a', 0.35]} />
           <directionalLight
@@ -111,6 +168,10 @@ export default function STLViewer({
           <Suspense fallback={<Html center className="text-xs text-brand-300 font-mono">Loading STL…</Html>}>
             <Bounds margin={fitMargin} clip observe>
               <Model src={src} layFlat={layFlat} />
+              <ResetBridge
+                controlsRef={controlsRef}
+                registerReset={(fn) => { resetFnRef.current = fn }}
+              />
             </Bounds>
           </Suspense>
 
@@ -120,7 +181,6 @@ export default function STLViewer({
             dampingFactor={0.08}
             target={controlsTarget}
           />
-          <DoubleClickReset controlsRef={controlsRef} />
         </Canvas>
       </MiniBoundary>
     </div>

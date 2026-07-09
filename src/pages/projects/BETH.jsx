@@ -38,9 +38,11 @@ function EntropyToggle() {
   }, [reduce, manual])
 
   const stretched = state === 'stretched'
+  // Both paths use the same command structure (M + 2×Q) so framer-motion
+  // interpolates cleanly between coiled and flat.
   const chainD = stretched
-    ? `M 60 100 Q 200 100 340 100`
-    : `M 60 100 Q 130 55 200 100 T 340 100`
+    ? 'M 60 100 Q 130 100 200 100 Q 270 100 340 100'
+    : 'M 60 100 Q 130 55  200 100 Q 270 145 340 100'
 
   return (
     <div className="rounded-xl bg-surface-3/60 border border-line overflow-hidden">
@@ -204,16 +206,21 @@ function ThermalCycleSimple() {
             )}
             {s.key === 'store' && (
               <motion.g key="b" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-                <motion.rect
-                  x="20" width="280" fill="url(#gradstore)"
-                  animate={{ y: 78 + 40, height: 0, opacity: [0, 1, 1] }}
-                  initial={{ y: 118, height: 0 }}
-                  transition={{ duration: 0 }}
-                />
+                {/* Heat enters from the top and penetrates DOWN into the PCM layer.
+                    Rectangle stays anchored to y=78 (top of PCM) and grows in
+                    height so the fill front visibly moves top → bottom. */}
                 <motion.rect
                   x="20" width="280" fill="#f97316" opacity="0.55"
-                  initial={{ y: 118, height: 0 }}
+                  initial={{ y: 78, height: 0 }}
                   animate={{ y: 78, height: 40 }}
+                  transition={{ duration: 2, ease: 'easeInOut' }}
+                />
+                {/* Bright leading edge follows the melt front. */}
+                <motion.line
+                  x1="20" x2="300"
+                  stroke="#fbbf24" strokeWidth="1.5"
+                  initial={{ y1: 78, y2: 78, opacity: 0 }}
+                  animate={{ y1: 118, y2: 118, opacity: [0, 1, 0.7] }}
                   transition={{ duration: 2, ease: 'easeInOut' }}
                 />
               </motion.g>
@@ -271,7 +278,6 @@ export default function BETH() {
     <ProjectLayout>
       <PageHero
         kicker="Speculative framework · Passive thermal systems"
-        code="P/06"
         title="BET-H · Biological Elastin Thermoregulation"
         subtitle="A speculative framework inspired by elastin's entropy-driven behavior in nature. The concept lives here in outline form; the technical detail (materials, formulations, sizing) is intentionally held back while the work is still in progress."
         chips={project.tech || []}
