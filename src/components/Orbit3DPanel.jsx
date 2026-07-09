@@ -100,31 +100,119 @@ const TIME_SCALE = 240
 
 /* ---------------- Earth texture (procedural) ---------------- */
 
+// Denser continent outlines. Coordinates in equirectangular
+// (longitude in [-180, +180], latitude in [+90, -90]). Not survey-grade,
+// but recognizable as their real continents at a glance. Each polygon
+// runs around the coastline in a single direction so the fill is clean.
+
+const CONTINENTS = [
+  // NORTH AMERICA — Alaska → Canada → Great Lakes → Atlantic → Florida → Gulf → Mexico → Central America → west coast back to Alaska
+  [
+    [-168, 66], [-155, 71], [-140, 70], [-125, 70], [-108, 68], [-95, 68],
+    [-83, 62], [-70, 60], [-58, 52], [-52, 48], [-58, 44], [-66, 45],
+    [-70, 41], [-74, 38], [-76, 35], [-80, 31], [-81, 26], [-80, 25],
+    [-84, 30], [-89, 30], [-95, 29], [-97, 26], [-97, 21], [-92, 18],
+    [-88, 16], [-83, 8], [-78, 8], [-83, 14], [-95, 15], [-105, 18],
+    [-115, 22], [-118, 32], [-122, 37], [-124, 42], [-124, 48], [-131, 53],
+    [-140, 58], [-153, 59], [-160, 62], [-168, 66],
+  ],
+  // GREENLAND
+  [
+    [-73, 78], [-55, 82], [-30, 83], [-15, 79], [-20, 75], [-40, 68],
+    [-52, 63], [-58, 66], [-70, 72], [-73, 78],
+  ],
+  // SOUTH AMERICA
+  [
+    [-78, 12], [-72, 12], [-62, 10], [-52, 5], [-35, -8], [-38, -22],
+    [-52, -30], [-58, -35], [-65, -40], [-70, -48], [-73, -54], [-72, -50],
+    [-74, -42], [-71, -30], [-72, -18], [-78, -8], [-80, 0], [-78, 12],
+  ],
+  // EUROPE — Iberia → France → UK arc → Scandinavia → Russia → Balkans → Iberia
+  [
+    [-9, 43], [-3, 44], [3, 47], [10, 55], [14, 66], [22, 70], [30, 70],
+    [40, 66], [50, 62], [58, 58], [50, 54], [40, 51], [30, 47], [25, 43],
+    [20, 40], [15, 39], [10, 43], [3, 43], [-3, 40], [-9, 43],
+  ],
+  // BRITISH ISLES (separate so it reads as an island)
+  [ [-6, 55], [-2, 58], [0, 56], [-2, 51], [-6, 51], [-6, 55] ],
+  // AFRICA
+  [
+    [-17, 22], [-16, 15], [-13, 8], [-8, 4], [0, 5], [8, 4], [10, -2],
+    [18, -8], [22, -18], [22, -30], [19, -35], [24, -35], [30, -30],
+    [35, -22], [40, -15], [42, -8], [50, -3], [51, 5], [45, 10], [42, 12],
+    [40, 18], [35, 22], [31, 30], [22, 32], [10, 33], [0, 30], [-8, 30],
+    [-14, 26], [-17, 22],
+  ],
+  // ARABIAN PENINSULA
+  [
+    [34, 30], [40, 30], [48, 25], [55, 22], [58, 18], [55, 13], [45, 12],
+    [40, 15], [35, 22], [34, 30],
+  ],
+  // ASIA — broad continent from Turkey through Siberia + India + China + SE Asia
+  [
+    [30, 45], [40, 42], [48, 40], [55, 35], [62, 30], [70, 25], [78, 8],
+    [82, 6], [90, 12], [95, 18], [100, 22], [104, 10], [109, 14], [115, 5],
+    [122, 12], [122, 20], [118, 25], [122, 32], [130, 34], [132, 40],
+    [128, 47], [130, 55], [140, 60], [150, 65], [155, 70], [165, 72],
+    [180, 72], [170, 68], [140, 62], [120, 58], [100, 55], [80, 55],
+    [60, 55], [45, 55], [35, 50], [30, 45],
+  ],
+  // JAPAN
+  [ [138, 40], [141, 44], [143, 42], [139, 35], [136, 34], [138, 40] ],
+  // SE ASIA / INDONESIA (single arc)
+  [ [95, 5], [105, 0], [115, -5], [125, -8], [138, -5], [140, -2], [130, 2], [115, 4], [100, 4], [95, 5] ],
+  // AUSTRALIA
+  [
+    [113, -22], [122, -18], [133, -12], [141, -12], [143, -14], [147, -19],
+    [152, -25], [151, -32], [148, -37], [140, -38], [130, -32], [122, -34],
+    [115, -32], [114, -25], [113, -22],
+  ],
+  // NEW ZEALAND
+  [ [170, -41], [174, -37], [178, -40], [175, -46], [171, -46], [170, -41] ],
+  // ANTARCTICA — thick belt from -60 to -85, following coastline curves
+  [
+    [-180, -68], [-150, -74], [-110, -73], [-80, -72], [-60, -80],
+    [-45, -78], [-20, -70], [0, -68], [30, -70], [60, -66], [90, -66],
+    [120, -66], [150, -78], [170, -78], [180, -78], [180, -85], [-180, -85], [-180, -68],
+  ],
+]
+
 function makeEarthTexture() {
-  const w = 1024, h = 512
+  const w = 2048, h = 1024
   const c = document.createElement('canvas')
   c.width = w; c.height = h
   const ctx = c.getContext('2d')
 
-  // Ocean base
+  // Deep ocean base with a subtle latitudinal gradient (darker at poles).
   const g = ctx.createLinearGradient(0, 0, 0, h)
-  g.addColorStop(0, '#0b3a63')
-  g.addColorStop(0.5, '#0c4a6e')
-  g.addColorStop(1, '#052a44')
+  g.addColorStop(0, '#052a4d')
+  g.addColorStop(0.3, '#0a3e6a')
+  g.addColorStop(0.5, '#0c4a72')
+  g.addColorStop(0.7, '#0a3e6a')
+  g.addColorStop(1, '#03203e')
   ctx.fillStyle = g
   ctx.fillRect(0, 0, w, h)
 
-  // Very simple continent silhouettes. Coordinates in equirectangular
-  // (x = longitude 0..w = -180..+180, y = latitude 0..h = +90..-90).
-  // Positions are eyeballed; the goal is "recognizably Earth" without
-  // shipping a texture image.
-  const land = (path, fill = '#245c3a') => {
-    ctx.fillStyle = fill
+  // Very faint ocean noise so it doesn't read as a flat gradient sphere.
+  const oceanNoise = ctx.getImageData(0, 0, w, h)
+  for (let i = 0; i < oceanNoise.data.length; i += 4) {
+    const n = (Math.random() - 0.5) * 8
+    oceanNoise.data[i]     = Math.max(0, Math.min(255, oceanNoise.data[i]     + n))
+    oceanNoise.data[i + 1] = Math.max(0, Math.min(255, oceanNoise.data[i + 1] + n))
+    oceanNoise.data[i + 2] = Math.max(0, Math.min(255, oceanNoise.data[i + 2] + n))
+  }
+  ctx.putImageData(oceanNoise, 0, 0)
+
+  // Continent painter
+  const lonLatToXY = (lon, lat) => [
+    ((lon + 180) / 360) * w,
+    ((90 - lat)  / 180) * h,
+  ]
+
+  const drawLand = (poly) => {
     ctx.beginPath()
-    for (let i = 0; i < path.length; i++) {
-      const [lon, lat] = path[i]
-      const x = ((lon + 180) / 360) * w
-      const y = ((90  - lat) / 180) * h
+    for (let i = 0; i < poly.length; i++) {
+      const [x, y] = lonLatToXY(poly[i][0], poly[i][1])
       if (i === 0) ctx.moveTo(x, y)
       else         ctx.lineTo(x, y)
     }
@@ -132,53 +220,55 @@ function makeEarthTexture() {
     ctx.fill()
   }
 
-  // North America
-  land([
-    [-140, 65], [-125, 68], [-95, 63], [-70, 55], [-58, 50],
-    [-65, 40],  [-80, 30],  [-98, 22], [-110, 25], [-120, 34],
-    [-130, 50], [-145, 60],
-  ])
-  // South America
-  land([
-    [-80, 10], [-70, 8], [-55, 5], [-40, -5], [-38, -20],
-    [-58, -35], [-70, -50], [-73, -30], [-78, -12],
-  ])
-  // Europe + North Africa
-  land([
-    [-10, 40], [5, 45], [20, 55], [30, 60], [45, 55],
-    [55, 45], [50, 35], [40, 30], [25, 15], [10, 20], [-10, 32],
-  ])
-  // Sub-Saharan Africa
-  land([
-    [10, 15], [25, 5], [40, 5], [45, -5], [42, -20],
-    [30, -32], [20, -30], [12, -15], [8, 0],
-  ])
-  // Asia (broad)
-  land([
-    [30, 60], [50, 70], [80, 72], [130, 70], [155, 65],
-    [140, 50], [125, 40], [115, 30], [95, 20], [78, 8],
-    [65, 25], [50, 40], [40, 55],
-  ])
-  // Southeast Asia + Australia
-  land([
-    [100, 15], [110, 5], [130, 0], [145, -12],
-    [150, -25], [138, -38], [120, -32], [115, -20], [105, -8],
-  ])
-  // Antarctica (belt)
-  ctx.fillStyle = '#a8b7d0'
-  ctx.fillRect(0, h - 22, w, 22)
-  // Greenland
-  land([[-45, 82], [-25, 80], [-15, 72], [-42, 68], [-52, 76]])
+  // Land base color — warmer than pure green so it reads like real Earth
+  // when viewed against ocean. Antarctica gets an ice tint applied after.
+  ctx.fillStyle = '#3e6b3b'
+  for (const poly of CONTINENTS) drawLand(poly)
 
-  // Soft cloud smear
-  ctx.globalAlpha = 0.14
-  ctx.fillStyle = '#eef2ff'
-  for (let i = 0; i < 40; i++) {
+  // Ice caps: brighten Antarctica and Greenland by re-painting them.
+  ctx.fillStyle = '#dbe7f1'
+  drawLand(CONTINENTS[1])                                              // Greenland
+  drawLand(CONTINENTS[CONTINENTS.length - 1])                          // Antarctica
+
+  // Add a green-brown shading gradient onto the land: darker (forest)
+  // near equator, tan/desert around Sahara-latitude, snow at poles.
+  // We do this by re-scanning image data — cheap since it's a small canvas.
+  const img = ctx.getImageData(0, 0, w, h)
+  const d = img.data
+  for (let y = 0; y < h; y++) {
+    const lat = 90 - (y / h) * 180
+    // Deserts around 20–30N and 20–30S: mix in tan
+    const desert = Math.max(0, 1 - Math.min(Math.abs(lat - 25), Math.abs(lat + 25)) / 10)
+    // Boreal / snow above 55° or below -55°
+    const cold   = Math.max(0, (Math.abs(lat) - 55) / 25)
+    for (let x = 0; x < w; x++) {
+      const i = (y * w + x) * 4
+      // Only shade "land"-ish pixels (green channel dominant vs blue)
+      const isLand = d[i + 1] > d[i + 2] + 4 || (d[i] > 190 && d[i + 1] > 190)
+      if (!isLand) continue
+      if (desert > 0.05) {
+        d[i]     = Math.min(255, d[i]     + 60 * desert)
+        d[i + 1] = Math.min(255, d[i + 1] + 30 * desert)
+        d[i + 2] = Math.min(255, d[i + 2] - 5  * desert)
+      }
+      if (cold > 0.05) {
+        d[i]     = Math.min(255, d[i]     + 90 * cold)
+        d[i + 1] = Math.min(255, d[i + 1] + 90 * cold)
+        d[i + 2] = Math.min(255, d[i + 2] + 90 * cold)
+      }
+    }
+  }
+  ctx.putImageData(img, 0, 0)
+
+  // Subtle cloud smears in the mid-latitudes so the planet looks alive.
+  ctx.globalAlpha = 0.16
+  ctx.fillStyle = '#f8fafc'
+  for (let i = 0; i < 60; i++) {
     const cx = Math.random() * w
-    const cy = 40 + Math.random() * (h - 80)
-    const rr = 20 + Math.random() * 70
+    const cy = 80 + Math.random() * (h - 200)
+    const rr = 30 + Math.random() * 120
     ctx.beginPath()
-    ctx.ellipse(cx, cy, rr, rr * 0.35, 0, 0, Math.PI * 2)
+    ctx.ellipse(cx, cy, rr, rr * 0.32, 0, 0, Math.PI * 2)
     ctx.fill()
   }
   ctx.globalAlpha = 1
@@ -186,23 +276,72 @@ function makeEarthTexture() {
   const tex = new THREE.CanvasTexture(c)
   tex.colorSpace = THREE.SRGBColorSpace
   tex.wrapS = THREE.RepeatWrapping
+  tex.anisotropy = 8
+  return tex
+}
+
+// Separate cloud texture — same equirectangular projection, just wispy
+// noise so the atmosphere layer reads.
+function makeCloudTexture() {
+  const w = 1024, h = 512
+  const c = document.createElement('canvas')
+  c.width = w; c.height = h
+  const ctx = c.getContext('2d')
+  ctx.clearRect(0, 0, w, h)
+  ctx.fillStyle = 'rgba(255,255,255,0.85)'
+  for (let i = 0; i < 90; i++) {
+    const cx = Math.random() * w
+    const cy = 40 + Math.random() * (h - 80)
+    const rx = 20 + Math.random() * 100
+    const ry = rx * (0.25 + Math.random() * 0.25)
+    ctx.beginPath()
+    ctx.ellipse(cx, cy, rx, ry, Math.random() * Math.PI, 0, Math.PI * 2)
+    ctx.fill()
+  }
+  const tex = new THREE.CanvasTexture(c)
+  tex.colorSpace = THREE.SRGBColorSpace
   return tex
 }
 
 /* ---------------- 3D scene components ---------------- */
 
 function Earth() {
-  const texture = useMemo(() => makeEarthTexture(), [])
-  const meshRef = useRef(null)
+  const earthMap  = useMemo(() => makeEarthTexture(), [])
+  const cloudMap  = useMemo(() => makeCloudTexture(), [])
+  const globeRef  = useRef(null)
+  const cloudsRef = useRef(null)
+  const atmoRef   = useRef(null)
   // Slow spin on Y so the world reads as alive even before the user drags.
+  // Clouds drift a bit faster than the surface for depth.
   useFrame((_, dt) => {
-    if (meshRef.current) meshRef.current.rotation.y += dt * 0.06
+    if (globeRef.current)  globeRef.current.rotation.y  += dt * 0.045
+    if (cloudsRef.current) cloudsRef.current.rotation.y += dt * 0.055
   })
   return (
-    <mesh ref={meshRef}>
-      <sphereGeometry args={[EARTH_R, 64, 48]} />
-      <meshStandardMaterial map={texture} roughness={0.85} metalness={0.05} />
-    </mesh>
+    <group>
+      {/* Textured Earth */}
+      <mesh ref={globeRef}>
+        <sphereGeometry args={[EARTH_R, 96, 64]} />
+        <meshStandardMaterial map={earthMap} roughness={0.88} metalness={0.05} />
+      </mesh>
+      {/* Cloud layer, slightly larger, transparent */}
+      <mesh ref={cloudsRef}>
+        <sphereGeometry args={[EARTH_R * 1.012, 96, 64]} />
+        <meshStandardMaterial
+          map={cloudMap}
+          transparent
+          opacity={0.55}
+          depthWrite={false}
+        />
+      </mesh>
+      {/* Atmosphere rim — a slightly larger sphere rendered from the back
+          side with an additive-ish fake fresnel via emissive scaling.
+          Gives the planet its blue halo. */}
+      <mesh ref={atmoRef} scale={1.055}>
+        <sphereGeometry args={[EARTH_R, 64, 48]} />
+        <meshBasicMaterial color="#3b82f6" transparent opacity={0.12} side={THREE.BackSide} depthWrite={false} />
+      </mesh>
+    </group>
   )
 }
 
@@ -309,7 +448,7 @@ export default function Orbit3DPanel({ onClose }) {
         </div>
 
         {/* Table — mobile-friendly: horizontally scrollable, sticky first col */}
-        <div className="mt-4 rounded-lg border border-line overflow-x-auto">
+        <div className="orbit-scroll-inner mt-4 rounded-lg border border-line overflow-x-auto max-w-full">
           <table className="w-full min-w-[420px] text-[12px]">
             <thead className="bg-surface-3/60 text-left">
               <tr className="text-[10px] font-mono uppercase tracking-[0.18em] text-gray-400">

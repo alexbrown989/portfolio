@@ -64,6 +64,23 @@ function PanelFallback() {
 
 export default function OrbitWidget() {
   const [open, setOpen] = useState(false)
+
+  // Body scroll-lock while the panel is open. Prevents the mobile
+  // 3D canvas from dragging the whole page instead of the scene.
+  useEffect(() => {
+    if (open) document.body.classList.add('orbit-open')
+    else      document.body.classList.remove('orbit-open')
+    return () => document.body.classList.remove('orbit-open')
+  }, [open])
+
+  // Esc closes.
+  useEffect(() => {
+    if (!open) return
+    const onKey = (e) => { if (e.key === 'Escape') setOpen(false) }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [open])
+
   return (
     <>
       <button

@@ -14,6 +14,14 @@
   box-sizing: border-box;
 }
 
+html, body {
+  /* No accidental horizontal scroll ever. The mouse-parallax orbs and
+     other decorative absolutes can extend past the viewport on narrow
+     screens; clip them at the document root. */
+  overflow-x: hidden;
+  max-width: 100%;
+}
+
 html {
   scroll-behavior: smooth;
   color-scheme: dark;
@@ -27,6 +35,15 @@ body {
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
+
+/* When the orbital panel is open (or any modal is), lock the page.
+   Prevents the 'entire page moves' when the user drags on the mobile
+   3D canvas — touch-gestures go to the canvas / table only. */
+body.orbit-open {
+  overflow: hidden;
+  touch-action: none;
+}
+body.orbit-open .orbit-scroll-inner { touch-action: auto; }
 
 #root {
   min-height: 100vh;
