@@ -4,9 +4,10 @@
 
 import { useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom'
-import { motion, useScroll, useSpring } from 'framer-motion'
+import { AnimatePresence, motion, useScroll, useSpring } from 'framer-motion'
 import Navigation from '../components/Navigation'
 import ChatLauncher from '../components/chat/ChatLauncher'
+import useKonami from './useKonami'
 
 function BackgroundFX() {
   return (
@@ -73,20 +74,49 @@ function useRouteScroll() {
   }, [pathname, hash])
 }
 
+// Small classified-mode banner: only shown after the Konami code trigger.
+// Lives for 30 seconds then disappears. Doesn't touch anything else.
+function ClassifiedBanner({ active, onDismiss }) {
+  useEffect(() => {
+    if (!active) return
+    const id = setTimeout(onDismiss, 30_000)
+    return () => clearTimeout(id)
+  }, [active, onDismiss])
+  if (!active) return null
+  return (
+    <motion.div
+      role="status"
+      aria-live="polite"
+      initial={{ y: -32, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      exit={{ y: -32, opacity: 0 }}
+      transition={{ duration: 0.25 }}
+      className="fixed top-16 left-1/2 -translate-x-1/2 z-40 px-3 py-1.5 rounded-md border border-amber-400/60 bg-amber-500/[0.10] backdrop-blur text-amber-200 text-[10.5px] font-mono uppercase tracking-[0.24em] shadow-lg pointer-events-none"
+    >
+      // Classified · You found the easter egg · Auto-dismiss in 30s
+    </motion.div>
+  )
+}
+
 export default function AppShell({ children }) {
   const { pathname } = useLocation()
   const [key, setKey] = useState(pathname)
+  const [classified, setClassified] = useState(false)
 
   useRouteScroll()
+  useKonami(() => setClassified(true))
 
   useEffect(() => { setKey(pathname) }, [pathname])
 
   return (
-    <div className="min-h-screen relative bg-surface-0 text-gray-100 antialiased selection:bg-brand-500/25">
+    <div className={`min-h-screen relative bg-surface-0 text-gray-100 antialiased selection:bg-brand-500/25 ${classified ? 'classified-mode' : ''}`}>
       <BackgroundFX />
       <ViewportCrosshairs />
       <Navigation />
       <ScrollProgress />
+      <AnimatePresence>
+        <ClassifiedBanner active={classified} onDismiss={() => setClassified(false)} />
+      </AnimatePresence>
       <main key={key} className="relative z-10 boot-reveal">
         {children}
       </main>

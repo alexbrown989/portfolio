@@ -167,6 +167,13 @@ html { scrollbar-color: #141b2c #05070d; scrollbar-width: thin; }
   background-repeat: no-repeat;
 }
 
+/* Classified mode — activated by Konami code. Amber-tints the HUD
+   brackets without changing content. Wears off with the banner. */
+.classified-mode [aria-hidden] {
+  filter: hue-rotate(-25deg) saturate(1.15);
+}
+.classified-mode ::selection { background: rgba(245, 158, 11, 0.35); }
+
 /* Media graceful-degrade — when a video/img fails to load we still
    present a real card with a message instead of a broken icon. */
 img[data-fallback], video[data-fallback] {
