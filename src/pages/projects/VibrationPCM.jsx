@@ -269,7 +269,7 @@ export default function VibrationPCM() {
                 height={520}
                 cameraPosition={[900, 900, 900]}
                 controlsTarget={[0, 0, 0]}
-                zoom={2.2}
+                fitMargin={1.5}
               />
             </Suspense>
             <div className="px-5 py-3 border-t border-line text-xs text-gray-400 font-mono">

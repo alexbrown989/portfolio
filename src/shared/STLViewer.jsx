@@ -50,9 +50,16 @@ function ResetBridge({ controlsRef, registerReset }) {
   const { gl } = useThree()
 
   const doReset = useCallback(() => {
-    controlsRef.current?.reset?.()
-    // Wait a frame so controls.reset() has settled, then re-fit.
-    requestAnimationFrame(() => api.refresh().fit())
+    // Prefer Bounds reset+fit (uses margin) over OrbitControls.reset(),
+    // which restores the initial camera and often lands too tight.
+    requestAnimationFrame(() => {
+      api.refresh().reset().fit()
+      // Second frame: let OrbitControls target settle, then clip near/far.
+      requestAnimationFrame(() => {
+        api.clip?.()
+        controlsRef.current?.update?.()
+      })
+    })
   }, [api, controlsRef])
 
   useEffect(() => {
@@ -107,8 +114,10 @@ export default function STLViewer({
   debug = false,
   cameraPosition = [80, 80, 80],
   controlsTarget = [0, 0, 0],
-  zoom = 10,
-  fitMargin = 1.08,
+  zoom = 1,
+  // Larger margin = more breathing room around the part on fit/reset.
+  // drei default is 1.2; 1.08 was framing too tight.
+  fitMargin = 1.45,
   background = '#0a0f1a',
 }) {
   const key = useMemo(() => `stl-${src}`, [src])
@@ -166,7 +175,7 @@ export default function STLViewer({
           <directionalLight position={[-5, 4, -3]} intensity={0.35} color="#7dd3fc" />
 
           <Suspense fallback={<Html center className="text-xs text-brand-300 font-mono">Loading STL…</Html>}>
-            <Bounds margin={fitMargin} clip observe>
+            <Bounds margin={fitMargin} clip observe fit>
               <Model src={src} layFlat={layFlat} />
               <ResetBridge
                 controlsRef={controlsRef}
