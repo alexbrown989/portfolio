@@ -107,19 +107,39 @@ export default function ResumeLink({
   skipAnimation = false,
 }) {
   const [decrypting, setDecrypting] = useState(false)
+  const pendingWindowRef = useRef(null)
 
   const label = children || (format === 'pdf' ? 'Resume' : 'Print-friendly resume')
   const Icon = format === 'pdf' ? FileDown : ArrowUpRight
 
-  const open = () => {
-    if (format === 'pdf') window.open(RESUME_URL, '_blank', 'noopener')
-    // html format is handled by react-router link below
-  }
-
+  // The old code called window.open() from a setTimeout, which desktop
+  // browsers treat as a non-user-gesture and block. Now we open a blank
+  // tab SYNCHRONOUSLY inside the click event (so the user gesture is
+  // preserved), then swap its location after the decrypt animation
+  // finishes. If popups are blocked entirely, we still navigate the
+  // current tab directly to the PDF as a fallback.
   const onClick = (e) => {
     if (skipAnimation || format !== 'pdf') return
     e.preventDefault()
+    try {
+      pendingWindowRef.current = window.open('about:blank', '_blank', 'noopener')
+    } catch {
+      pendingWindowRef.current = null
+    }
     setDecrypting(true)
+  }
+
+  const finishDecrypt = () => {
+    setDecrypting(false)
+    const win = pendingWindowRef.current
+    pendingWindowRef.current = null
+    setTimeout(() => {
+      if (win && !win.closed) {
+        try { win.location.href = RESUME_URL; return } catch { /* pop under */ }
+      }
+      // Popup blocked or lost — navigate current window as fallback.
+      window.location.href = RESUME_URL
+    }, 30)
   }
 
   const buttonCls =
@@ -151,10 +171,7 @@ export default function ResumeLink({
 
       <AnimatePresence>
         {decrypting && (
-          <DecryptOverlay onDone={() => {
-            setDecrypting(false)
-            setTimeout(open, 30)
-          }} />
+          <DecryptOverlay onDone={finishDecrypt} />
         )}
       </AnimatePresence>
     </>
