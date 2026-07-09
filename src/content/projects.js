@@ -55,8 +55,13 @@ export const projects = [
       ],
       results: [
         'Delivered a working folding multi-tool that met all dimensional and GD&T requirements in the print.',
-        'Built practical fluency in manufacturing process planning, GD&T interpretation, tolerance control, and inspection strategy.',
-        'Direct hands-on experience with machinist communication and design-for-manufacturability, the exact skill stack used every day at my Verus Aerospace internship.',
+        'Proven skill set — process planning: order-of-operations, fixturing, and inspection strategy planned before touching a machine.',
+        'Proven skill set — manual + CNC machining: comfortable moving between manual mill and CNC for the right operation on the right feature.',
+        'Proven skill set — GD&T interpretation: read a full drawing package and translate flatness / parallelism / position callouts into machining strategy.',
+        'Proven skill set — metrology: calipers, pin gauges, dial indicators, and granite surface used to prove parts against the print.',
+        'Proven skill set — assembly integration: pivots, bushings, spacers, and fasteners integrated into an articulated assembly that actually works.',
+        'Proven skill set — DFM communication: iterated with machinist feedback on tolerances and features that were expensive or fragile to produce.',
+        'Direct rehearsal for the aerospace-manufacturing skill stack used every day at my Verus Aerospace internship.',
       ],
     },
     aar: {
@@ -72,40 +77,42 @@ export const projects = [
   // ---------------------------------------------------------------------
   {
     id: 'gearbox',
-    title: 'Robotic Elbow: Reduction Gearbox Design',
+    title: 'Three-Stage Reduction Gearbox · Robotic Elbow',
     category: 'Mechanical Design',
     year: 'Mar – Apr 2026',
     summary:
-      'Small-team design of a shaft reduction gearbox for a 1-DOF robotic elbow under a quarter-long deadline: gear ratio and shaft sizing, bearing selection, tolerance stack-up, and live CAD assembly management up to design review.',
+      'Quarter-long small-team design of a three-stage spur-gear reduction for a 1-DOF robotic elbow. 4000 → 50 RPM, 2.11 → 169 lb-in, full AGMA 2001-D04 bending-stress analysis, mixed 4140-steel / 6061-T6-aluminum stack, design-review-approved.',
     image: '/projects/gearbox-render.jpg',
-    // TODO(alex): drop these into /public/projects/
-    //   gearbox-render.jpg   — final CAD render / exploded view
-    //   gearbox-cad-1.jpg    — CAD assembly screenshot #1
-    //   gearbox-cad-2.jpg    — CAD assembly screenshot #2
-    //   gearbox-review.jpg   — (optional) design review artifacts
-    tech: ['SolidWorks', 'Gear Design', 'Tolerance Stack-Up', 'GD&T', 'Design Reviews'],
+    stl: '/models/gearbox.stl',
+    // TODO(alex): drop these into /public/
+    //   projects/gearbox-render.jpg   — final CAD render / exploded view
+    //   projects/gearbox-cad-1.jpg    — CAD assembly screenshot #1
+    //   projects/gearbox-cad-2.jpg    — CAD assembly screenshot #2
+    //   models/gearbox.stl            — assembled STL for the 3D viewer
+    tech: ['SolidWorks', 'AGMA 2001-D04', 'Spur Gears', 'Tolerance Stack-Up', 'GD&T'],
     status: 'COMPLETED',
     star: {
       situation:
-        'Quarter-long, small-team mechanical design project: build a shaft reduction gearbox to drive a 1-DOF robotic elbow joint, under a fixed deadline with multiple design-review checkpoints.',
+        'Quarter-long small-team mechanical design project: build a shaft reduction gearbox to drive a 1-DOF robotic elbow. Input 4000 RPM, output target 50 RPM, real design-review checkpoints and full AGMA analysis expected.',
       task:
-        'Own a slice of a real mechanical-systems design cycle: from spec to calc to CAD to design review, coordinating with teammates to land on a manufacturable, assemblable gearbox that meets the joint’s torque and speed requirements.',
+        'Own a slice of a real mechanical-systems design cycle from spec to calc to CAD to review. Deliver a manufacturable three-stage spur-gear reduction that meets the joint\'s torque and speed requirements.',
       actions: [
-        'Developed and maintained a live CAD assembly to validate shaft alignment, gear placement, bearing fitment, fastener access, and motion clearance before final submission.',
-        'Performed mechanical design calculations: gear-ratio selection, torque transmission, shaft sizing, bearing selection, keyway considerations, and load verification.',
-        'Applied tolerance stack-up analysis, clearance / interference-fit calculations, and GD&T principles to improve manufacturability, assembly repeatability, and backlash control.',
-        'Coordinated with teammates on CAD conventions, design reviews, and division of deliverables under a quarter-long deadline.',
-        'Participated in design reviews to identify mechanical interferences, resolve assembly constraints, and pressure-test whether the gearbox could realistically be fabricated, assembled, and inspected.',
+        'Designed a three-stage spur-gear reduction (5.0 × 4.0 × 4.0 = 80:1) between an input pinion and a terminal output gear, all at 20° pressure angle per AGMA 2001-D04.',
+        'Ran the AGMA bending-stress analysis on every gear: Lewis form factor, tangential force from stage torque and pitch diameter, dynamic factor Kv, load-distribution Km, and factor of safety against material fatigue.',
+        'Chose materials per-gear against the stress budget: 4140 steel for the loaded pinions and terminal output, 6061-T6 aluminum for lighter driven gears.',
+        'Developed and maintained a live CAD assembly to validate shaft alignment, gear placement, bearing fitment, and fastener access ahead of the final review.',
+        'Applied tolerance stack-up analysis, clearance / interference-fit calculations, and GD&T principles to control backlash and keep the assembly buildable.',
       ],
       results: [
-        'Delivered a design-review-approved gearbox assembly with a validated interface story: shafts, gears, bearings, fasteners, and clearances all accounted for.',
-        'Strengthened practical understanding of power transmission, live assembly management, DFM, and deadline-driven team execution. That discipline transfers into every production mechanical-design role.',
+        'Design-review-approved gearbox delivering 169.04 lb-in at 50 RPM from a 2.11 lb-in / 4000 RPM input.',
+        'Every gear passes AGMA bending FoS ≥ 2.3, with the terminal output G6 sitting closest to the limit (FoS 2.30) and G1 the highest margin at 15.04.',
+        'Full analysis package: kinematics table, tangential + radial force per stage, per-gear stress, FoS, and material assignments — ready for a manufacturability review.',
       ],
     },
     aar: {
-      right:   'Working the tolerance stack-up early exposed a fit problem before it became a fabrication problem.',
+      right:   'Working the AGMA analysis in parallel with the CAD kept material choices honest — 4140 vs 6061 wasn\'t vibes, it was stress budget.',
       wrong:   'Initial fastener access was tight in one quadrant of the housing. Caught in review, fixed before submission.',
-      learned: 'A live CAD assembly is a team communication tool, not just a modeling tool.',
+      learned: 'A live CAD assembly is a team communication tool, not just a modeling tool. The AGMA worksheet is the same idea for the calculations.',
     },
   },
 
@@ -218,29 +225,29 @@ export const projects = [
     category: 'Thermal Systems',
     year: '2024',
     summary:
-      'Elastin-inspired passive thermal regulation using PCM, carbon black, graphite, and copper. Zero-energy design concepts for infrastructure-limited settings.',
+      'Speculative framework: passive thermal regulation inspired by elastin\'s entropy-driven behavior in nature. Concept-level here; technical depth held back while the work is in progress.',
     image: '/projects/beth.png',
-    tech: ['Thermo', 'PCM', 'Graphite', 'Carbon Black'],
+    tech: ['Thermodynamics', 'Materials', 'Bio-inspired'],
     status: 'R&D',
     star: {
       situation:
-        'Elastin manages energy through entropy changes in its hydration shell, absorbing and releasing heat during reversible structural transitions without active metabolism. That principle has not been formalized as a materials-engineering framework.',
+        'Elastin manages thermal energy through reversible structural transitions in its hydration shell. That principle has not been formalized as a general materials-engineering framework.',
       task:
-        'Propose and defend BET-H (Biological Elastin Thermoregulation): a design framework that abstracts elastin’s entropy behavior into passive thermal systems built from PCM, graphite, carbon black, and copper.',
+        'Propose and defend BET-H (Biological Elastin Thermoregulation): a design framework that abstracts elastin\'s entropy behavior into passive thermal systems, without publishing proprietary detail while the work is in progress.',
       actions: [
-        'Extracted the thermodynamic principle from biology (abstraction, not imitation) into a material-driven thermoregulation model.',
-        'Built out the material stack: PCM (~247 kJ/kg latent heat), graphite (~4300 W/m·K in-plane), carbon black (~98% solar absorption), copper (~400 W/m·K isotropic).',
-        'Ran conceptual application studies (EV battery thermal buffer, solar roofing system, Stirling dissipator) to pressure-test the framework across use cases.',
+        'Extracted the thermodynamic principle from biology into a material-driven thermoregulation model (abstraction, not imitation).',
+        'Scoped a small stack of common engineering materials that together deliver an absorb-store-release cycle without a control loop.',
+        'Pressure-tested the concept across a short list of use cases to check whether the framework generalizes.',
       ],
       results: [
-        'Documented framework with defensible material properties and four conceptual applications.',
+        'Documented framework, held at concept-level on the public site; technical depth reserved for private conversation.',
         'Clear next-step research plan: interface-loss characterization, durability testing, and instrumented prototypes.',
       ],
     },
     aar: {
-      right:   'Latent capacity confirmed; architecture aligns with passive operation goals.',
-      wrong:   'Early models over-idealized conduction; added anisotropy & interface losses.',
-      learned: 'Interfaces dominate performance; geometry & contact are king.',
+      right:   'Concept holds together on paper; framework generalizes across at least three use cases.',
+      wrong:   'Early models over-idealized conduction; added anisotropy and interface losses.',
+      learned: 'Interfaces dominate performance. Geometry and contact are king.',
     },
   },
   {

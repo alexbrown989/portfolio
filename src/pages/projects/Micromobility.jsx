@@ -1,139 +1,15 @@
 // src/pages/projects/Micromobility.jsx
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import ProjectLayout from '../ProjectLayout'
 import {
   Container, PageHero, SectionTitle, Glass,
   ProjectPager, ProjectCTA, STARSection, AARSection,
 } from '../../shared/ui'
 import { projects } from '../../content/projects'
-import { motion, useInView } from 'framer-motion'
+import { useInView } from 'framer-motion'
 import { Accessibility, Wallet, SmartphoneNfc, TrainFront } from 'lucide-react'
 
 const project = projects.find(p => p.id === 'micromobility') || {}
-
-/* ------------------------------------------------------------------- */
-/* Signature interactive: 100-rider equity simulator                    */
-/* ------------------------------------------------------------------- */
-//
-// 100 rider icons in a grid. Each of the four equity gaps knocks out a
-// slice of the population when the corresponding policy is OFF; toggling
-// the policy ON lights those riders back up. Uses a deterministic seed
-// so the same rider is always the "adaptive-need" rider on every render.
-//
-// Gap percentages come from the study:
-//   Physical accessibility · 29.0% of programs incentivize adaptive vehicles
-//   Financial inclusion    · 48.8% offer unbanked payment
-//   Digital access         · 42.4% smartphone-free access
-//   System integration     · 42.4% transit-card interoperable
-
-const GAPS = [
-  { key: 'access',      label: 'Physical accessibility', share: 0.15, color: '#22bfe0' },
-  { key: 'financial',   label: 'Financial inclusion',    share: 0.20, color: '#22c55e' },
-  { key: 'digital',     label: 'Digital access',         share: 0.18, color: '#a78bfa' },
-  { key: 'integration', label: 'System integration',     share: 0.17, color: '#f59e0b' },
-]
-
-function EquitySimulator() {
-  // Which gaps are being addressed (true = policy in place, riders can use it).
-  const [on, setOn] = useState({ access: false, financial: false, digital: false, integration: false })
-
-  // Deterministic rider composition: assign each of 100 riders to a
-  // primary need bucket (or "unblocked" = no barrier) using a fixed
-  // pseudo-random shuffle so the visual is stable.
-  const riders = useMemo(() => {
-    const out = []
-    const seeds = [17, 41, 73, 109]
-    let cursor = 0
-    for (const [gi, gap] of GAPS.entries()) {
-      const count = Math.round(gap.share * 100)
-      for (let k = 0; k < count; k++) {
-        // interleave the gap owners so they visually spread across the grid
-        const idx = (cursor * 7 + seeds[gi]) % 100
-        out[idx] = { gap: gap.key, color: gap.color }
-        cursor++
-      }
-    }
-    for (let i = 0; i < 100; i++) if (!out[i]) out[i] = { gap: null, color: null }
-    return out
-  }, [])
-
-  const canRide = (r) => !r.gap || on[r.gap]
-  const served = riders.filter(canRide).length
-
-  const toggle = (k) => setOn(o => ({ ...o, [k]: !o[k] }))
-
-  return (
-    <div className="rounded-xl border border-line bg-surface-3/60 overflow-hidden">
-      <div className="grid md:grid-cols-[1fr_260px]">
-        <div className="p-4">
-          <div className="grid grid-cols-10 gap-1.5 bg-black/40 border border-line rounded-lg p-3">
-            {riders.map((r, i) => {
-              const active = canRide(r)
-              const fill = active ? (r.gap ? r.color : '#22bfe0') : 'rgba(148,163,184,0.18)'
-              return (
-                <motion.div
-                  key={i}
-                  className="aspect-square rounded-sm"
-                  initial={false}
-                  animate={{
-                    backgroundColor: fill,
-                    opacity: active ? 1 : 0.35,
-                    scale: active ? 1 : 0.9,
-                  }}
-                  transition={{ duration: 0.25, delay: (i % 10) * 0.005 }}
-                />
-              )
-            })}
-          </div>
-          <div className="mt-3 flex flex-wrap items-center justify-between gap-2 text-[11px] font-mono uppercase tracking-[0.18em]">
-            <span className="text-gray-500">100 potential riders · 1 dot each</span>
-            <span className="text-white">Served: <span className="text-brand-200 tabular-nums">{served} / 100</span></span>
-          </div>
-        </div>
-
-        <div className="p-4 md:border-l border-line space-y-2">
-          <div className="text-[10.5px] font-mono uppercase tracking-[0.22em] text-gray-500 mb-1">
-            Toggle equity policies
-          </div>
-          {GAPS.map(g => (
-            <button
-              key={g.key}
-              onClick={() => toggle(g.key)}
-              className={`w-full flex items-center justify-between gap-3 rounded-lg border px-3 py-2 text-left transition-colors ${
-                on[g.key]
-                  ? 'border-brand-500/40 bg-brand-500/[0.06] text-white'
-                  : 'border-line text-gray-300 hover:border-line-strong hover:text-white'
-              }`}
-            >
-              <div>
-                <div className="text-sm font-semibold">{g.label}</div>
-                <div className="text-[11px] text-gray-500">{Math.round(g.share * 100)}% of riders need this</div>
-              </div>
-              <span
-                className="inline-flex w-8 h-4 rounded-full border relative transition-colors"
-                style={{
-                  borderColor: on[g.key] ? g.color : 'rgba(148,163,184,0.3)',
-                  background: on[g.key] ? g.color + '55' : 'transparent',
-                }}
-              >
-                <span
-                  className="absolute top-0.5 rounded-full w-3 h-3 transition-all"
-                  style={{
-                    left: on[g.key] ? 'calc(100% - 14px)' : '2px',
-                    background: on[g.key] ? g.color : 'rgba(148,163,184,0.5)',
-                  }}
-                />
-              </span>
-            </button>
-          ))}
-          <div className="pt-2 text-[11px] text-gray-500 leading-relaxed">
-            Turn every policy on to unlock all 100 riders. That is the engineering constraint set the study produced.
-          </div>
-        </div>
-      </div>
-    </div>
-  )
-}
 
 /* -------------------- Count-up hook -------------------- */
 function useCountUp(target = 0, duration = 1100, active = true) {
@@ -233,19 +109,6 @@ export default function Micromobility() {
         chips={project.tech || []}
         status={{ label: 'Active', tone: 'brand', pulse: true }}
       />
-
-      {/* Signature interactive */}
-      <section className="pb-10">
-        <Container>
-          <SectionTitle
-            kicker="Interactive"
-            code="I/01"
-            title="Rider simulator · 100 potential riders"
-            subtitle="Each dot is a rider. Groups are shaded by the equity policy they need. Toggle policies on and off to see which slice of the population an operator serves at each level of inclusive design."
-          />
-          <EquitySimulator />
-        </Container>
-      </section>
 
       {/* Challenge */}
       <section className="pb-10">

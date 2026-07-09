@@ -301,32 +301,6 @@ export default function MultiToolFab() {
         </Container>
       </section>
 
-      {/* Skills / capabilities summary — reads well to a recruiter */}
-      <section className="pb-10">
-        <Container>
-          <SectionTitle
-            kicker="Capabilities demonstrated"
-            code="C/04"
-            title="What this project proves I can do"
-          />
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {[
-              { title: 'Process planning',       body: 'Order-of-operations, fixturing, and inspection strategy planned before touching a machine.' },
-              { title: 'Manual + CNC machining', body: 'Comfortable moving between manual mill and CNC for the right operation on the right feature.' },
-              { title: 'GD&T interpretation',    body: 'Read a full drawing package and translate flatness / parallelism / position callouts into machining strategy.' },
-              { title: 'Metrology',              body: 'Calipers, pin gauges, dial indicators, and granite surface used to prove parts against the print.' },
-              { title: 'Assembly integration',   body: 'Pivots, bushings, spacers, and fasteners integrated into an articulated assembly that actually works.' },
-              { title: 'DFM communication',      body: 'Iterated with machinist feedback on tolerances and features that were expensive or fragile to produce.' },
-            ].map((c) => (
-              <Glass key={c.title}>
-                <div className="text-white font-semibold">{c.title}</div>
-                <p className="text-sm text-gray-300 mt-1.5 leading-relaxed">{c.body}</p>
-              </Glass>
-            ))}
-          </div>
-        </Container>
-      </section>
-
       {/* AAR — the reflection */}
       <AARSection aar={project.aar} />
 
