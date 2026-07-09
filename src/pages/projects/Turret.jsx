@@ -6,6 +6,7 @@ import {
   ProjectPager, ProjectCTA, STARSection, AARSection,
 } from '../../shared/ui'
 import { projects } from '../../content/projects'
+import { usePageMeta } from '../../shared/usePageMeta'
 import { motion } from 'framer-motion'
 import { Target, Eye, Cpu, GitMerge } from 'lucide-react'
 
@@ -40,6 +41,12 @@ const roadmap = [
 ]
 
 export default function Turret() {
+  usePageMeta({
+    title: '2-Axis Autonomous Turret · Mechatronics · Alex Brown',
+    description: 'SolidWorks multi-part assembly, FDM prints, and NodeMCU/Arduino embedded control for a 2-axis robotic turret. 0.8° angular repeatability over 100 cycles at ±45° per axis.',
+    path: '/projects/turret',
+    image: '/projects/turret.jpg',
+  })
   return (
     <ProjectLayout>
       <PageHero

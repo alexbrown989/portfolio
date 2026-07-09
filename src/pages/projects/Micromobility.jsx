@@ -6,6 +6,7 @@ import {
   ProjectPager, ProjectCTA, STARSection, AARSection,
 } from '../../shared/ui'
 import { projects } from '../../content/projects'
+import { usePageMeta } from '../../shared/usePageMeta'
 import { useInView } from 'framer-motion'
 import { Accessibility, Wallet, SmartphoneNfc, TrainFront } from 'lucide-react'
 
@@ -100,6 +101,12 @@ function EquityCard({ Icon, title, percent, caption }) {
 }
 
 export default function Micromobility() {
+  usePageMeta({
+    title: 'Equitable Micromobility Study · Co-Author · Alex Brown',
+    description: 'Co-authored peer-reviewed study translating equity policy from 250+ U.S. micromobility programs into concrete engineering constraints.',
+    path: '/projects/micromobility',
+    image: '/projects/micro.jpg',
+  })
   return (
     <ProjectLayout>
       <PageHero

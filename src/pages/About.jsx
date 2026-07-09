@@ -10,6 +10,7 @@ import ProjectLayout from './ProjectLayout'
 import {
   Container, PageHero, SectionTitle, Glass, CornerBrackets,
 } from '../shared/ui'
+import { usePageMeta } from '../shared/usePageMeta'
 
 const Contact = lazy(() => import('../components/Contact'))
 const Footer  = lazy(() => import('../components/Footer'))
@@ -56,6 +57,11 @@ const portfolioLines = [
 /* ------------------------------------------------------------------- */
 
 export default function About() {
+  usePageMeta({
+    title: 'About · Alex Brown · Navy Corpsman → Aerospace Engineer',
+    description: 'From Navy Corpsman to aerospace engineer. Five years of high-stakes Navy operations, then a decisive turn into mechanical engineering R&D, now inside an active aerospace manufacturing and quality role at Verus Aerospace.',
+    path: '/about',
+  })
   const portfolio = useMemo(
     () => portfolioLines.map((line) => {
       const [title, ...rest] = line.split(':')

@@ -10,45 +10,195 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="apple-touch-icon" href="/favicon.svg" />
     <link rel="manifest" href="/site.webmanifest" />
+    <link rel="canonical" href="https://alexandercbrown.com/" />
 
     <!-- Primary meta -->
-    <title>Alex Brown · Mechanical Engineer</title>
-    <meta name="description" content="Alex Brown — mechanical engineering student and Navy veteran currently interning at Verus Aerospace in Tacoma, WA. Aerospace manufacturing and quality, plus hands-on machining, GD&T, mechatronics, and thermal R&D case studies." />
+    <title>Alex Brown · Mechanical Engineer · Aerospace-Focused</title>
+    <meta name="description" content="Alex Brown — U.S. Navy veteran and mechanical engineering student at UW Tacoma. Lead Intern at Verus Aerospace: AS9102 First Article Inspection, GD&T, Infor VISUAL ERP configuration control, Quality Clinic operations. Case studies in machining, mechatronics, coastal fluid dynamics, and passive thermal systems." />
     <meta name="author" content="Alex Brown" />
-    <meta name="keywords" content="Alex Brown, mechanical engineer, aerospace, Verus Aerospace, GD&T, AS9102, machining, PIV, PCM, mechatronics, UW Tacoma, Navy veteran" />
+    <meta name="keywords" content="Alex Brown, mechanical engineer, aerospace engineer, Verus Aerospace, GD&T, AS9102, machining, PIV, PCM, mechatronics, UW Tacoma, Navy veteran, defense engineering, Tacoma WA" />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
 
     <!-- Open Graph -->
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Alex Brown · Mechanical Engineer" />
-    <meta property="og:title" content="Alex Brown · Mechanical Engineer" />
-    <meta property="og:description" content="Navy veteran turned mechanical engineer. Currently interning at Verus Aerospace — aerospace manufacturing, GD&T, AS9102 FAI, and hands-on R&D." />
-    <meta property="og:url" content="https://alexbrown.engineering/" />
-    <meta property="og:image" content="https://alexbrown.engineering/og.png" />
+    <meta property="og:title" content="Alex Brown · Mechanical Engineer · Aerospace-Focused" />
+    <meta property="og:description" content="U.S. Navy veteran and mechanical engineering student. Currently Lead Intern at Verus Aerospace — AS9102 FAI, GD&T, ERP configuration control, and hands-on R&D. Seeking full-time engineering roles starting Summer 2027." />
+    <meta property="og:url" content="https://alexandercbrown.com/" />
+    <meta property="og:image" content="https://alexandercbrown.com/og.png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
+    <meta property="og:locale" content="en_US" />
 
     <!-- Twitter card -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Alex Brown · Mechanical Engineer" />
-    <meta name="twitter:description" content="Navy veteran turned mechanical engineer. Currently interning at Verus Aerospace." />
-    <meta name="twitter:image" content="https://alexbrown.engineering/og.png" />
+    <meta name="twitter:title" content="Alex Brown · Mechanical Engineer · Aerospace-Focused" />
+    <meta name="twitter:description" content="Navy veteran turned mechanical engineer. Lead Intern at Verus Aerospace." />
+    <meta name="twitter:image" content="https://alexandercbrown.com/og.png" />
+    <meta name="twitter:url" content="https://alexandercbrown.com/" />
 
     <!-- Preconnect for fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 
-    <!-- SPA scripts must be enabled to view; degrade gracefully if not -->
+    <!-- Structured data — Person -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Person",
+      "name": "Alex Brown",
+      "alternateName": "Alexander Chase Brown",
+      "url": "https://alexandercbrown.com/",
+      "image": "https://alexandercbrown.com/og.png",
+      "jobTitle": "Lead Engineering Intern",
+      "worksFor": { "@type": "Organization", "name": "Verus Aerospace", "url": "https://verusaero.com/" },
+      "alumniOf": { "@type": "CollegeOrUniversity", "name": "University of Washington Tacoma" },
+      "email": "mailto:alexbrow@uw.edu",
+      "address": { "@type": "PostalAddress", "addressLocality": "Tacoma", "addressRegion": "WA", "addressCountry": "US" },
+      "nationality": "American",
+      "sameAs": ["https://www.linkedin.com/in/alexanderchasebrown/"],
+      "knowsAbout": [
+        "Mechanical Engineering", "Aerospace Manufacturing", "AS9102 First Article Inspection",
+        "GD&T", "Metrology", "CNC Machining", "SolidWorks", "AGMA Gear Design",
+        "Phase-Change Materials", "PIV", "Coastal Fluid Dynamics", "Mechatronics",
+        "Infor VISUAL ERP", "Quality Systems", "Design for Manufacturability"
+      ],
+      "description": "U.S. Navy veteran and mechanical engineering student at UW Tacoma. Currently Lead Intern at Verus Aerospace supporting flight-critical hardware — AS9102 First Article Inspection, GD&T, Infor VISUAL ERP configuration control, Quality Clinic operations."
+    }
+    </script>
+
+    <!-- Structured data — WebSite -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "Alex Brown · Mechanical Engineer",
+      "url": "https://alexandercbrown.com/",
+      "author": { "@type": "Person", "name": "Alex Brown" }
+    }
+    </script>
   </head>
   <body>
-    <noscript>
-      <div style="padding:2rem;max-width:640px;margin:2rem auto;font-family:system-ui,sans-serif;color:#e5e7eb;background:#0a0f1a;border:1px solid #22bfe0;border-radius:12px;">
-        <h1 style="margin-top:0;color:#fff;">JavaScript required</h1>
-        <p>This portfolio is a client-rendered SPA. Enable JavaScript, or read the static
-          <a style="color:#22bfe0" href="/resume.pdf">PDF resume</a>
-          or reach out at <a style="color:#22bfe0" href="mailto:alexbrow@uw.edu">alexbrow@uw.edu</a>.</p>
-      </div>
-    </noscript>
-    <div id="root"></div>
+    <!--
+      Static fallback for crawlers, link-preview bots, corporate scanners,
+      and JavaScript-disabled clients. Everything below is rendered by the
+      server (or picked up by scrapers) even if the SPA never boots.
+      When JavaScript is enabled, React unmounts this and takes over.
+    -->
+    <div id="root">
+      <noscript>
+        <style>
+          .fb{max-width:820px;margin:2rem auto;padding:2rem 1.25rem;font-family:system-ui,sans-serif;color:#e5e7eb;background:#05070d;line-height:1.55}
+          .fb h1{font-size:1.75rem;color:#fff;margin:0 0 .35rem}
+          .fb h2{font-size:1.15rem;color:#22bfe0;margin:1.75rem 0 .5rem;letter-spacing:.02em}
+          .fb h3{font-size:1rem;color:#fff;margin:1rem 0 .25rem}
+          .fb a{color:#22bfe0}
+          .fb .tag{display:inline-block;font-size:.75rem;padding:.15rem .55rem;margin:0 .35rem .35rem 0;border:1px solid #1f2937;border-radius:.35rem;color:#cbd5e1}
+          .fb .pill{display:inline-flex;gap:.4rem;font-size:.7rem;letter-spacing:.15em;text-transform:uppercase;color:#7dd3fc;border:1px solid rgba(34,191,224,.35);background:rgba(34,191,224,.06);border-radius:999px;padding:.25rem .6rem}
+          .fb .grid{display:grid;grid-template-columns:1fr;gap:.75rem}
+          @media(min-width:640px){.fb .grid{grid-template-columns:1fr 1fr}}
+          .fb .p{border:1px solid #1f2937;background:#0a0f1a;border-radius:.5rem;padding:.85rem 1rem}
+          .fb .muted{color:#9ca3af;font-size:.9rem}
+          .fb .small{font-size:.85rem;color:#cbd5e1}
+        </style>
+        <main class="fb">
+          <div class="pill">Interning · Verus Aerospace · Manufacturing & Quality</div>
+          <h1>Alex Brown</h1>
+          <div class="muted">Mechanical Engineering · Aerospace-Focused · Tacoma, WA</div>
+          <p>
+            U.S. Navy veteran (five years as a Hospital Corpsman) and mechanical engineering
+            student at the University of Washington Tacoma. Currently the Lead Intern at
+            Verus Aerospace, supporting flight-critical hardware — AS9102 First Article
+            Inspection, GD&amp;T, Infor VISUAL ERP configuration control, Quality Clinic
+            operations, and independent over-check inspections on Gulfstream assemblies.
+          </p>
+          <p><strong>Seeking full-time engineering roles starting Summer 2027.</strong></p>
+
+          <h2>Contact</h2>
+          <ul class="small">
+            <li>Email: <a href="mailto:alexbrow@uw.edu">alexbrow@uw.edu</a></li>
+            <li>LinkedIn: <a href="https://www.linkedin.com/in/alexanderchasebrown/">linkedin.com/in/alexanderchasebrown</a></li>
+            <li>Resume: <a href="/resume.pdf">/resume.pdf</a></li>
+          </ul>
+
+          <h2>Current internship — Verus Aerospace</h2>
+          <p class="small">
+            Dec 2025 – Present · Lead Intern. Supporting flight-critical aerospace hardware
+            in a high-mix production environment. Maintain Engineering Masters and
+            configuration control in Infor VISUAL ERP. Develop inspection plans and quality
+            documentation for AS9102 First Article Inspection. Perform independent
+            over-check inspections on Gulfstream assemblies. Lead Quality Clinic operations
+            (non-conforming hardware disposition + workflow redesign). Exposure to
+            multi-spindle CNC machining of titanium and Inconel.
+          </p>
+
+          <h2>Case studies</h2>
+          <div class="grid">
+            <div class="p">
+              <h3>Multi-Tool Fabrication</h3>
+              <p class="small">Fabricated a functional folding multi-tool from raw aluminum on manual mill + CNC. Held ±0.005 in precision, 0.003 in parallelism, 0.002 in flatness against a full GD&amp;T drawing package. <a href="/projects/multitool">Read more →</a></p>
+            </div>
+            <div class="p">
+              <h3>Three-Stage Reduction Gearbox</h3>
+              <p class="small">Small-team design of a three-stage spur-gear reduction for a 1-DOF robotic elbow. 4000 → 50 RPM, 80:1, full AGMA 2001-D04 analysis, mixed steel + aluminum stack. <a href="/projects/gearbox">Read more →</a></p>
+            </div>
+            <div class="p">
+              <h3>2-Axis Autonomous Turret</h3>
+              <p class="small">SolidWorks multi-part assembly + FDM prints + NodeMCU/Arduino embedded C++. 0.8° angular repeatability (σ) over 100 cycles at ±45° per axis. <a href="/projects/turret">Read more →</a></p>
+            </div>
+            <div class="p">
+              <h3>PCM Vibration Analysis</h3>
+              <p class="small">Novel composite (epoxy + beeswax PCM + graphite) with a custom monolithic test rig. ~10× damping factor increase when thermally triggered; near-critical damping validated. <a href="/projects/vibration">Read more →</a></p>
+            </div>
+            <div class="p">
+              <h3>Saipan Coastal Wave Dynamics</h3>
+              <p class="small">First lab-scale pipeline quantifying wave–coast interactions for Saipan. ~40% PIV accuracy gain via a novel Visual Field Architecture. <a href="/projects/coastal">Read more →</a></p>
+            </div>
+            <div class="p">
+              <h3>BET-H · Biological Elastin Thermoregulation</h3>
+              <p class="small">Speculative framework: passive thermal regulation inspired by elastin's entropy-driven behavior. Concept-level public; technical depth on request. <a href="/projects/beth">Read more →</a></p>
+            </div>
+            <div class="p">
+              <h3>Equitable Micromobility Study</h3>
+              <p class="small">Co-authored peer-reviewed study translating equity policy from 250+ U.S. programs into engineering constraints. <a href="/projects/micromobility">Read more →</a></p>
+            </div>
+          </div>
+
+          <h2>Skills</h2>
+          <div>
+            <span class="tag">AS9102 FAI</span>
+            <span class="tag">GD&amp;T</span>
+            <span class="tag">Metrology</span>
+            <span class="tag">Infor VISUAL ERP</span>
+            <span class="tag">Manual Mill + CNC</span>
+            <span class="tag">SolidWorks</span>
+            <span class="tag">Onshape</span>
+            <span class="tag">MATLAB</span>
+            <span class="tag">Python</span>
+            <span class="tag">Arduino / NodeMCU</span>
+            <span class="tag">Embedded C++</span>
+            <span class="tag">LTspice</span>
+            <span class="tag">AGMA gear design</span>
+            <span class="tag">Tolerance Stack-Up</span>
+            <span class="tag">DFM</span>
+            <span class="tag">CFD / PIV</span>
+          </div>
+
+          <h2>Prior experience</h2>
+          <ul class="small">
+            <li><strong>U.S. Navy Corpsman</strong> · 2018 – 2023 · Armed Forces Service Medal · 5 years managing high-consequence systems.</li>
+            <li><strong>Onsite Medical Representative · Amazon</strong> · Kent WA · 2023 – 2024. Cut incident response times 25%.</li>
+            <li><strong>SAME President · UW Tacoma</strong> · Oct 2024 – Present. +30% membership growth, $10K+ budget, 5+ industry pipelines.</li>
+          </ul>
+
+          <p class="small" style="margin-top:2rem;color:#9ca3af">
+            The rest of this site is a client-rendered SPA. If you're seeing this fallback,
+            enable JavaScript for the full interactive experience — or use any of the links
+            above to jump straight to the content you need.
+          </p>
+        </main>
+      </noscript>
+    </div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

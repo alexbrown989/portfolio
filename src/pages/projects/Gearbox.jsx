@@ -14,6 +14,7 @@ import {
 } from '../../shared/ui'
 import { SafeImage } from '../../shared/Media'
 import { projects } from '../../content/projects'
+import { usePageMeta } from '../../shared/usePageMeta'
 
 const STLViewer = lazy(() => import('../../shared/STLViewer.jsx'))
 
@@ -350,6 +351,12 @@ function AGMATable() {
 /* ------------------------------------------------------------------- */
 
 export default function Gearbox() {
+  usePageMeta({
+    title: 'Three-Stage Reduction Gearbox · AGMA Analysis · Alex Brown',
+    description: 'Quarter-long small-team design of a three-stage spur-gear reduction for a 1-DOF robotic elbow. 4000 → 50 RPM, 80:1, full AGMA 2001-D04 bending-stress analysis, mixed steel + aluminum stack.',
+    path: '/projects/gearbox',
+    image: '/projects/gearbox-render.jpg',
+  })
   return (
     <ProjectLayout>
       <PageHero

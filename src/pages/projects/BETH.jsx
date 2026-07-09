@@ -14,6 +14,7 @@ import {
   ProjectPager, ProjectCTA, STARSection, AARSection,
 } from '../../shared/ui'
 import { projects } from '../../content/projects'
+import { usePageMeta } from '../../shared/usePageMeta'
 
 const project = projects.find(p => p.id === 'beth') || {}
 
@@ -260,6 +261,12 @@ function ThermalCycleSimple() {
 /* ------------------------------------------------------------------- */
 
 export default function BETH() {
+  usePageMeta({
+    title: 'BET-H · Biological Elastin Thermoregulation · Alex Brown',
+    description: 'Speculative framework: passive thermal regulation inspired by elastin\'s entropy-driven behavior in nature. Concept-level here; technical depth on request.',
+    path: '/projects/beth',
+    image: '/projects/beth.png',
+  })
   return (
     <ProjectLayout>
       <PageHero

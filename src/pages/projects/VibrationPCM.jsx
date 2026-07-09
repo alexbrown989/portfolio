@@ -7,6 +7,7 @@ import {
   ProjectPager, ProjectCTA, STARSection, AARSection,
 } from '../../shared/ui'
 import { projects } from '../../content/projects'
+import { usePageMeta } from '../../shared/usePageMeta'
 
 const STLViewer = lazy(() => import('../../shared/STLViewer.jsx'))
 const project = projects.find(p => p.id === 'vibration') || {}
@@ -163,6 +164,12 @@ function DampingWaveform() {
 }
 
 export default function VibrationPCM() {
+  usePageMeta({
+    title: 'Vibration Analysis of Phase-Change Materials · Alex Brown',
+    description: 'Novel PCM composite with a custom monolithic test rig. Validated a ~10× increase in damping factor and a near-critical damping state when thermally triggered.',
+    path: '/projects/vibration',
+    image: '/projects/oscilloscope_pcm.jpg',
+  })
   return (
     <ProjectLayout>
       <PageHero

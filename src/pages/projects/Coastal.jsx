@@ -8,6 +8,7 @@ import {
   Container, PageHero, SectionTitle, Glass, MetricBox,
   ProjectPager, ProjectCTA, STARSection, AARSection,
 } from '../../shared/ui'
+import { usePageMeta } from '../../shared/usePageMeta'
 
 const STLViewer = lazy(() => import('../../shared/STLViewer.jsx'))
 
@@ -435,6 +436,12 @@ const metrics = [
 ]
 
 export default function Coastal() {
+  usePageMeta({
+    title: 'Saipan Coastal Wave Dynamics · PIV · Alex Brown',
+    description: 'First lab-scale pipeline quantifying wave–coast interactions for Saipan. ~40% PIV accuracy gain via a novel Visual Field Architecture. Protects up to $45M in Pacific infrastructure.',
+    path: '/projects/coastal',
+    image: '/projects/coastal.jpg',
+  })
   return (
     <ProjectLayout>
       <PageHero

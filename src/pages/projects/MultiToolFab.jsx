@@ -17,6 +17,7 @@ import {
 } from '../../shared/ui'
 import { SafeImage, SafeVideo } from '../../shared/Media'
 import { projects } from '../../content/projects'
+import { usePageMeta } from '../../shared/usePageMeta'
 
 const project = projects.find(p => p.id === 'multitool') || {}
 
@@ -166,6 +167,12 @@ const toleranceTable = [
 ]
 
 export default function MultiToolFab() {
+  usePageMeta({
+    title: 'Multi-Tool Fabrication · GD&T + Machining · Alex Brown',
+    description: 'Fabricated a functional folding multi-tool from raw aluminum on manual mill + CNC. Held ±0.005 in precision, 0.003 in parallelism, 0.002 in flatness against a full GD&T drawing package.',
+    path: '/projects/multitool',
+    image: '/projects/multitool-final.jpg',
+  })
   return (
     <ProjectLayout>
       <PageHero
