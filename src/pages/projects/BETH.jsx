@@ -1,19 +1,16 @@
 // src/pages/projects/BETH.jsx
 //
-// Framework page for BET-H (Biological Elastin Thermoregulation).
-// Emphasis on serious, defensible content with rich interactive graphics:
-//   - Interactive stretched-vs-relaxed elastin model (entropy loop)
-//   - Layered material stack diagram (PCM · graphite · carbon black · copper)
-//   - Thermal cycle explorer (absorb / store / release / re-absorb)
-//   - Material property table + framework principles
-//   - Conceptual applications matrix
+// Softened framework page. Detail on formulations, exact material property
+// numbers, and application-specific specs has been pulled — this is
+// early-stage in-progress research and the page now teaches the CONCEPT
+// only. Anyone who wants the full technical depth is pointed at email.
 
 import { useEffect, useState } from 'react'
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
-import { Sun, Snowflake, Battery, Home, Cpu, FlaskConical } from 'lucide-react'
+import { Sun, Snowflake, FlaskConical, Mail } from 'lucide-react'
 import ProjectLayout from '../ProjectLayout'
 import {
-  Container, PageHero, SectionTitle, Glass, MetricBox, CornerBrackets,
+  Container, PageHero, SectionTitle, Glass, CornerBrackets,
   ProjectPager, ProjectCTA, STARSection, AARSection,
 } from '../../shared/ui'
 import { projects } from '../../content/projects'
@@ -21,250 +18,114 @@ import { projects } from '../../content/projects'
 const project = projects.find(p => p.id === 'beth') || {}
 
 /* ------------------------------------------------------------------- */
-/* Elastin entropy visualization                                        */
+/* Simple entropy toggle                                                */
 /* ------------------------------------------------------------------- */
 //
-// Two side-by-side panels: RELAXED (single chain coiled, water tightly
-// ordered around it, heat leaving) vs STRETCHED (chain elongated, water
-// dispersed and disordered, heat entering). A slider blends between the
-// two states so the user can see the transition. This is a cartoon, not
-// a molecular simulation — the goal is to make the entropy story
-// immediately readable.
+// Two-state cartoon: relaxed vs stretched. No slider. No jargon in the
+// primary readout. Just: order → disorder → heat direction. Auto-cycles;
+// the button lets you hold either state.
 
-function useAutoTween(duration = 3200) {
-  const [t, setT] = useState(0)
-  const [dir, setDir] = useState(1)
-  const [paused, setPaused] = useState(false)
+function EntropyToggle() {
+  const [state, setState] = useState('relaxed') // relaxed | stretched
+  const [manual, setManual] = useState(false)
   const reduce = useReducedMotion()
 
   useEffect(() => {
-    if (reduce || paused) return
-    let raf, start
-    const step = (now) => {
-      if (!start) start = now
-      const dt = (now - start) / duration
-      let next = t + dir * dt * 1.2
-      if (next >= 1) { next = 1; setDir(-1) }
-      else if (next <= 0) { next = 0; setDir(1) }
-      setT(next)
-      start = now
-      raf = requestAnimationFrame(step)
-    }
-    raf = requestAnimationFrame(step)
-    return () => cancelAnimationFrame(raf)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dir, paused, reduce, duration])
+    if (reduce || manual) return
+    const id = setInterval(() => setState(s => s === 'relaxed' ? 'stretched' : 'relaxed'), 3600)
+    return () => clearInterval(id)
+  }, [reduce, manual])
 
-  return { t, setT, dir, setDir, paused, setPaused }
-}
-
-function InteractiveElastin() {
-  const { t, setT, setPaused } = useAutoTween()
-  // 0 = fully relaxed, 1 = fully stretched
-  const chainAmp   = 60 - 55 * t   // amplitude of the coil (px)
-  const chainSpan  = 60 + 220 * t  // horizontal extent
-  const heatFlow   = t > 0.5 ? 'in' : 'out' // heat direction
-  const centerX    = 200
-  const centerY    = 110
-
-  // Path for the elastin chain — coiled sine when t=0, near-straight when t=1
-  const chainD = (() => {
-    const pts = []
-    const segs = 40
-    for (let i = 0; i <= segs; i++) {
-      const p = i / segs
-      const x = centerX - chainSpan / 2 + p * chainSpan
-      const y = centerY + Math.sin(p * Math.PI * (3 - 2 * t)) * chainAmp * (1 - t * 0.85)
-      pts.push(`${i === 0 ? 'M' : 'L'} ${x.toFixed(1)} ${y.toFixed(1)}`)
-    }
-    return pts.join(' ')
-  })()
-
-  // Water molecules — arranged tightly when relaxed, dispersed when stretched
-  const waterCount = 30
-  const waters = Array.from({ length: waterCount }, (_, i) => {
-    const angle = (i / waterCount) * Math.PI * 2
-    const relaxedR = 42 + (i % 3) * 6
-    const stretchedR = 84 + (i % 5) * 8
-    const r = relaxedR + (stretchedR - relaxedR) * t
-    return {
-      cx: centerX + Math.cos(angle) * r,
-      cy: centerY + Math.sin(angle) * r * 0.55,
-      r:  3 - 1.2 * t + (i % 2 ? 0.4 : 0),
-      opacity: 0.85 - 0.3 * t,
-    }
-  })
+  const stretched = state === 'stretched'
+  const chainD = stretched
+    ? `M 60 100 Q 200 100 340 100`
+    : `M 60 100 Q 130 55 200 100 T 340 100`
 
   return (
-    <div
-      className="relative rounded-xl bg-surface-3/60 border border-line overflow-hidden"
-      onMouseEnter={() => setPaused(true)}
-      onMouseLeave={() => setPaused(false)}
-    >
-      <svg viewBox="0 0 400 220" className="w-full h-72">
+    <div className="rounded-xl bg-surface-3/60 border border-line overflow-hidden">
+      <svg viewBox="0 0 400 200" className="w-full h-56">
         <defs>
           <linearGradient id="beth-chain" x1="0" x2="1">
             <stop offset="0%"   stopColor="#22bfe0" />
             <stop offset="100%" stopColor="#6366f1" />
           </linearGradient>
-          <radialGradient id="beth-water">
-            <stop offset="0%" stopColor="#93c5fd" stopOpacity="1" />
-            <stop offset="100%" stopColor="#3b82f6" stopOpacity="0" />
-          </radialGradient>
           <radialGradient id="beth-heat-in" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor="#f97316" stopOpacity="0.45" />
+            <stop offset="0%" stopColor="#f97316" stopOpacity="0.5" />
             <stop offset="100%" stopColor="#f97316" stopOpacity="0" />
           </radialGradient>
           <radialGradient id="beth-heat-out" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor="#22bfe0" stopOpacity="0.35" />
+            <stop offset="0%" stopColor="#22bfe0" stopOpacity="0.4" />
             <stop offset="100%" stopColor="#22bfe0" stopOpacity="0" />
           </radialGradient>
         </defs>
 
-        {/* Heat halo — orange when heat flowing INTO the system (stretch),
-            cyan when heat flowing OUT (relax) */}
+        {/* Heat halo */}
         <motion.ellipse
-          cx={centerX} cy={centerY}
-          rx={120}    ry={80}
-          fill={heatFlow === 'in' ? 'url(#beth-heat-in)' : 'url(#beth-heat-out)'}
-          animate={{ scale: [1, 1.06, 1] }}
-          transition={{ duration: 2.2, repeat: Infinity }}
+          cx="200" cy="100" rx="120" ry="60"
+          fill={stretched ? 'url(#beth-heat-in)' : 'url(#beth-heat-out)'}
+          animate={{ scale: [1, 1.05, 1] }}
+          transition={{ duration: 2.6, repeat: Infinity }}
         />
 
-        {/* Water molecules */}
-        {waters.map((w, i) => (
-          <circle key={i} cx={w.cx} cy={w.cy} r={w.r} fill="url(#beth-water)" opacity={w.opacity} />
-        ))}
+        {/* Ordered vs disordered water dots */}
+        {Array.from({ length: 22 }, (_, i) => {
+          const angle = (i / 22) * Math.PI * 2
+          const orderedR   = 42
+          const disorderedR = 78 + (i % 4) * 5
+          const r = stretched ? disorderedR : orderedR
+          const cx = 200 + Math.cos(angle) * r
+          const cy = 100 + Math.sin(angle) * r * 0.55
+          return (
+            <motion.circle
+              key={i}
+              animate={{ cx, cy, r: stretched ? 1.6 : 2.4, opacity: stretched ? 0.55 : 0.85 }}
+              transition={{ duration: 0.7, ease: 'easeOut' }}
+              fill="#93c5fd"
+            />
+          )
+        })}
 
-        {/* Elastin chain */}
-        <path d={chainD} stroke="url(#beth-chain)" strokeWidth="3" fill="none" strokeLinecap="round" />
-
-        {/* Chain endpoints — small pull-tabs */}
-        <circle cx={centerX - chainSpan / 2} cy={centerY} r={5} fill="#0f172a" stroke="#22bfe0" strokeWidth="1.5" />
-        <circle cx={centerX + chainSpan / 2} cy={centerY} r={5} fill="#0f172a" stroke="#22bfe0" strokeWidth="1.5" />
-
-        {/* Directional heat arrows */}
-        {heatFlow === 'in' ? (
-          <>
-            {[0, 1, 2, 3].map(i => (
-              <motion.path
-                key={i}
-                d={`M ${60 + i * 20} 30 v 16 M ${55 + i * 20} 40 l 5 6 l 5 -6`}
-                stroke="#f97316" strokeWidth="1.5" fill="none" strokeLinecap="round"
-                animate={{ opacity: [0.2, 1, 0.2], y: [0, 6, 0] }}
-                transition={{ duration: 1.6, repeat: Infinity, delay: i * 0.15 }}
-              />
-            ))}
-          </>
-        ) : (
-          <>
-            {[0, 1, 2, 3].map(i => (
-              <motion.path
-                key={i}
-                d={`M ${60 + i * 20} 46 v -16 M ${55 + i * 20} 36 l 5 -6 l 5 6`}
-                stroke="#22bfe0" strokeWidth="1.5" fill="none" strokeLinecap="round"
-                animate={{ opacity: [0.2, 1, 0.2], y: [0, -6, 0] }}
-                transition={{ duration: 1.6, repeat: Infinity, delay: i * 0.15 }}
-              />
-            ))}
-          </>
-        )}
+        {/* Chain */}
+        <motion.path
+          animate={{ d: chainD }}
+          transition={{ duration: 0.7 }}
+          stroke="url(#beth-chain)"
+          strokeWidth="3"
+          fill="none"
+          strokeLinecap="round"
+        />
+        <circle cx="60"  cy="100" r="5" fill="#0f172a" stroke="#22bfe0" strokeWidth="1.5" />
+        <circle cx="340" cy="100" r="5" fill="#0f172a" stroke="#22bfe0" strokeWidth="1.5" />
       </svg>
 
-      {/* Slider + labels */}
-      <div className="px-4 pb-4">
-        <div className="flex items-center gap-3 text-[11px] font-mono uppercase tracking-[0.18em]">
-          <span className={`transition-colors ${t < 0.4 ? 'text-brand-200' : 'text-gray-500'}`}>
-            Relaxed
-          </span>
-          <input
-            type="range"
-            min="0" max="1000"
-            value={Math.round(t * 1000)}
-            onChange={(e) => setT(Number(e.target.value) / 1000)}
-            onMouseDown={() => setPaused(true)}
-            onMouseUp={() => setPaused(false)}
-            aria-label="Elastin state (0 = relaxed, 1 = stretched)"
-            className="flex-1 accent-brand-500"
-          />
-          <span className={`transition-colors ${t > 0.6 ? 'text-amber-300' : 'text-gray-500'}`}>
-            Stretched
-          </span>
-        </div>
-        <div className="mt-3 grid grid-cols-3 gap-3 text-center">
+      <div className="px-4 pb-4 pt-1 grid grid-cols-1 sm:grid-cols-[1fr_auto] gap-3 items-center">
+        <div className="grid grid-cols-2 gap-3 text-center">
           <div>
-            <div className="text-[10px] font-mono uppercase tracking-[0.18em] text-gray-500">Entropy ΔS</div>
-            <div className={`text-sm font-semibold ${t > 0.5 ? 'text-amber-300' : 'text-brand-200'}`}>
-              {t > 0.5 ? '> 0' : '< 0'}
-            </div>
-          </div>
-          <div>
-            <div className="text-[10px] font-mono uppercase tracking-[0.18em] text-gray-500">Water shell</div>
-            <div className="text-sm font-semibold text-white">
-              {t < 0.35 ? 'Ordered' : t > 0.65 ? 'Disordered' : 'Transitioning'}
+            <div className="text-[10px] font-mono uppercase tracking-[0.18em] text-gray-500">State</div>
+            <div className={`text-sm font-semibold ${stretched ? 'text-amber-300' : 'text-brand-200'}`}>
+              {stretched ? 'Stretched' : 'Relaxed'}
             </div>
           </div>
           <div>
             <div className="text-[10px] font-mono uppercase tracking-[0.18em] text-gray-500">Heat</div>
-            <div className={`text-sm font-semibold ${heatFlow === 'in' ? 'text-amber-300' : 'text-brand-200'}`}>
-              {heatFlow === 'in' ? 'Absorbed ↓' : 'Released ↑'}
+            <div className={`text-sm font-semibold ${stretched ? 'text-amber-300' : 'text-brand-200'}`}>
+              {stretched ? 'Absorbed ↓' : 'Released ↑'}
             </div>
           </div>
         </div>
-      </div>
-    </div>
-  )
-}
-
-/* ------------------------------------------------------------------- */
-/* Layered material stack diagram                                       */
-/* ------------------------------------------------------------------- */
-
-function MaterialStack() {
-  const layers = [
-    { name: 'Carbon black skin',   color: '#111827', role: '~98% solar absorption. Structural reinforcement.', kv: '~98%',   kk: 'α' },
-    { name: 'Graphite spreader',   color: '#1f2937', role: '~4300 W/m·K in-plane. Lateral heat spreading.',   kv: '~4300',  kk: 'W/m·K' },
-    { name: 'PCM matrix',          color: '#0e7490', role: 'n-eicosane · ~247 kJ/kg latent buffer.',           kv: '~247',   kk: 'kJ/kg' },
-    { name: 'Copper substrate',    color: '#b45309', role: '~400 W/m·K isotropic. Sink and structure.',        kv: '~400',   kk: 'W/m·K' },
-  ]
-  return (
-    <div className="rounded-xl border border-line bg-surface-3/40 p-4">
-      <div className="text-[10.5px] font-mono uppercase tracking-[0.22em] text-brand-300/90 mb-3">
-        Layered stack · Conceptual
-      </div>
-      <div className="grid grid-cols-[1fr_auto] gap-3 items-center">
-        <div className="space-y-1.5">
-          {layers.map((L, i) => (
-            <motion.div
-              key={L.name}
-              initial={{ opacity: 0, x: -8 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true, amount: 0.4 }}
-              transition={{ delay: i * 0.08 }}
-              className="relative rounded-md border border-line px-3 py-2 flex items-center gap-3"
-              style={{ background: `linear-gradient(90deg, ${L.color}, transparent 90%)` }}
-            >
-              <span className="w-2 h-2 rounded-full" style={{ background: L.color, boxShadow: `0 0 12px ${L.color}` }} />
-              <div>
-                <div className="text-sm text-white font-semibold">{L.name}</div>
-                <div className="text-[11px] text-gray-400">{L.role}</div>
-              </div>
-              <div className="ml-auto text-right">
-                <div className="text-brand-200 font-mono text-sm tabular-nums">{L.kv}</div>
-                <div className="text-[10px] font-mono uppercase tracking-widest text-gray-500">{L.kk}</div>
-              </div>
-            </motion.div>
-          ))}
-        </div>
-        {/* Heat-flow arrows */}
-        <div className="flex flex-col items-center gap-1 h-full">
-          <div className="text-[10px] font-mono uppercase tracking-widest text-amber-300/80">Sun</div>
-          <motion.div
-            className="w-1 flex-1 bg-gradient-to-b from-amber-400 via-brand-400 to-brand-500 rounded-full"
-            animate={{ opacity: [0.4, 1, 0.4] }}
-            transition={{ duration: 2.4, repeat: Infinity }}
-          />
-          <div className="text-[10px] font-mono uppercase tracking-widest text-brand-300/80">Sink</div>
+        <div className="inline-flex rounded-lg border border-line overflow-hidden">
+          <button
+            onClick={() => { setManual(true); setState('relaxed') }}
+            className={`px-3 py-1.5 text-xs font-medium transition-colors ${state === 'relaxed' ? 'bg-brand-500/15 text-brand-200' : 'text-gray-400 hover:text-white'}`}
+          >
+            Relaxed
+          </button>
+          <button
+            onClick={() => { setManual(true); setState('stretched') }}
+            className={`px-3 py-1.5 text-xs font-medium transition-colors border-l border-line ${state === 'stretched' ? 'bg-amber-500/15 text-amber-200' : 'text-gray-400 hover:text-white'}`}
+          >
+            Stretched
+          </button>
         </div>
       </div>
     </div>
@@ -272,198 +133,27 @@ function MaterialStack() {
 }
 
 /* ------------------------------------------------------------------- */
-/* Thermal cycle explorer                                               */
-/* ------------------------------------------------------------------- */
-
-/* ------------------------------------------------------------------- */
-/* Thermal cycle explorer                                                */
+/* Simplified thermal cycle                                             */
 /* ------------------------------------------------------------------- */
 //
-// Cross-section of the composite (four labeled layers) with a stage-
-// specific animation on top:
-//   Absorb  – sun rays impacting the surface, top layer heating red
-//   Store   – PCM layer filling with a melt front (progress fill)
-//   Release – heat radiating outward from the substrate as ambient cools
-//
-// This actually visualizes what each stage DOES to the stack instead of
-// just showing flow lines with a caption.
+// Three stages, each showing what the framework does at that step, with
+// arrow-direction only. No exact material specs. Full technical detail
+// available on request via the CTA below.
 
-function CompositeCrossSection({ stage }) {
-  // Layer geometry in SVG coords
-  const layers = [
-    { name: 'Carbon black',    y: 20,  h: 22, base: '#111827' },
-    { name: 'Graphite',        y: 45,  h: 20, base: '#1f2937' },
-    { name: 'PCM (n-eicosane)', y: 68, h: 44, base: '#0e7490' },
-    { name: 'Copper',          y: 115, h: 30, base: '#a16207' },
-  ]
-
-  // For the "store" stage, animate a melt front rising through the PCM layer
-  const pcmMelt =
-    stage === 'store' ? { fillProgress: 1 } :
-    stage === 'release' ? { fillProgress: 0.35 } :
-    { fillProgress: 0 }
-
-  // Surface heating color: neutral → hot orange during absorb; retained warmth during store
-  const skinFill =
-    stage === 'absorb'  ? '#7c2d12' :
-    stage === 'store'   ? '#4a1d0f' :
-    layers[0].base
-
-  const graphiteFill =
-    stage === 'absorb' ? '#78350f' :
-    stage === 'store'  ? '#3b2716' :
-    layers[1].base
-
-  const copperFill =
-    stage === 'release' ? '#b45309' :
-    layers[3].base
-
-  return (
-    <svg viewBox="0 0 320 180" className="w-full h-56">
-      <defs>
-        <linearGradient id="beth-melt" x1="0" x2="0" y1="0" y2="1">
-          <stop offset="0%"   stopColor="#f97316" stopOpacity="0.85" />
-          <stop offset="100%" stopColor="#7c2d12" stopOpacity="0.55" />
-        </linearGradient>
-        <linearGradient id="beth-copper-radiate" cx="50%" cy="50%">
-          <stop offset="0%" stopColor="#f97316" stopOpacity="0.55" />
-          <stop offset="100%" stopColor="#f97316" stopOpacity="0" />
-        </linearGradient>
-      </defs>
-
-      {/* Base plate outline */}
-      <rect x="20" y="18" width="280" height="130" rx="4" fill="none" stroke="rgba(148,163,184,0.25)" />
-
-      {/* Layer rectangles */}
-      <motion.rect x="22" y={layers[0].y} width="276" height={layers[0].h}
-        animate={{ fill: skinFill }} transition={{ duration: 0.6 }} />
-      <motion.rect x="22" y={layers[1].y} width="276" height={layers[1].h}
-        animate={{ fill: graphiteFill }} transition={{ duration: 0.6 }} />
-      <rect x="22" y={layers[2].y} width="276" height={layers[2].h} fill={layers[2].base} />
-      <motion.rect x="22" y={layers[3].y} width="276" height={layers[3].h}
-        animate={{ fill: copperFill }} transition={{ duration: 0.6 }} />
-
-      {/* PCM melt fill (fills bottom-up so it reads as latent buffering) */}
-      <motion.rect
-        x="22"
-        width="276"
-        fill="url(#beth-melt)"
-        animate={{
-          y:      layers[2].y + layers[2].h * (1 - pcmMelt.fillProgress),
-          height: layers[2].h * pcmMelt.fillProgress,
-        }}
-        transition={{ duration: 1.4, ease: 'easeInOut' }}
-      />
-
-      {/* ABSORB stage — sun rays hitting the surface */}
-      {stage === 'absorb' && Array.from({ length: 7 }, (_, i) => (
-        <motion.line
-          key={i}
-          x1={60 + i * 35} y1={-4}
-          x2={60 + i * 35} y2={layers[0].y - 1}
-          stroke="#f97316" strokeWidth="2" strokeLinecap="round"
-          animate={{ opacity: [0.15, 1, 0.15] }}
-          transition={{ duration: 1.4, repeat: Infinity, delay: i * 0.12 }}
-        />
-      ))}
-
-      {/* RELEASE stage — radiating heat rays leaving the copper downward */}
-      {stage === 'release' && (
-        <>
-          {Array.from({ length: 7 }, (_, i) => (
-            <motion.line
-              key={i}
-              x1={60 + i * 35} y1={layers[3].y + layers[3].h + 2}
-              x2={60 + i * 35} y2={layers[3].y + layers[3].h + 22}
-              stroke="#f97316" strokeWidth="2" strokeLinecap="round"
-              animate={{ opacity: [0.15, 1, 0.15], y2: [layers[3].y + layers[3].h + 18, layers[3].y + layers[3].h + 30, layers[3].y + layers[3].h + 18] }}
-              transition={{ duration: 1.6, repeat: Infinity, delay: i * 0.12 }}
-            />
-          ))}
-          <ellipse cx="160" cy={layers[3].y + layers[3].h + 6} rx="140" ry="10" fill="url(#beth-copper-radiate)" />
-        </>
-      )}
-
-      {/* Layer labels along the right */}
-      {layers.map((L) => (
-        <text
-          key={L.name}
-          x={306} y={L.y + L.h / 2 + 3}
-          textAnchor="end"
-          fontFamily="ui-monospace, JetBrains Mono, monospace"
-          fontSize="8"
-          fill="rgba(226,232,240,0.75)"
-          style={{ letterSpacing: '0.08em', textTransform: 'uppercase' }}
-        >
-          {L.name}
-        </text>
-      ))}
-
-      {/* Stage-driven temperature legend on the left */}
-      <g>
-        <rect x="8" y="18" width="4" height="130" rx="2" fill="rgba(148,163,184,0.18)" />
-        {/* stack-averaged temp gauge */}
-        <motion.rect
-          x="8" width="4" rx="2"
-          animate={{
-            fill:
-              stage === 'absorb'  ? '#f97316' :
-              stage === 'store'   ? '#f59e0b' :
-              stage === 'release' ? '#22bfe0' : '#94a3b8',
-            y:
-              stage === 'absorb'  ? 30 :
-              stage === 'store'   ? 50 :
-              stage === 'release' ? 100 : 110,
-            height:
-              stage === 'absorb'  ? 118 :
-              stage === 'store'   ? 98  :
-              stage === 'release' ? 48  : 38,
-          }}
-          transition={{ duration: 1.2, ease: 'easeInOut' }}
-        />
-      </g>
-    </svg>
-  )
-}
-
-function ThermalCycle() {
+function ThermalCycleSimple() {
   const [stage, setStage] = useState(0)
   const stages = [
-    {
-      key: 'absorb',
-      label: 'Absorption',
-      Icon: Sun,
-      color: '#f59e0b',
-      title: 'Solar absorption',
-      body: 'Carbon-black skin absorbs incident radiation (~98% α). Graphite immediately spreads it laterally so no local hot spot forms — the whole surface heats together.',
-      metric: '~98%',
-      metricLabel: 'α solar',
-    },
-    {
-      key: 'store',
-      label: 'Storage',
-      Icon: FlaskConical,
-      color: '#22bfe0',
-      title: 'Phase-change storage',
-      body: 'Once the PCM (n-eicosane) hits its transition temperature, further heat goes into the melt rather than into temperature. Latent heat acts as a buffer while ambient keeps rising.',
-      metric: '~247',
-      metricLabel: 'kJ/kg latent',
-    },
-    {
-      key: 'release',
-      label: 'Release',
-      Icon: Snowflake,
-      color: '#6366f1',
-      title: 'Controlled release',
-      body: 'When ambient drops, the PCM freezes and releases stored latent heat back into the copper substrate, which conducts it out to the sink over the evening tail.',
-      metric: '~400',
-      metricLabel: 'W/m·K sink',
-    },
+    { key: 'absorb',  label: 'Absorb',  Icon: Sun,          color: '#f59e0b',
+      body: 'Incoming heat enters the composite through the absorbing outer layer.' },
+    { key: 'store',   label: 'Store',   Icon: FlaskConical, color: '#22bfe0',
+      body: 'A phase-change layer buffers the energy without raising temperature.' },
+    { key: 'release', label: 'Release', Icon: Snowflake,    color: '#6366f1',
+      body: 'When the ambient cools, the stored energy leaves through the substrate.' },
   ]
   const s = stages[stage]
 
   useEffect(() => {
-    const id = setInterval(() => setStage(v => (v + 1) % stages.length), 5200)
+    const id = setInterval(() => setStage(v => (v + 1) % stages.length), 3800)
     return () => clearInterval(id)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
@@ -487,71 +177,80 @@ function ThermalCycle() {
         ))}
       </div>
 
-      <div className="grid md:grid-cols-[1fr_auto] gap-4 items-start">
-        <div className="rounded-xl bg-surface-3/60 border border-line overflow-hidden p-3">
-          <CompositeCrossSection stage={s.key} />
-        </div>
+      <div className="relative rounded-xl bg-surface-3/60 border border-line overflow-hidden p-4">
+        <svg viewBox="0 0 320 180" className="w-full h-52">
+          {/* Layered stack — abstract, no material labels */}
+          <rect x="20" y="30"  width="280" height="20" fill="#111827" opacity="0.85" />
+          <rect x="20" y="55"  width="280" height="18" fill="#1f2937" opacity="0.85" />
+          <rect x="20" y="78"  width="280" height="40" fill="#0e7490" opacity="0.85" />
+          <rect x="20" y="122" width="280" height="26" fill="#a16207" opacity="0.85" />
+          <rect x="20" y="30"  width="280" height="118" fill="none" stroke="rgba(148,163,184,0.28)" />
+
+          <AnimatePresence mode="wait">
+            {s.key === 'absorb' && (
+              <motion.g key="a" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+                {[0,1,2,3,4,5,6].map(i => (
+                  <motion.line
+                    key={i}
+                    x1={60 + i * 32} y1={-2}
+                    x2={60 + i * 32} y2={29}
+                    stroke={s.color} strokeWidth="2" strokeLinecap="round"
+                    animate={{ opacity: [0.15, 1, 0.15] }}
+                    transition={{ duration: 1.4, repeat: Infinity, delay: i * 0.12 }}
+                  />
+                ))}
+              </motion.g>
+            )}
+            {s.key === 'store' && (
+              <motion.g key="b" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+                <motion.rect
+                  x="20" width="280" fill="url(#gradstore)"
+                  animate={{ y: 78 + 40, height: 0, opacity: [0, 1, 1] }}
+                  initial={{ y: 118, height: 0 }}
+                  transition={{ duration: 0 }}
+                />
+                <motion.rect
+                  x="20" width="280" fill="#f97316" opacity="0.55"
+                  initial={{ y: 118, height: 0 }}
+                  animate={{ y: 78, height: 40 }}
+                  transition={{ duration: 2, ease: 'easeInOut' }}
+                />
+              </motion.g>
+            )}
+            {s.key === 'release' && (
+              <motion.g key="c" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+                {[0,1,2,3,4,5,6].map(i => (
+                  <motion.line
+                    key={i}
+                    x1={60 + i * 32} y1={150}
+                    x2={60 + i * 32} y2={175}
+                    stroke={s.color} strokeWidth="2" strokeLinecap="round"
+                    animate={{ opacity: [0.15, 1, 0.15], y2: [172, 178, 172] }}
+                    transition={{ duration: 1.5, repeat: Infinity, delay: i * 0.12 }}
+                  />
+                ))}
+              </motion.g>
+            )}
+          </AnimatePresence>
+        </svg>
+
         <AnimatePresence mode="wait">
           <motion.div
             key={s.key}
-            initial={{ opacity: 0, y: 6 }}
+            initial={{ opacity: 0, y: 4 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -6 }}
-            transition={{ duration: 0.25 }}
-            className="w-full md:w-64 rounded-xl border border-line bg-surface-3/40 p-4"
+            exit={{ opacity: 0, y: -4 }}
+            transition={{ duration: 0.22 }}
+            className="mt-2 flex items-start gap-2"
           >
-            <div className="flex items-center gap-2">
-              <s.Icon className="w-4 h-4" style={{ color: s.color }} />
-              <div className="text-[10.5px] font-mono uppercase tracking-[0.22em] text-gray-500">
-                Stage {String(stage + 1).padStart(2, '0')} · {s.label}
-              </div>
-            </div>
-            <div className="text-white font-semibold text-base leading-tight mt-1">{s.title}</div>
-            <div className="text-sm text-gray-300 leading-relaxed mt-2">{s.body}</div>
-            <div className="mt-3 pt-3 border-t border-line">
-              <div className="text-2xl font-bold text-white tabular-nums leading-none">{s.metric}</div>
-              <div className="text-[10px] font-mono uppercase tracking-[0.22em] text-gray-400 mt-1">{s.metricLabel}</div>
+            <s.Icon className="w-4 h-4 mt-0.5 flex-shrink-0" style={{ color: s.color }} />
+            <div>
+              <div className="text-white font-semibold text-sm">{s.label}</div>
+              <div className="text-sm text-gray-300 leading-relaxed">{s.body}</div>
             </div>
           </motion.div>
         </AnimatePresence>
       </div>
-    </div>
-  )
-}
-
-/* ------------------------------------------------------------------- */
-/* Applications matrix                                                   */
-/* ------------------------------------------------------------------- */
-
-const APPS = [
-  { Icon: Battery, title: 'EV battery thermal buffer', status: 'Theoretical',
-    body: 'Layered PCM architecture buffers fast-charge heat before the pack has to react.' },
-  { Icon: Home,    title: 'Solar roofing system',      status: 'Conceptual',
-    body: 'Capture midday heat, release it into the building over the evening tail.' },
-  { Icon: Cpu,     title: 'Stirling dissipator',       status: 'Design phase',
-    body: 'Cold-side heat rejection using conductive networks plus latent buffering.' },
-  { Icon: FlaskConical, title: 'MDT framework',        status: 'Research',
-    body: 'Design principles and methodology so future studies inherit a shared vocabulary.' },
-]
-
-function ApplicationsGrid() {
-  return (
-    <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-3">
-      {APPS.map((a, i) => (
-        <motion.div
-          key={a.title}
-          initial={{ opacity: 0, y: 8 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.3 }}
-          transition={{ delay: i * 0.06 }}
-          className="group rounded-xl border border-line bg-surface-3/40 p-4 hover:border-brand-500/40 transition-colors"
-        >
-          <a.Icon className="w-5 h-5 text-brand-300 group-hover:text-brand-200 transition-colors" />
-          <div className="text-white font-semibold text-sm mt-2">{a.title}</div>
-          <p className="text-[12px] text-gray-400 mt-1.5 leading-relaxed">{a.body}</p>
-          <div className="mt-3 text-[10px] font-mono uppercase tracking-[0.18em] text-amber-300/80">{a.status}</div>
-        </motion.div>
-      ))}
     </div>
   )
 }
@@ -564,151 +263,97 @@ export default function BETH() {
   return (
     <ProjectLayout>
       <PageHero
-        kicker="Theoretical framework · Passive thermal systems"
+        kicker="Speculative framework · Passive thermal systems"
         code="P/06"
         title="BET-H · Biological Elastin Thermoregulation"
-        subtitle="A framework that abstracts elastin's entropy-driven behavior into a design pattern for passive thermal systems: PCM, graphite, carbon black, and copper arranged so that thermodynamic function lives in the material, not in a control loop."
+        subtitle="A speculative framework inspired by elastin's entropy-driven behavior in nature. The concept lives here in outline form; the technical detail (materials, formulations, sizing) is intentionally held back while the work is still in progress."
         chips={project.tech || []}
-        status={{ label: 'R&D', tone: 'brand', pulse: true }}
+        status={{ label: 'R&D · early', tone: 'brand', pulse: true }}
       />
 
-      {/* STAR overview */}
       <STARSection star={project.star} title="Overview" />
 
-      {/* Hypothesis + biological spark */}
+      {/* The idea */}
       <section className="pb-10">
         <Container>
           <SectionTitle
-            kicker="Biological spark"
-            code="H/01"
-            title="Why elastin?"
-            subtitle="Elastin manages energy through entropy changes in its hydration shell. Stretch it and molecular disorder increases, absorbing heat. Release it and order returns, expelling heat. No active metabolism required."
-          />
-          <div className="grid md:grid-cols-[1fr_1.1fr] gap-5">
-            <Glass>
-              <div className="text-white font-semibold">The 4.5× signal</div>
-              <p className="text-sm text-gray-300 mt-2 leading-relaxed">
-                At 37&nbsp;°C, elastin releases &minus;159.5&nbsp;±&nbsp;5&nbsp;mJ/g internally
-                while the mechanical work put in is only 35.5&nbsp;±&nbsp;0.3&nbsp;mJ/g. The
-                4.5× difference comes from water reorientation in the hydration
-                shell, not polymer deformation.
-              </p>
-              <div className="grid grid-cols-3 gap-2 mt-4">
-                <MetricBox value="4.5×" label="Thermal vs mechanical" sub="Water dominates" />
-                <MetricBox value="ΔS"   label="Entropy driver"        sub="Hydration reorientation" />
-                <MetricBox value="0 W"  label="External power"        sub="Passive by design" />
-              </div>
-              <p className="text-sm text-gray-300 mt-4 leading-relaxed">
-                <span className="text-accent-400 font-semibold">BET-H proposes:</span> this
-                isn't unique to elastin. It is a design principle. Materials can regulate
-                thermal energy through reversible structural transitions alone.
-              </p>
-            </Glass>
-            <Glass>
-              <InteractiveElastin />
-              <p className="text-xs text-gray-500 mt-3 leading-relaxed">
-                Simplified visualization. Chains splay under stretch; water molecules
-                reorient. Diagram auto-cycles so state is always visible; click to hold.
-              </p>
-            </Glass>
-          </div>
-        </Container>
-      </section>
-
-      {/* Material stack */}
-      <section className="pb-10">
-        <Container>
-          <SectionTitle
-            kicker="Material-driven thermoregulation"
-            code="M/02"
-            title="The stack"
-            subtitle="Four abundant, cheap materials arranged so heat can enter easily, be spread laterally, buffered in a phase transition, and rejected cleanly. No moving parts, no sensors, no control loop."
-          />
-          <div className="grid md:grid-cols-[1.1fr_1fr] gap-5">
-            <MaterialStack />
-            <Glass>
-              <div className="text-white font-semibold mb-2">How each layer earns its place</div>
-              <ul className="space-y-3 text-sm text-gray-300 leading-relaxed">
-                <li className="flex gap-2"><span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-brand-400 flex-shrink-0" /><span><b className="text-white">Carbon black</b> for near-perfect solar absorption and mechanical reinforcement. Cheap, durable, globally available.</span></li>
-                <li className="flex gap-2"><span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-brand-400 flex-shrink-0" /><span><b className="text-white">Graphite sheets</b> for anisotropic conductivity. Fast lateral spread, limited through-plane leak.</span></li>
-                <li className="flex gap-2"><span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-brand-400 flex-shrink-0" /><span><b className="text-white">PCM (n-eicosane)</b> for latent buffering. Absorbs energy at the phase point without raising temperature.</span></li>
-                <li className="flex gap-2"><span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-brand-400 flex-shrink-0" /><span><b className="text-white">Copper substrate</b> for isotropic sinking. Structural backbone and heat highway to the environment.</span></li>
-              </ul>
-            </Glass>
-          </div>
-        </Container>
-      </section>
-
-      {/* Thermal cycle */}
-      <section className="pb-10">
-        <Container>
-          <SectionTitle
-            kicker="Thermal cycle"
-            code="T/03"
-            title="Absorb · Store · Release"
-            subtitle="System intelligence emerges from the sequence, not from a controller. Each stage is passive; sequence is enforced by geometry and phase-transition temperatures."
-          />
-          <Glass>
-            <ThermalCycle />
-          </Glass>
-        </Container>
-      </section>
-
-      {/* Properties + principles */}
-      <section className="pb-10">
-        <Container>
-          <SectionTitle
-            kicker="Properties"
-            code="P/04"
-            title="Framework principles + numbers"
+            kicker="The idea"
+            code="I/01"
+            title="Order and disorder do the thermodynamic work"
+            subtitle="Elastin manages energy through reversible structural transitions in its hydration shell. Stretch it and disorder increases, absorbing heat. Release it and order returns, releasing heat. No power required."
           />
           <div className="grid md:grid-cols-2 gap-5">
+            <EntropyToggle />
             <Glass>
-              <div className="grid grid-cols-2 gap-3">
-                <MetricBox value="~247"  label="Latent heat"              sub="kJ/kg · n-eicosane" />
-                <MetricBox value="~4300" label="In-plane conductivity"    sub="W/m·K · graphite" />
-                <MetricBox value="~98%"  label="Solar absorption"         sub="α · carbon black" />
-                <MetricBox value="~400"  label="Copper conductivity"      sub="W/m·K · isotropic" />
-              </div>
-            </Glass>
-            <Glass>
-              <div className="text-white font-semibold mb-3">Framework principles</div>
-              <ul className="space-y-2.5 text-sm text-gray-300 leading-relaxed">
-                <li className="flex gap-2"><span className="text-brand-300 mt-0.5">→</span><span><b className="text-white">Abstraction, not imitation.</b> Extract the thermodynamic function from biology; leave the biochemistry.</span></li>
-                <li className="flex gap-2"><span className="text-brand-300 mt-0.5">→</span><span><b className="text-white">Passive by design.</b> System intelligence lives in material properties and geometry, not in a controller.</span></li>
-                <li className="flex gap-2"><span className="text-brand-300 mt-0.5">→</span><span><b className="text-white">Scalable materials.</b> PCM, graphite, carbon black, and copper are abundant, cheap, and manufacturable.</span></li>
-                <li className="flex gap-2"><span className="text-brand-300 mt-0.5">→</span><span><b className="text-white">Research status.</b> Conceptual applications require experimental validation and durability testing before any product claim.</span></li>
-              </ul>
+              <div className="text-white font-semibold">What BET-H proposes</div>
+              <p className="text-sm text-gray-300 mt-2 leading-relaxed">
+                The behavior above isn't unique to elastin. It's a design principle:
+                arrange a small stack of common engineering materials so that
+                thermodynamic function lives in the structure itself. The system
+                responds to its environment through geometry and physics alone.
+              </p>
+              <p className="text-sm text-gray-300 mt-3 leading-relaxed">
+                No sensors. No control loop. No moving parts.
+              </p>
             </Glass>
           </div>
         </Container>
       </section>
 
-      {/* Applications */}
+      {/* Cycle */}
       <section className="pb-10">
         <Container>
           <SectionTitle
-            kicker="Conceptual applications"
-            code="A/05"
-            title="Where the framework lands"
+            kicker="Behavior"
+            code="B/02"
+            title="Absorb, store, release"
+            subtitle="Three passive stages. What each stage does; not what materials or numbers back it. Ask for the deeper write-up if it's relevant to your team."
           />
-          <ApplicationsGrid />
-          <CornerBrackets className="mt-5 rounded-lg border border-amber-400/25 bg-amber-500/[0.05] p-4">
-            <p className="text-sm text-amber-200/90 leading-relaxed">
-              These applications are theoretical. They require experimental validation,
-              durability testing, and performance characterization under real-world
-              conditions before any product-level claim can be made.
-            </p>
+          <ThermalCycleSimple />
+        </Container>
+      </section>
+
+      {/* Deliberately reserved */}
+      <section className="pb-10">
+        <Container>
+          <SectionTitle
+            kicker="Deliberately reserved"
+            code="D/03"
+            title="Held back while the work is in progress"
+          />
+          <CornerBrackets className="rounded-2xl border border-line bg-surface-2/60 backdrop-blur-sm p-6">
+            <div className="grid md:grid-cols-[1fr_auto] gap-4 items-center">
+              <div>
+                <p className="text-[15px] text-gray-200 leading-relaxed">
+                  Specific formulations, layer stacks, application-specific sizing,
+                  and validation-run data are not published on the site yet.
+                  I'll walk through the technical depth in a live conversation
+                  once we have context on what your team is trying to do.
+                </p>
+                <ul className="mt-3 space-y-1.5 text-sm text-gray-300 leading-relaxed list-disc pl-5">
+                  <li>Material stack details and reasoning</li>
+                  <li>Ballpark thermal capacity and time constants</li>
+                  <li>Application matrix (transport, structures, thermal storage)</li>
+                  <li>Next-step validation plan and instrumentation</li>
+                </ul>
+              </div>
+              <a
+                href="mailto:alexbrow@uw.edu?subject=BET-H%20framework"
+                className="glow-btn inline-flex items-center gap-2 px-4 py-3 rounded-lg bg-brand-500 text-white font-semibold hover:bg-brand-400 transition-colors whitespace-nowrap"
+              >
+                <Mail className="w-4 h-4" />
+                Reach out for depth
+              </a>
+            </div>
           </CornerBrackets>
         </Container>
       </section>
 
-      {/* AAR */}
       <AARSection aar={project.aar} />
 
       <ProjectCTA
         title="Rethinking thermal systems"
-        body="This framework replaces mechanical complexity with material intelligence: embed thermodynamic function into the structure so systems respond to their environment through physics alone."
+        body="This framework replaces mechanical complexity with material intelligence. If that overlaps with your team's work, I'm happy to talk through the depth in a private conversation."
         primary={{ label: 'Discuss research', to: '/#contact' }}
       />
 
