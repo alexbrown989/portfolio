@@ -6,9 +6,10 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { motion, useReducedMotion } from 'framer-motion'
-import { ArrowRight, ArrowUpRight, Circle } from 'lucide-react'
+import { ArrowRight, Circle } from 'lucide-react'
 import { site } from '../content/siteConfig'
 import { CornerBrackets } from '../shared/ui'
+import ResumeLink from './ResumeLink'
 
 const container = {
   hidden: { opacity: 0 },
@@ -176,14 +177,7 @@ export default function Hero() {
           >
             Explore projects
           </a>
-          <a
-            href="/resume.pdf"
-            target="_blank"
-            rel="noreferrer"
-            className="inline-flex items-center gap-2 px-5 py-3 rounded-lg border border-line text-gray-300 hover:text-white hover:border-brand-400/60 transition-colors"
-          >
-            Resume <ArrowUpRight className="w-4 h-4" />
-          </a>
+          <ResumeLink />
         </motion.div>
 
         {/* System readout */}
