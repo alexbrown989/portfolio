@@ -135,70 +135,59 @@ function GearTrainSim() {
   const scale = inputRpm / 4000
   const outputTorque = 169.04 * scale
 
-  // Geometry — six gears meshed left to right, then centered in the SVG.
-  // 1) Compute natural radii proportional to pitch diameter with a floor
-  //    so the smallest pinions still read as gears (min ~ 22 px).
-  // 2) Lay them out tangent (center-to-center = rA + rB).
-  // 3) Measure the total footprint and translate the whole group so the
-  //    train sits centered in the SVG viewbox.
+  // Geometry — four shafts, compound pairs stacked concentrically.
+  // Real train: G1 | G2+G3 | G4+G5 | G6
+  // Stage 1 meshes G1→G2, stage 2 meshes G3→G4, stage 3 meshes G5→G6.
+  // Radii stay proportional to pitch diameter (no floor that warps ratios).
 
-  const svgW = 900, svgH = 280
-  const gearR = (d) => Math.max(22, d * 15)  // px per inch of pitch diameter
+  const svgW = 900, svgH = 320
+  const gearR = (d) => d * 22  // px per inch of pitch diameter
+  const cy = svgH / 2 + 8
+  const padX = 36
 
-  const layout = []
-  const cy = svgH / 2
-  let x = 0
-  for (let i = 0; i < STAGES.length; i++) {
-    const stage = STAGES[i]
-    const rDr = gearR(stage.driver.d)
-    const rDn = gearR(stage.driven.d)
-    if (i === 0) {
-      layout.push({ role: 'driver', gear: stage.driver, cx: x + rDr, cy, r: rDr, sign: 1 })
-      const drivenCx = x + rDr + rDr + rDn
-      layout.push({ role: 'driven', gear: stage.driven, cx: drivenCx, cy, r: rDn, sign: -1 })
-      x = drivenCx + rDn
-    } else {
-      // Stage i's driver shares its centerline with the previous stage's
-      // driven (single shaft), so we DON'T advance x before it.
-      const prev = layout[layout.length - 1]
-      layout.push({ role: 'driver', gear: stage.driver, cx: prev.cx, cy, r: rDr, sign: prev.sign, shared: true })
-      const drivenCx = prev.cx + rDr + rDn
-      layout.push({ role: 'driven', gear: stage.driven, cx: drivenCx, cy, r: rDn, sign: -prev.sign })
-      x = drivenCx + rDn
-    }
+  const [s1, s2, s3] = STAGES
+  const r = {
+    G1: gearR(s1.driver.d),
+    G2: gearR(s1.driven.d),
+    G3: gearR(s2.driver.d),
+    G4: gearR(s2.driven.d),
+    G5: gearR(s3.driver.d),
+    G6: gearR(s3.driven.d),
   }
 
-  // Center the whole train horizontally in the SVG. Track outermost edges
-  // (leftmost gear center minus its radius, rightmost center plus its radius).
-  const leftEdge  = layout[0].cx - layout[0].r
-  const rightEdge = layout[layout.length - 1].cx + layout[layout.length - 1].r
-  const trainW    = rightEdge - leftEdge
-  const xOffset   = (svgW - trainW) / 2 - leftEdge
-  for (const g of layout) g.cx += xOffset
+  // Shaft centers from successive mesh distances (driver + driven radii).
+  const shaft = [0, 0, 0, 0]
+  shaft[0] = padX + r.G1
+  shaft[1] = shaft[0] + r.G1 + r.G2
+  shaft[2] = shaft[1] + r.G3 + r.G4
+  shaft[3] = shaft[2] + r.G5 + r.G6
 
-  // Per-gear rotation angle. Rotation flips through each mesh, and the
-  // relative speed = ratio of the driving to driven gear teeth.
-  // We track running angle in radians using per-gear teeth ratios so
-  // consecutive gears mesh correctly.
-  const angles = []
-  let cumulative = phase
-  layout.forEach((g, i) => {
-    if (i === 0) angles.push(cumulative)
-    else {
-      const prev = layout[i - 1]
-      // Meshed gears rotate opposite; speed ratio = prev.teeth / this.teeth
-      const ratio = prev.gear.teeth / g.gear.teeth
-      cumulative = -cumulative * ratio
-      // For a shared shaft (same shaft as previous), take the same angle.
-      if (g.shared) cumulative = angles[i - 1]
-      angles.push(cumulative)
-    }
-  })
+  // Center the four-shaft train in the viewBox.
+  const leftEdge  = shaft[0] - r.G1
+  const rightEdge = shaft[3] + r.G6
+  const xOffset   = (svgW - (rightEdge - leftEdge)) / 2 - leftEdge
+  for (let i = 0; i < shaft.length; i++) shaft[i] += xOffset
+
+  // Draw order: large compound gears first, then pinions on top.
+  const layout = [
+    { id: 'G2', gear: s1.driven, cx: shaft[1], cy, r: r.G2, angle: -phase * (s1.driver.teeth / s1.driven.teeth), z: 1 },
+    { id: 'G4', gear: s2.driven, cx: shaft[2], cy, r: r.G4, angle:  phase * (s1.driver.teeth / s1.driven.teeth) * (s2.driver.teeth / s2.driven.teeth), z: 1 },
+    { id: 'G6', gear: s3.driven, cx: shaft[3], cy, r: r.G6, angle: -phase * (s1.driver.teeth / s1.driven.teeth) * (s2.driver.teeth / s2.driven.teeth) * (s3.driver.teeth / s3.driven.teeth), z: 1 },
+    { id: 'G1', gear: s1.driver, cx: shaft[0], cy, r: r.G1, angle:  phase, z: 2 },
+    { id: 'G3', gear: s2.driver, cx: shaft[1], cy, r: r.G3, angle: -phase * (s1.driver.teeth / s1.driven.teeth), z: 2 }, // same shaft as G2
+    { id: 'G5', gear: s3.driver, cx: shaft[2], cy, r: r.G5, angle:  phase * (s1.driver.teeth / s1.driven.teeth) * (s2.driver.teeth / s2.driven.teeth), z: 2 }, // same shaft as G4
+  ]
+
+  const stageBands = [
+    { stage: 1, ratio: s1.ratio, x1: shaft[0], x2: shaft[1], rpm: `${s1.input.rpm} → ${s1.output.rpm}` },
+    { stage: 2, ratio: s2.ratio, x1: shaft[1], x2: shaft[2], rpm: `${s2.input.rpm} → ${s2.output.rpm}` },
+    { stage: 3, ratio: s3.ratio, x1: shaft[2], x2: shaft[3], rpm: `${s3.input.rpm} → ${s3.output.rpm}` },
+  ]
 
   return (
     <div className="rounded-xl border border-line bg-surface-3/60 overflow-hidden">
       <div className="p-4">
-        <svg viewBox={`0 0 ${svgW} ${svgH}`} className="w-full h-72 bg-black/40 rounded-lg border border-line">
+        <svg viewBox={`0 0 ${svgW} ${svgH}`} className="w-full h-80 bg-black/40 rounded-lg border border-line">
           <defs>
             <radialGradient id="gb-steel">
               <stop offset="0%" stopColor="#22bfe0" stopOpacity="0.9" />
@@ -210,61 +199,68 @@ function GearTrainSim() {
             </radialGradient>
           </defs>
 
-          {/* Baseline shaft line */}
+          {/* Shaft baseline */}
           <line x1="20" y1={cy} x2={svgW - 20} y2={cy} stroke="rgba(148,163,184,0.18)" strokeWidth="1" strokeDasharray="4 4" />
 
-          {/* Gears */}
-          {layout.map((g, i) => {
+          {/* Stage brackets — span mesh pairs on consecutive shafts */}
+          {stageBands.map((s) => (
+            <g key={`stage-${s.stage}`}>
+              <line x1={s.x1} x2={s.x2} y1={22} y2={22} stroke="rgba(34,191,224,0.45)" strokeWidth="1.25" />
+              <line x1={s.x1} x2={s.x1} y1={18} y2={26} stroke="rgba(34,191,224,0.45)" strokeWidth="1.25" />
+              <line x1={s.x2} x2={s.x2} y1={18} y2={26} stroke="rgba(34,191,224,0.45)" strokeWidth="1.25" />
+              <text x={(s.x1 + s.x2) / 2} y={14} textAnchor="middle"
+                fontFamily="ui-monospace, JetBrains Mono, monospace"
+                fontSize="10" fill="rgba(148,163,184,0.9)"
+                style={{ letterSpacing: '0.12em', textTransform: 'uppercase' }}>
+                Stage {s.stage} · {s.ratio.toFixed(1)}:1 · {s.rpm} RPM
+              </text>
+            </g>
+          ))}
+
+          {/* Gears (large first, compound pinions on top) */}
+          {layout.map((g) => {
             const mat = materialFill(g.gear.material)
+            const toothH = Math.max(4, Math.min(8, g.r * 0.12))
             return (
-              <g key={g.gear.id} transform={`translate(${g.cx}, ${g.cy}) rotate(${angles[i] * 180 / Math.PI})`}>
+              <g key={g.id} transform={`translate(${g.cx}, ${g.cy}) rotate(${g.angle * 180 / Math.PI})`}>
                 <path
-                  d={gearPath({ cx: 0, cy: 0, r: g.r, teeth: g.gear.teeth, toothH: 6 })}
+                  d={gearPath({ cx: 0, cy: 0, r: g.r, teeth: Math.min(g.gear.teeth, 48), toothH })}
                   fill={mat.fill}
                   stroke={mat.stroke}
                   strokeWidth="1"
+                  opacity={g.z === 1 ? 0.92 : 1}
                 />
-                <circle cx="0" cy="0" r="8" fill="#0f172a" stroke={mat.stroke} strokeWidth="1.5" />
-                <line x1="0" y1="0" x2={g.r - 10} y2="0" stroke={mat.stroke} strokeWidth="2" />
+                <circle cx="0" cy="0" r={Math.max(5, g.r * 0.12)} fill="#0f172a" stroke={mat.stroke} strokeWidth="1.5" />
+                <line x1="0" y1="0" x2={g.r * 0.72} y2="0" stroke={mat.stroke} strokeWidth="2" />
               </g>
             )
           })}
 
-          {/* Gear labels (bottom of each gear) */}
-          {layout.map((g, i) => (
-            <text
-              key={`lbl-${g.gear.id}-${i}`}
-              x={g.cx} y={g.cy + g.r + 16}
-              textAnchor="middle"
-              fontFamily="ui-monospace, JetBrains Mono, monospace"
-              fontSize="10"
-              fill={g.gear.material.includes('Steel') ? 'rgba(125,211,252,0.85)' : 'rgba(203,213,225,0.85)'}
-              style={{ letterSpacing: '0.12em', textTransform: 'uppercase' }}
-            >
-              {g.gear.id} · {g.gear.teeth}T
-            </text>
+          {/* Shaft ticks */}
+          {shaft.map((sx, i) => (
+            <circle key={`shaft-${i}`} cx={sx} cy={cy} r="3" fill="rgba(148,163,184,0.55)" />
           ))}
 
-          {/* Stage brackets along the top */}
-          {STAGES.map((s, i) => {
-            const startIdx = i === 0 ? 0 : 2 * i
-            const endIdx   = startIdx + 1
-            const startX = layout[startIdx].cx
-            const endX   = layout[endIdx].cx
-            return (
-              <g key={`stage-${s.stage}`}>
-                <line x1={startX} x2={endX} y1={20} y2={20} stroke="rgba(34,191,224,0.4)" strokeWidth="1" />
-                <line x1={startX} x2={startX} y1={16} y2={24} stroke="rgba(34,191,224,0.4)" strokeWidth="1" />
-                <line x1={endX}   x2={endX}   y1={16} y2={24} stroke="rgba(34,191,224,0.4)" strokeWidth="1" />
-                <text x={(startX + endX) / 2} y={12} textAnchor="middle"
-                  fontFamily="ui-monospace, JetBrains Mono, monospace"
-                  fontSize="10" fill="rgba(148,163,184,0.85)"
-                  style={{ letterSpacing: '0.14em', textTransform: 'uppercase' }}>
-                  Stage {s.stage} · {s.ratio.toFixed(1)}:1
-                </text>
-              </g>
-            )
-          })}
+          {/* Labels under each shaft */}
+          {[
+            { cx: shaft[0], lines: ['G1 · 20T', 'input'] },
+            { cx: shaft[1], lines: ['G2 · 100T', 'G3 · 24T'] },
+            { cx: shaft[2], lines: ['G4 · 96T', 'G5 · 24T'] },
+            { cx: shaft[3], lines: ['G6 · 96T', 'output'] },
+          ].map((lbl) => (
+            <g key={`lbl-${lbl.cx}`}>
+              <text x={lbl.cx} y={cy + Math.max(r.G2, r.G4, r.G6) + 18} textAnchor="middle"
+                fontFamily="ui-monospace, JetBrains Mono, monospace" fontSize="10"
+                fill="rgba(203,213,225,0.9)" style={{ letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+                {lbl.lines[0]}
+              </text>
+              <text x={lbl.cx} y={cy + Math.max(r.G2, r.G4, r.G6) + 32} textAnchor="middle"
+                fontFamily="ui-monospace, JetBrains Mono, monospace" fontSize="9"
+                fill="rgba(148,163,184,0.7)" style={{ letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+                {lbl.lines[1]}
+              </text>
+            </g>
+          ))}
         </svg>
       </div>
 
@@ -419,7 +415,7 @@ export default function Gearbox() {
                 height={520}
                 cameraPosition={[900, 900, 900]}
                 controlsTarget={[0, 0, 0]}
-                zoom={2.2}
+                fitMargin={1.5}
               />
             </Suspense>
             <div className="px-5 py-3 border-t border-line text-xs text-gray-400 font-mono">

@@ -40,6 +40,9 @@ export default function Coastal() {
         status={{ label: 'Active', tone: 'brand', pulse: true }}
       />
 
+      {/* Overview first — same pattern as other case studies */}
+      <STARSection star={project.star} title="Overview" />
+
       {/* Crisis */}
       <section className="pb-10">
         <Container>
@@ -178,7 +181,7 @@ export default function Coastal() {
                   height={420}
                   cameraPosition={[900, 900, 900]}
                   controlsTarget={[0, 0, 0]}
-                  zoom={2.1}
+                  fitMargin={1.45}
                 />
               </Suspense>
               <div className="px-5 py-3 border-t border-line text-xs text-gray-400 font-mono">
@@ -189,7 +192,6 @@ export default function Coastal() {
         </section>
       )}
 
-      <STARSection star={project.star} />
       <AARSection aar={project.aar} />
 
       <ProjectCTA
