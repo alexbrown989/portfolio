@@ -135,34 +135,46 @@ function GearTrainSim() {
   const scale = inputRpm / 4000
   const outputTorque = 169.04 * scale
 
-  // Geometry — six gears meshed left to right.
-  const svgW = 900, svgH = 260
-  // Pitch radii scale to fit — clamp to fit the whole train in the viewbox.
-  const scaleGeom = 22
-  const gearR = (d) => Math.max(18, d * scaleGeom * 0.5 * 0.6)
+  // Geometry — six gears meshed left to right, then centered in the SVG.
+  // 1) Compute natural radii proportional to pitch diameter with a floor
+  //    so the smallest pinions still read as gears (min ~ 22 px).
+  // 2) Lay them out tangent (center-to-center = rA + rB).
+  // 3) Measure the total footprint and translate the whole group so the
+  //    train sits centered in the SVG viewbox.
 
-  // Position stages left → right, with pinion (small) sharing shaft with
-  // the previous stage's driven (large).
+  const svgW = 900, svgH = 280
+  const gearR = (d) => Math.max(22, d * 15)  // px per inch of pitch diameter
+
   const layout = []
-  let cx = 60
   const cy = svgH / 2
+  let x = 0
   for (let i = 0; i < STAGES.length; i++) {
     const stage = STAGES[i]
     const rDr = gearR(stage.driver.d)
     const rDn = gearR(stage.driven.d)
     if (i === 0) {
-      layout.push({ role: 'driver', gear: stage.driver, cx, cy, r: rDr, sign: 1 })
-      cx += rDr + rDn - 3
-      layout.push({ role: 'driven', gear: stage.driven, cx, cy, r: rDn, sign: -1 })
+      layout.push({ role: 'driver', gear: stage.driver, cx: x + rDr, cy, r: rDr, sign: 1 })
+      const drivenCx = x + rDr + rDr + rDn
+      layout.push({ role: 'driven', gear: stage.driven, cx: drivenCx, cy, r: rDn, sign: -1 })
+      x = drivenCx + rDn
     } else {
       // Stage i's driver shares its centerline with the previous stage's
-      // driven (single shaft), so we DON'T advance cx before drawing it.
+      // driven (single shaft), so we DON'T advance x before it.
       const prev = layout[layout.length - 1]
       layout.push({ role: 'driver', gear: stage.driver, cx: prev.cx, cy, r: rDr, sign: prev.sign, shared: true })
-      cx = prev.cx + rDr + rDn - 3
-      layout.push({ role: 'driven', gear: stage.driven, cx, cy, r: rDn, sign: -prev.sign })
+      const drivenCx = prev.cx + rDr + rDn
+      layout.push({ role: 'driven', gear: stage.driven, cx: drivenCx, cy, r: rDn, sign: -prev.sign })
+      x = drivenCx + rDn
     }
   }
+
+  // Center the whole train horizontally in the SVG. Track outermost edges
+  // (leftmost gear center minus its radius, rightmost center plus its radius).
+  const leftEdge  = layout[0].cx - layout[0].r
+  const rightEdge = layout[layout.length - 1].cx + layout[layout.length - 1].r
+  const trainW    = rightEdge - leftEdge
+  const xOffset   = (svgW - trainW) / 2 - leftEdge
+  for (const g of layout) g.cx += xOffset
 
   // Per-gear rotation angle. Rotation flips through each mesh, and the
   // relative speed = ratio of the driving to driven gear teeth.

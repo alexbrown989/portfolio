@@ -64,7 +64,7 @@ export default function Turret() {
         <Container>
           <SectionTitle
             kicker="Design → fabrication"
-            code="D/02"
+            code="D/01"
             title="From CAD to bench-ready hardware in under 24 hours"
           />
           <div className="grid lg:grid-cols-2 gap-5">
@@ -115,7 +115,7 @@ export default function Turret() {
           <Container>
             <SectionTitle
               kicker="CAD"
-              code="C/03"
+              code="A/02"
               title="Interactive assembly"
               subtitle="Explore the multi-part SolidWorks assembly. Key design features: press-fit servo mounts and a stabilized dual-axis gimbal."
             />
@@ -147,7 +147,7 @@ export default function Turret() {
         <Container>
           <SectionTitle
             kicker="Controls"
-            code="C/04"
+            code="C/03"
             title="Embedded control & motion profile"
           />
           <div className="grid lg:grid-cols-2 gap-5">
@@ -203,7 +203,7 @@ export default function Turret() {
         <Container>
           <SectionTitle
             kicker="Looking toward the future"
-            code="R/05"
+            code="R/04"
             title="What the platform is scoped to do next"
             subtitle="None of the phases below have shipped on the current hardware. This is the R&D backlog the mechanical + embedded foundation was built to unlock."
           />

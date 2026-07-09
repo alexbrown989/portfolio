@@ -43,19 +43,20 @@ function CoastalWaveSim() {
   // Reset world-state whenever the scenario toggles.
   useEffect(() => {
     const cssW = 720, cssH = 320
-    // Barrier column depends on scenario:
-    // - defended:   crest breaks against the seawall face at x = 380
-    // - undefended: crest breaks against the shoreline face at x = 500
-    const seawallX     = 380
+    // Shore layout: ground starts at x=500. The seawall (when defended)
+    // is anchored INTO the shoreline at that exact column — no gap,
+    // reads as a real seawall bolted to the shore. Wave impacts at the
+    // seawall face when defended, or at the shore face when undefended.
     const groundStartX = 500
-    const barrierX     = defended ? seawallX + 8 : groundStartX
+    const seawallX     = groundStartX - 4    // wall sits flush against the shore
+    const barrierX     = defended ? seawallX - 4 : groundStartX
     stateRef.current = {
       cssW, cssH,
       seawallX, groundStartX, barrierX,
-      loss: new Float32Array(cssW - groundStartX), // per-column erosion depth (px)
+      loss: new Float32Array(cssW - groundStartX),
       spray:     [],
       sediment:  [],
-      breaking:  [],   // wave-face crash particles at the barrier
+      breaking:  [],
       t: 0,
       lastCrestPast: false,
       strikes: 0,
@@ -186,17 +187,24 @@ function CoastalWaveSim() {
         }
       }
 
-      // Seawall — drawn on TOP of water so the wave clearly ends against it
+      // Seawall — drawn flush against the shore, embedded into the ground.
+      // The wave impacts its water-facing face; back face melds into land.
       if (defended) {
         ctx.fillStyle = '#334155'
         ctx.strokeStyle = 'rgba(34,191,224,0.7)'
         ctx.lineWidth = 1.4
-        ctx.fillRect(s.seawallX - 8, 140, 16, 76)
-        ctx.strokeRect(s.seawallX - 8, 140, 16, 76)
-        ctx.fillStyle = 'rgba(148,163,184,0.85)'
-        ctx.font = '10px ui-monospace, JetBrains Mono, monospace'
-        ctx.textAlign = 'center'
-        ctx.fillText('SEAWALL', s.seawallX, 130)
+        // Vertical wall: 8px wide, from y=132 (crest) down to y=210 (into ground)
+        ctx.fillRect(s.seawallX - 8, 132, 8, 78)
+        ctx.strokeRect(s.seawallX - 8, 132, 8, 78)
+        // Beveled top cap for readability
+        ctx.beginPath()
+        ctx.moveTo(s.seawallX - 8, 132)
+        ctx.lineTo(s.seawallX - 4, 128)
+        ctx.lineTo(s.seawallX,     132)
+        ctx.closePath()
+        ctx.fillStyle = '#475569'
+        ctx.fill()
+        ctx.stroke()
       }
 
       // Draw incoming crest as a raised arc up to the barrier
@@ -353,15 +361,6 @@ function CoastalWaveSim() {
         setEnergyPct(Math.round(s.lastEnergy))
         setErosionPct(Math.round(erosion))
       }
-
-      // HUD footer
-      ctx.fillStyle = 'rgba(226,232,240,0.75)'
-      ctx.font = '10px ui-monospace, JetBrains Mono, monospace'
-      ctx.textAlign = 'left'
-      ctx.fillText(
-        `SCENARIO · ${defended ? 'DEFENDED' : 'UNDEFENDED'}   STRIKES · ${s.strikes}   PARTICLES · ${s.spray.length + s.breaking.length + s.sediment.length}`,
-        12, 306,
-      )
 
       if (!reduce) raf = requestAnimationFrame(step)
     }

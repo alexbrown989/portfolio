@@ -122,7 +122,7 @@ export default function Micromobility() {
         <Container>
           <SectionTitle
             kicker="The challenge"
-            code="C/02"
+            code="C/01"
             title="From policy to pavement"
             subtitle="Coding hundreds of municipal documents into machine-usable analytical constructs, then turning those constructs into requirements engineers can build against."
           />
@@ -160,7 +160,7 @@ export default function Micromobility() {
         <Container>
           <SectionTitle
             kicker="Quantifying the gap"
-            code="Q/03"
+            code="Q/02"
             title="Where U.S. programs fall short"
             subtitle="Analysis of 250+ programs shows measurable gaps. Leading cities are progressing, but nationally there are clear targets for engineering and policy intervention."
           />
@@ -182,7 +182,7 @@ export default function Micromobility() {
         <Container>
           <SectionTitle
             kicker="Result"
-            code="R/04"
+            code="R/03"
             title="Translating gaps into engineering constraints"
           />
           <div className="grid md:grid-cols-3 gap-4">

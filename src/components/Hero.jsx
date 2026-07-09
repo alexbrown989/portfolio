@@ -128,7 +128,7 @@ export default function Hero() {
           className="mt-7 text-5xl md:text-7xl xl:text-8xl font-extrabold tracking-tight leading-[1.02]"
         >
           <span className="text-white">{site.hero.titleTop}</span>
-          <span className="block text-transparent bg-clip-text bg-gradient-to-r from-brand-300 via-brand-200 to-accent-400 font-semibold text-2xl md:text-3xl xl:text-4xl mt-3 tracking-[0.02em]">
+          <span className="block text-gray-300 font-semibold text-2xl md:text-3xl xl:text-4xl mt-3 tracking-[0.02em]">
             {site.hero.titleBottom}
           </span>
         </motion.h1>
