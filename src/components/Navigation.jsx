@@ -1,8 +1,11 @@
 // src/components/Navigation.jsx
 import { useState, useEffect } from 'react'
 import { useLocation, Link } from 'react-router-dom'
-import { Menu, X, FileDown } from 'lucide-react'
+import { Menu, X } from 'lucide-react'
 import { site } from '../content/siteConfig'
+import OrbitWidget from './OrbitWidget'
+import ZuluClock from './ZuluClock'
+import ResumeLink from './ResumeLink'
 
 export default function Navigation() {
   const [scrolled, setScrolled] = useState(false)
@@ -97,15 +100,9 @@ export default function Navigation() {
                 </Link>
               )
             })}
-            <a
-              href="/resume.pdf"
-              target="_blank"
-              rel="noreferrer"
-              className="ml-2 inline-flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-semibold text-white bg-brand-500 hover:bg-brand-400 transition-colors"
-            >
-              <FileDown className="w-3.5 h-3.5" />
-              Resume
-            </a>
+            <ZuluClock />
+            <OrbitWidget />
+            <ResumeLink variant="ghost" className="ml-1" />
           </div>
 
           {/* Mobile toggle */}
@@ -142,14 +139,13 @@ export default function Navigation() {
                 </Link>
               )
             )}
-            <a
-              href="/resume.pdf"
-              target="_blank"
-              rel="noreferrer"
-              className="block py-2 px-3 mt-2 rounded-lg text-center font-semibold text-white bg-brand-500 hover:bg-brand-400"
+            <ResumeLink
+              variant="primary"
+              className="w-full justify-center mt-2"
+              showIcon={false}
             >
               Resume
-            </a>
+            </ResumeLink>
           </div>
         )}
       </div>

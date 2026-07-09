@@ -1,240 +1,63 @@
 // src/pages/projects/Turret.jsx
-import { lazy, Suspense, useEffect, useRef, useState } from 'react'
+import { lazy, Suspense } from 'react'
 import ProjectLayout from '../ProjectLayout'
 import {
   Container, PageHero, SectionTitle, Glass, MetricBox,
   ProjectPager, ProjectCTA, STARSection, AARSection,
 } from '../../shared/ui'
 import { projects } from '../../content/projects'
-import { motion, useReducedMotion } from 'framer-motion'
+import { usePageMeta } from '../../shared/usePageMeta'
+import { motion } from 'framer-motion'
+import { Target, Eye, Cpu, GitMerge } from 'lucide-react'
 
 const STLViewer = lazy(() => import('../../shared/STLViewer.jsx'))
 
 const project = projects.find(p => p.id === 'turret') || {}
 
-/* ------------------------------------------------------------------- */
-/* Signature interactive: radar scan simulator                          */
-/* ------------------------------------------------------------------- */
-//
-// Top-down azimuth view. Turret at the origin. A sweeping arm traces
-// the current heading; each dwell point leaves a fading trail so the
-// randomized-scan pattern reads visually. Sliders control the
-// per-axis range and the sweep speed. Coverage % and cycles / min
-// update live.
-
-function TurretScanSim() {
-  const [range, setRange] = useState(45)      // ±deg per axis
-  const [speed, setSpeed] = useState(1.0)     // 0.4 – 1.8x
-  const [angle, setAngle] = useState(0)       // current sweep angle
-  const [trail, setTrail] = useState([])       // recent points
-  const reduce = useReducedMotion()
-  const dir = useRef(1)
-  const raf = useRef(0)
-  const t0 = useRef(0)
-
-  useEffect(() => {
-    if (reduce) return
-    const step = (now) => {
-      if (!t0.current) t0.current = now
-      const dt = (now - t0.current) / 16.67
-      t0.current = now
-      setAngle(prev => {
-        // Simulated randomized sweep: base linear scan plus a small
-        // pseudo-random micro-adjustment so the trail feels like the
-        // real "randomized sweep pattern".
-        const jitter = (Math.sin(now / 300) + Math.cos(now / 175)) * 1.5
-        let next = prev + dir.current * (0.9 * speed) * dt + jitter * 0.05 * dt
-        if (next >= range)  { next = range;  dir.current = -1 }
-        if (next <= -range) { next = -range; dir.current = 1 }
-        return next
-      })
-      raf.current = requestAnimationFrame(step)
-    }
-    raf.current = requestAnimationFrame(step)
-    return () => cancelAnimationFrame(raf.current)
-  }, [range, speed, reduce])
-
-  // Append trail points, keep the last N so the fading readout stays cheap.
-  useEffect(() => {
-    setTrail(t => {
-      const next = [...t, angle]
-      if (next.length > 60) next.shift()
-      return next
-    })
-  }, [angle])
-
-  const cx = 200, cy = 200, R = 160
-  const rad = (angle - 90) * Math.PI / 180  // -90 so 0° is up
-
-  // Fan of possible directions the turret could point (light shading).
-  const fanD = (() => {
-    const start = (-range - 90) * Math.PI / 180
-    const end   = (+range - 90) * Math.PI / 180
-    return `
-      M ${cx} ${cy}
-      L ${cx + Math.cos(start) * R} ${cy + Math.sin(start) * R}
-      A ${R} ${R} 0 0 1 ${cx + Math.cos(end) * R} ${cy + Math.sin(end) * R}
-      Z
-    `
-  })()
-
-  const cyclesPerMin = ((0.9 * speed) * 60 * 60 / (range * 4)).toFixed(1)
-  const coverage = Math.round((range / 90) * 100)
-
-  return (
-    <div className="rounded-xl border border-line bg-surface-3/60 overflow-hidden">
-      <div className="grid md:grid-cols-[1fr_260px] gap-0">
-        <div className="p-4">
-          <svg viewBox="0 0 400 400" className="w-full h-64 md:h-80 bg-black/40 rounded-lg border border-line">
-            {/* Compass ring */}
-            {[45, 90, 135, 180].map(step => (
-              <circle key={step} cx={cx} cy={cy} r={(step / 180) * R}
-                fill="none" stroke="rgba(148,163,184,0.14)" />
-            ))}
-            {/* Cross hairs */}
-            <line x1={cx - R} y1={cy} x2={cx + R} y2={cy} stroke="rgba(148,163,184,0.18)" />
-            <line x1={cx} y1={cy - R} x2={cx} y2={cy + R} stroke="rgba(148,163,184,0.18)" />
-
-            {/* Operating fan */}
-            <path d={fanD} fill="rgba(34,191,224,0.08)" stroke="rgba(34,191,224,0.35)" />
-
-            {/* Trail */}
-            {trail.map((a, i) => {
-              const r = (a - 90) * Math.PI / 180
-              const opacity = (i + 1) / trail.length * 0.6
-              return (
-                <line
-                  key={i}
-                  x1={cx} y1={cy}
-                  x2={cx + Math.cos(r) * R * 0.98} y2={cy + Math.sin(r) * R * 0.98}
-                  stroke="#22bfe0"
-                  strokeWidth="0.6"
-                  opacity={opacity}
-                />
-              )
-            })}
-
-            {/* Active beam */}
-            <line
-              x1={cx} y1={cy}
-              x2={cx + Math.cos(rad) * R} y2={cy + Math.sin(rad) * R}
-              stroke="#22d3ee" strokeWidth="2"
-              style={{ filter: 'drop-shadow(0 0 6px rgba(34,211,238,0.6))' }}
-            />
-            {/* Beam tip target */}
-            <circle
-              cx={cx + Math.cos(rad) * R} cy={cy + Math.sin(rad) * R}
-              r="4" fill="#22d3ee"
-            />
-
-            {/* Turret base */}
-            <circle cx={cx} cy={cy} r="12" fill="#0f172a" stroke="#22bfe0" strokeWidth="1.5" />
-            <circle cx={cx} cy={cy} r="4" fill="#22bfe0" />
-
-            {/* HUD labels */}
-            <text x="12" y="20" fontFamily="ui-monospace, JetBrains Mono, monospace" fontSize="10"
-              fill="rgba(148,163,184,0.75)" style={{ letterSpacing: '0.14em', textTransform: 'uppercase' }}>
-              Azimuth trace · randomized sweep
-            </text>
-            <text x={cx} y={cy - R - 8} textAnchor="middle" fontFamily="ui-monospace, JetBrains Mono, monospace"
-              fontSize="9" fill="rgba(148,163,184,0.75)" style={{ letterSpacing: '0.2em' }}>
-              0°
-            </text>
-            <text x={cx} y={cy + R + 16} textAnchor="middle" fontFamily="ui-monospace, JetBrains Mono, monospace"
-              fontSize="9" fill="rgba(148,163,184,0.5)" style={{ letterSpacing: '0.2em' }}>
-              180°
-            </text>
-            <text x={cx - R - 6} y={cy + 4} textAnchor="end" fontFamily="ui-monospace, JetBrains Mono, monospace"
-              fontSize="9" fill="rgba(148,163,184,0.5)" style={{ letterSpacing: '0.2em' }}>
-              -90°
-            </text>
-            <text x={cx + R + 6} y={cy + 4} fontFamily="ui-monospace, JetBrains Mono, monospace"
-              fontSize="9" fill="rgba(148,163,184,0.5)" style={{ letterSpacing: '0.2em' }}>
-              +90°
-            </text>
-          </svg>
-        </div>
-
-        {/* Controls + readout */}
-        <div className="p-4 md:border-l border-line space-y-4">
-          <div>
-            <div className="text-[10.5px] font-mono uppercase tracking-[0.22em] text-gray-500 mb-1">
-              Range · ±{range}°
-            </div>
-            <input
-              type="range" min="15" max="90" step="5"
-              value={range}
-              onChange={(e) => setRange(Number(e.target.value))}
-              className="w-full accent-brand-500"
-              aria-label="Sweep range per axis"
-            />
-          </div>
-          <div>
-            <div className="text-[10.5px] font-mono uppercase tracking-[0.22em] text-gray-500 mb-1">
-              Speed · {speed.toFixed(1)}x
-            </div>
-            <input
-              type="range" min="4" max="18" step="1"
-              value={Math.round(speed * 10)}
-              onChange={(e) => setSpeed(Number(e.target.value) / 10)}
-              className="w-full accent-brand-500"
-              aria-label="Sweep speed"
-            />
-          </div>
-          <div className="pt-3 border-t border-line grid grid-cols-2 gap-2 text-center">
-            <div>
-              <div className="text-[10px] font-mono uppercase tracking-[0.18em] text-gray-500">Coverage</div>
-              <div className="text-lg font-bold text-white tabular-nums">{coverage}%</div>
-            </div>
-            <div>
-              <div className="text-[10px] font-mono uppercase tracking-[0.18em] text-gray-500">Cycles / min</div>
-              <div className="text-lg font-bold text-white tabular-nums">{cyclesPerMin}</div>
-            </div>
-            <div>
-              <div className="text-[10px] font-mono uppercase tracking-[0.18em] text-gray-500">Repeatability</div>
-              <div className="text-lg font-bold text-brand-200 tabular-nums">0.8°</div>
-            </div>
-            <div>
-              <div className="text-[10px] font-mono uppercase tracking-[0.18em] text-gray-500">Range · spec</div>
-              <div className="text-lg font-bold text-brand-200 tabular-nums">±45°</div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  )
-}
-
+// Roadmap is deliberately marked as future work — none of these have shipped
+// on the current hardware yet. Framing matches "looking toward the future"
+// so nothing over-promises the platform's actual state.
 const roadmap = [
-  { phase: 'Phase 1', title: 'Sensor Fusion',        text: 'Integrate LiDAR + camera modules for environment awareness.' },
-  { phase: 'Phase 2', title: 'On-board Perception',  text: 'Lightweight vision model (e.g. YOLOv8n) for detection and tracking.' },
-  { phase: 'Phase 3', title: 'Autonomous Behaviors', text: 'Target acquisition and centering without operator input.' },
-  { phase: 'Phase 4', title: 'ROS Integration',      text: 'Migrate to ROS for composable behaviors and interoperability.' },
+  {
+    phase: 'Next',    Icon: Eye,
+    title: 'Sensor fusion',
+    text: 'Integrate a LiDAR + camera module so the platform can perceive its environment instead of executing a blind scan.',
+  },
+  {
+    phase: 'Then',    Icon: Cpu,
+    title: 'On-board perception',
+    text: 'Run a lightweight vision model on the compute (e.g. a small YOLO variant) for real-time detection and tracking.',
+  },
+  {
+    phase: 'After',   Icon: Target,
+    title: 'Autonomous behaviors',
+    text: 'Close the loop: target acquisition and centering without operator input, feeding the servo controller directly.',
+  },
+  {
+    phase: 'Long-term', Icon: GitMerge,
+    title: 'ROS integration',
+    text: 'Migrate the control stack to ROS so behaviors compose cleanly and the platform interoperates with other robotics work.',
+  },
 ]
 
 export default function Turret() {
+  usePageMeta({
+    title: '2-Axis Autonomous Turret · Mechatronics · Alex Brown',
+    description: 'SolidWorks multi-part assembly, FDM prints, and NodeMCU/Arduino embedded control for a 2-axis robotic turret. 0.8° angular repeatability over 100 cycles at ±45° per axis.',
+    path: '/projects/turret',
+    image: '/projects/turret.jpg',
+  })
   return (
     <ProjectLayout>
       <PageHero
         kicker="Foundational Platform for Autonomous Systems"
         title="Mechatronics Integration: 2-Axis Robotic Turret"
-        subtitle="Designed, fabricated, and validated a multi-part robotic turret that achieves repeatable positioning under test. Built as a robust R&D platform for sensor fusion and future autonomy."
+        subtitle="Designed, fabricated, and validated a multi-part robotic turret that achieves repeatable positioning under test. Built as a foundation for future sensor fusion and autonomy — not yet closed-loop."
         chips={project.tech || []}
         status={{ label: 'Active', tone: 'brand', pulse: true }}
       />
 
-      {/* Signature interactive */}
-      <section className="pb-10">
-        <Container>
-          <SectionTitle
-            kicker="Interactive"
-            code="I/01"
-            title="Scan simulator · azimuth trace"
-            subtitle="Sweep range and speed under real controls. The fading trail is the randomized-sweep pattern the NodeMCU actually runs; the operating fan shows the servo-limited safe envelope."
-          />
-          <TurretScanSim />
-        </Container>
-      </section>
+      <STARSection star={project.star} title="Overview" />
 
       {/* Assembly + fabrication */}
       <section className="pb-10">
@@ -259,7 +82,7 @@ export default function Turret() {
               <div className="px-5 py-4 border-t border-line">
                 <div className="text-white font-semibold">Assembled platform</div>
                 <p className="text-sm text-gray-300 mt-1.5 leading-relaxed">
-                  Engineered for mechanical stability and precise servo seating; press-fit mounts reduce backlash to a repeatable minimum.
+                  Engineered for mechanical stability and precise servo seating. Press-fit mounts reduce backlash to a repeatable minimum.
                 </p>
               </div>
             </Glass>
@@ -375,45 +198,49 @@ export default function Turret() {
         </Container>
       </section>
 
-      {/* Roadmap */}
+      {/* Roadmap — deliberately framed as future work */}
       <section className="pb-10">
         <Container>
           <SectionTitle
-            kicker="Roadmap"
+            kicker="Looking toward the future"
             code="R/05"
-            title="Where this platform is going"
+            title="What the platform is scoped to do next"
+            subtitle="None of the phases below have shipped on the current hardware. This is the R&D backlog the mechanical + embedded foundation was built to unlock."
           />
-          <Glass>
-            <div className="relative pl-6">
-              <div className="absolute left-2 top-1 bottom-1 w-px bg-gradient-to-b from-brand-400/60 via-brand-500/25 to-transparent" />
-              {roadmap.map((r, i) => (
-                <motion.div
-                  key={r.title}
-                  initial={{ opacity: 0, x: 8 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true, amount: 0.4 }}
-                  transition={{ delay: i * 0.06 }}
-                  className="relative mb-5 last:mb-0"
-                >
-                  <div className="absolute -left-3 top-1.5 w-2.5 h-2.5 rounded-full bg-brand-400 shadow-ring-brand" />
-                  <div className="text-[11px] font-mono uppercase tracking-[0.18em] text-brand-300/90">
-                    {r.phase}
+          <div className="grid md:grid-cols-2 gap-3">
+            {roadmap.map((r, i) => (
+              <motion.div
+                key={r.title}
+                initial={{ opacity: 0, y: 8 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.3 }}
+                transition={{ delay: i * 0.06 }}
+              >
+                <Glass hover={false} className="h-full">
+                  <div className="flex items-start gap-3">
+                    <div className="w-9 h-9 rounded-lg bg-surface-3/60 border border-line grid place-items-center flex-shrink-0">
+                      <r.Icon className="w-4 h-4 text-brand-300" />
+                    </div>
+                    <div>
+                      <div className="text-[10.5px] font-mono uppercase tracking-[0.22em] text-brand-300/90">
+                        {r.phase} · not yet built
+                      </div>
+                      <div className="text-white font-semibold mt-0.5">{r.title}</div>
+                      <p className="text-sm text-gray-300 mt-1.5 leading-relaxed">{r.text}</p>
+                    </div>
                   </div>
-                  <div className="text-white font-semibold">{r.title}</div>
-                  <p className="text-sm text-gray-300 mt-1 leading-relaxed">{r.text}</p>
-                </motion.div>
-              ))}
-            </div>
-          </Glass>
+                </Glass>
+              </motion.div>
+            ))}
+          </div>
         </Container>
       </section>
 
-      <STARSection star={project.star} />
       <AARSection aar={project.aar} />
 
       <ProjectCTA
         title="Why this project matters"
-        body="End-to-end mechatronics execution: mechanical architecture, rapid fabrication, embedded control, and validation. Designed to scale into intelligent robotics through iterative R&D."
+        body="End-to-end mechatronics execution: mechanical architecture, rapid fabrication, embedded control, and validation. Designed as scaffolding for the perception and autonomy work that comes next."
         primary={{ label: 'Get in touch', to: '/#contact' }}
       />
 

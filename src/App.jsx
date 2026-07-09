@@ -6,6 +6,7 @@ import { Suspense, lazy, Component } from 'react'
 import { Routes, Route } from 'react-router-dom'
 import AppShell from './shared/AppShell'
 import Hero from './components/Hero'
+import { usePageMeta } from './shared/usePageMeta'
 
 /* ----- Lazy modules ----- */
 const Projects        = lazy(() => import('./components/Projects'))
@@ -24,6 +25,7 @@ const Turret        = lazy(() => import('./pages/projects/Turret.jsx'))
 const VibrationPCM  = lazy(() => import('./pages/projects/VibrationPCM.jsx'))
 const MultiToolFab  = lazy(() => import('./pages/projects/MultiToolFab.jsx'))
 const Gearbox       = lazy(() => import('./pages/projects/Gearbox.jsx'))
+const ResumePrint   = lazy(() => import('./pages/ResumePrint.jsx'))
 const NotFound      = lazy(() => import('./pages/NotFound.jsx'))
 
 /* ----- Error boundary ----- */
@@ -71,6 +73,11 @@ function LoadingFallback({ message = 'Loading…' }) {
 
 /* ----- Home content ----- */
 function HomeContent() {
+  usePageMeta({
+    title: 'Alex Brown · Mechanical Engineer · Aerospace-Focused',
+    description: 'U.S. Navy veteran and mechanical engineering student. Lead Intern at Verus Aerospace — AS9102 FAI, GD&T, Infor VISUAL ERP configuration control, Quality Clinic operations. Seeking full-time engineering roles starting Summer 2027.',
+    path: '/',
+  })
   return (
     <>
       <section id="hero" className="min-h-[92vh] pt-24 md:pt-20 pb-12 flex items-center">
@@ -165,6 +172,9 @@ export default function App() {
         <Route path="/projects/vibration-pcm"  element={withBoundary('VibrationPCM',  <VibrationPCM />)} />
         <Route path="/projects/multitool"      element={withBoundary('MultiToolFab',  <MultiToolFab />)} />
         <Route path="/projects/gearbox"        element={withBoundary('Gearbox',       <Gearbox />)} />
+
+        {/* Print-friendly HTML resume */}
+        <Route path="/resume" element={withBoundary('ResumePrint', <ResumePrint />)} />
 
         {/* Generic fallback for anything data-driven */}
         <Route path="/projects/:id" element={withBoundary('ProjectDetail', <ProjectDetail />)} />

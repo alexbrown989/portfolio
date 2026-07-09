@@ -234,12 +234,12 @@ export const knowledgeBase = [
   },
   {
     id: 'gearbox',
-    title: 'Reduction Gearbox · Robotic Elbow',
-    tags: ['gearbox', 'reduction', 'robotic elbow', 'gears', 'design project', 'mechanical design', 'tolerance stack', 'stack-up', 'design review'],
-    terms: ['gearbox', 'reduction gearbox', 'robotic elbow', 'gear design'],
+    title: 'Three-Stage Reduction Gearbox · Robotic Elbow',
+    tags: ['gearbox', 'reduction', 'robotic elbow', 'gears', 'agma', 'mechanical design', 'tolerance stack', 'stack-up', 'design review'],
+    terms: ['gearbox', 'reduction gearbox', 'robotic elbow', 'gear design', 'agma'],
     patterns: ['gearbox project', 'robotic elbow', 'mechanical design project'],
     answer:
-      'Mar–Apr 2026. Small-team, quarter-long design of a shaft reduction gearbox for a 1-DOF robotic elbow. I contributed on gear-ratio selection, torque transmission, shaft sizing, bearing selection, keyway calls, and tolerance stack-up for backlash control. Maintained the live CAD assembly for shaft alignment, gear placement, bearing fitment, and fastener access. Approved through design review.',
+      'Mar–Apr 2026. Quarter-long small-team design of a three-stage spur-gear reduction for a 1-DOF robotic elbow. 4000 → 50 RPM, 2.11 → 169 lb-in, total ratio 80:1. Full AGMA 2001-D04 bending-stress analysis across all six gears: mixed 4140-steel / 6061-T6-aluminum stack, every gear passes with margin (G6 closest to the limit at FoS 2.30). Live CAD assembly + tolerance stack-up + GD&T. Design-review approved.',
     links: [{ label: 'Case study', to: '/projects/gearbox' }],
   },
   {
@@ -275,12 +275,15 @@ export const knowledgeBase = [
   {
     id: 'beth',
     title: 'BET-H · Biological Elastin Thermoregulation',
-    tags: ['beth', 'bet-h', 'elastin', 'thermal', 'pcm', 'graphite', 'carbon black', 'biological', 'bio-inspired', 'passive', 'material'],
+    tags: ['beth', 'bet-h', 'elastin', 'thermal', 'biological', 'bio-inspired', 'passive'],
     terms: ['beth', 'bet-h', 'elastin', 'thermal framework', 'bio-inspired thermal'],
     patterns: ['beth project', 'bet-h', 'elastin project', 'bio-inspired thermal', 'passive thermal'],
     answer:
-      'Framework that abstracts elastin\'s entropy-driven behavior into a design pattern for passive thermal systems. Materials: n-eicosane PCM (~247 kJ/kg latent heat), graphite (~4300 W/m·K in-plane), carbon black (~98% solar absorption), copper (~400 W/m·K isotropic). Framework principles: abstraction over imitation, passive by design, scalable materials. Conceptual applications: EV battery thermal buffer, solar roofing, Stirling dissipator.',
-    links: [{ label: 'Case study', to: '/projects/beth' }],
+      'Speculative framework that abstracts elastin\'s entropy-driven behavior in nature into a design pattern for passive thermal systems. The concept is public; specific formulations, layer stacks, and validation data are intentionally held back while the work is in progress. Happy to walk a serious team through the technical depth in a private conversation.',
+    links: [
+      { label: 'Case study', to: '/projects/beth' },
+      { label: 'Email',      to: 'mailto:alexbrow@uw.edu', external: true },
+    ],
   },
   {
     id: 'micromobility',

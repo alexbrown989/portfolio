@@ -7,6 +7,7 @@ import {
   ProjectPager, ProjectCTA, STARSection, AARSection,
 } from '../../shared/ui'
 import { projects } from '../../content/projects'
+import { usePageMeta } from '../../shared/usePageMeta'
 
 const STLViewer = lazy(() => import('../../shared/STLViewer.jsx'))
 const project = projects.find(p => p.id === 'vibration') || {}
@@ -128,39 +129,6 @@ function ImageCard({ src, alt, aspect = 'aspect-[4/3]' }) {
   )
 }
 
-/* ---------------------- Hypothesis visual ---------------------- */
-function HypothesisBeams() {
-  return (
-    <div className="grid md:grid-cols-2 gap-3 h-56 md:h-64">
-      <div className="relative rounded-xl border border-line bg-surface-3/60 overflow-hidden">
-        <div className="absolute top-2 left-3 text-xs font-mono uppercase tracking-[0.18em] text-gray-400">
-          Control (no heat)
-        </div>
-        <motion.div
-          className="absolute left-4 right-4 top-1/2 h-[2px] bg-gray-300 origin-left"
-          initial={{ rotate: 0 }}
-          animate={{ rotate: [0, -4, 4, -4, 4, 0] }}
-          transition={{ duration: 2.2, repeat: Infinity, ease: 'easeInOut' }}
-        />
-      </div>
-      <div className="relative rounded-xl border border-line bg-surface-3/60 overflow-hidden">
-        <div className="absolute top-2 left-3 text-xs font-mono uppercase tracking-[0.18em] text-gray-400">
-          PCM composite (heated)
-        </div>
-        <div className="absolute top-2 right-3 text-[10px] bg-amber-500/15 border border-amber-400/40 text-amber-200 px-2 py-0.5 rounded">
-          heat ↑
-        </div>
-        <motion.div
-          className="absolute left-4 right-4 top-1/2 h-[2px] bg-brand-300 origin-left"
-          initial={{ rotate: 0 }}
-          animate={{ rotate: [0, -6, 4, -2, 1, 0] }}
-          transition={{ duration: 2.2, repeat: Infinity, ease: 'easeInOut' }}
-        />
-      </div>
-    </div>
-  )
-}
-
 /* ---------------------- Damping waveform ---------------------- */
 function DampingWaveform() {
   const build = (amp, decay, freq, len) => {
@@ -196,6 +164,12 @@ function DampingWaveform() {
 }
 
 export default function VibrationPCM() {
+  usePageMeta({
+    title: 'Vibration Analysis of Phase-Change Materials · Alex Brown',
+    description: 'Novel PCM composite with a custom monolithic test rig. Validated a ~10× increase in damping factor and a near-critical damping state when thermally triggered.',
+    path: '/projects/vibration',
+    image: '/projects/oscilloscope_pcm.jpg',
+  })
   return (
     <ProjectLayout>
       <PageHero
@@ -205,6 +179,8 @@ export default function VibrationPCM() {
         chips={project.tech || []}
         status={{ label: 'Active', tone: 'brand', pulse: true }}
       />
+
+      <STARSection star={project.star} title="Overview" />
 
       {/* Signature interactive */}
       <section className="pb-10">
@@ -219,36 +195,20 @@ export default function VibrationPCM() {
         </Container>
       </section>
 
-      {/* Hypothesis */}
+      {/* Hypothesis + sample matrix */}
       <section className="pb-10">
         <Container>
           <SectionTitle
             kicker="Hypothesis"
             code="H/02"
             title="Can a material’s damping be switched on?"
-            subtitle="Embed a phase-change material (like beeswax) in an epoxy matrix and thermally trigger it into a near-critically damped state on demand."
+            subtitle="Embed a phase-change material (like beeswax) in an epoxy matrix and thermally trigger it into a near-critically damped state on demand. Prove it against a systematic sample matrix."
           />
           <div className="grid md:grid-cols-2 gap-5">
-            <Glass><HypothesisBeams /></Glass>
             <Glass>
               <ImageCard src="/projects/pcm_samples.jpg" alt="Eight fabricated composite samples" />
               <p className="text-sm text-gray-300 mt-3 leading-relaxed">
                 An 8-sample matrix isolated the effect of epoxy, beeswax (PCM), and graphite (conductive filler) on dynamic properties.
-              </p>
-            </Glass>
-          </div>
-        </Container>
-      </section>
-
-      {/* Material synthesis */}
-      <section className="pb-10">
-        <Container>
-          <SectionTitle kicker="Synthesis" code="S/03" title="Methodical material preparation" />
-          <div className="grid md:grid-cols-2 gap-5">
-            <Glass>
-              <ImageCard src="/projects/pcm_mixing_setup.jpg" alt="Numbered cups for precise mixing" aspect="aspect-[16/10]" />
-              <p className="text-sm text-gray-300 mt-3 leading-relaxed">
-                Systematic protocol measured each component by mass / volume for consistency across the 8-sample matrix.
               </p>
             </Glass>
             <Glass>
@@ -264,14 +224,38 @@ export default function VibrationPCM() {
         </Container>
       </section>
 
-      {/* Apparatus */}
+      {/* Material synthesis */}
+      <section className="pb-10">
+        <Container>
+          <SectionTitle kicker="Synthesis" code="S/03" title="Methodical material preparation" />
+          <div className="grid md:grid-cols-2 gap-5">
+            <Glass>
+              <ImageCard src="/projects/pcm_mixing_setup.jpg" alt="Numbered cups for precise mixing" aspect="aspect-[16/10]" />
+              <p className="text-sm text-gray-300 mt-3 leading-relaxed">
+                Numbered mixing cups keep every component traceable back to the sample it feeds. Every mass / volume measured before pouring so the matrix is reproducible.
+              </p>
+            </Glass>
+            <Glass>
+              <div className="text-[11px] font-mono uppercase tracking-[0.18em] text-brand-300/90 mb-2">Process controls</div>
+              <ul className="text-sm text-gray-300 space-y-2 list-disc pl-5 leading-relaxed">
+                <li><b className="text-white">Traceability:</b> per-sample label on cup, mold, and cure card.</li>
+                <li><b className="text-white">Mass control:</b> constituent masses recorded to 0.01 g.</li>
+                <li><b className="text-white">Cure time:</b> constant across samples so only composition varies.</li>
+                <li><b className="text-white">Rejection:</b> voided any sample with visible entrained air.</li>
+              </ul>
+            </Glass>
+          </div>
+        </Container>
+      </section>
+
+      {/* Apparatus — folds Design-Through-Failure lessons in as the surrounding narrative */}
       <section className="pb-10">
         <Container>
           <SectionTitle
             kicker="Apparatus"
             code="A/04"
             title="A case study in iteration"
-            subtitle="The final rig looks simple, but its monolithic structure and adaptable clamp are direct products of three deliberate failures."
+            subtitle="The final rig looks simple. Its monolithic structure and adaptable clamp are the direct product of three deliberate failures: static rigidity that failed dynamically, a modular bed whose bolted joints corrupted readings, and a precision slot that couldn't accept real cast parts."
           />
           <Glass pad={false}>
             <Suspense fallback={
@@ -308,29 +292,10 @@ export default function VibrationPCM() {
         </Container>
       </section>
 
-      {/* Design through failure */}
-      <section className="pb-10">
-        <Container>
-          <SectionTitle kicker="Iteration log" code="L/05" title="Design through failure" />
-          <div className="grid md:grid-cols-3 gap-4">
-            {[
-              { t: 'Failure 1 · static vs dynamic rigidity', d: 'Off-the-shelf vises are made for holding, not vibrating. The experiment needed a vibrationally inert foundation.' },
-              { t: 'Failure 2 · every joint flexes',         d: 'A modular, bed-sized design seemed convenient, but bolted interfaces added micro-movement and corrupted readings.' },
-              { t: 'Failure 3 · the precision trap',         d: 'A closed, perfect slot didn’t accept real cast parts. The open-channel clamp balanced tolerance with stability.' },
-            ].map((c) => (
-              <Glass key={c.t}>
-                <div className="text-white font-semibold">{c.t}</div>
-                <p className="text-sm text-gray-300 mt-1.5 leading-relaxed">{c.d}</p>
-              </Glass>
-            ))}
-          </div>
-        </Container>
-      </section>
-
       {/* Experiment + results */}
       <section className="pb-10">
         <Container>
-          <SectionTitle kicker="Results" code="R/06" title="Experimentation & validated results" />
+          <SectionTitle kicker="Results" code="R/05" title="Experimentation & validated results" />
           <div className="grid md:grid-cols-2 gap-5">
             <Glass>
               <ImageCard src="/projects/rig_sensor.jpg" alt="Sample in the resonance rig with sensor attached" />
@@ -360,7 +325,7 @@ export default function VibrationPCM() {
         <Container>
           <SectionTitle
             kicker="Future work"
-            code="F/07"
+            code="F/06"
             title="From proof-of-concept to engineering solution"
           />
           <Glass>
@@ -374,7 +339,6 @@ export default function VibrationPCM() {
         </Container>
       </section>
 
-      <STARSection star={project.star} />
       <AARSection aar={project.aar} />
 
       <ProjectCTA

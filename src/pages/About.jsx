@@ -8,8 +8,9 @@ import { motion } from 'framer-motion'
 import { Anchor, ShieldCheck, GraduationCap, Wrench, Award, MapPin } from 'lucide-react'
 import ProjectLayout from './ProjectLayout'
 import {
-  Container, PageHero, SectionTitle, Glass, MetricBox, CornerBrackets,
+  Container, PageHero, SectionTitle, Glass, CornerBrackets,
 } from '../shared/ui'
+import { usePageMeta } from '../shared/usePageMeta'
 
 const Contact = lazy(() => import('../components/Contact'))
 const Footer  = lazy(() => import('../components/Footer'))
@@ -23,13 +24,6 @@ const story = [
   `That background is the bedrock of how I approach engineering today. I am not just a student; I am a builder, driven by curiosity about how things work and a compulsion to make them better. My work is a constant dialogue between the theoretical and the tangible: translating a spark of an idea, from a new theory on passive thermodynamics to a two-axis autonomous turret, into fully functional hardware.`,
   `Today that mindset lives inside my internship at Verus Aerospace in Tacoma, WA. I support flight-critical hardware through AS9102 First Article Inspection activities, Infor VISUAL ERP configuration control, and independent over-check inspections on Gulfstream assemblies. As the Lead Intern I also coordinate onboarding for incoming interns and lead the Quality Clinic. Aerospace manufacturing is where operations, GD&T, and real production physics meet, and it is exactly where I want to be.`,
   `Looking forward, I am seeking a full-time engineering role starting Summer 2027 where operational maturity, hands-on manufacturing fluency, and R&D depth all pull in the same direction.`,
-]
-
-const kpis = [
-  { value: '-20%',  label: 'Operational downtime',   sub: 'via logistics engineering' },
-  { value: '92%',   label: 'Training compliance',    sub: '57 personnel · Navy' },
-  { value: '-30%',  label: 'Procedural errors',      sub: 'systematic SOP redesign' },
-  { value: '200+',  label: 'Surgical procedures',    sub: 'zero critical failures' },
 ]
 
 const capabilities = [
@@ -63,6 +57,11 @@ const portfolioLines = [
 /* ------------------------------------------------------------------- */
 
 export default function About() {
+  usePageMeta({
+    title: 'About · Alex Brown · Navy Corpsman → Aerospace Engineer',
+    description: 'From Navy Corpsman to aerospace engineer. Five years of high-stakes Navy operations, then a decisive turn into mechanical engineering R&D, now inside an active aerospace manufacturing and quality role at Verus Aerospace.',
+    path: '/about',
+  })
   const portfolio = useMemo(
     () => portfolioLines.map((line) => {
       const [title, ...rest] = line.split(':')
@@ -159,26 +158,12 @@ export default function About() {
         </Container>
       </section>
 
-      {/* Impact KPIs */}
-      <section className="pb-10">
-        <Container>
-          <SectionTitle
-            kicker="Impact"
-            code="I/02"
-            title="Numbers that hold up under review"
-          />
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-            {kpis.map(k => <MetricBox key={k.label} {...k} />)}
-          </div>
-        </Container>
-      </section>
-
       {/* Portfolio bullets */}
       <section className="pb-10">
         <Container>
           <SectionTitle
             kicker="Active R&D + Manufacturing"
-            code="P/03"
+            code="P/02"
             title="Current research portfolio"
           />
           <div className="grid md:grid-cols-2 gap-3">
@@ -204,7 +189,7 @@ export default function About() {
         <Container>
           <SectionTitle
             kicker="Availability"
-            code="A/04"
+            code="A/03"
             title="Ready to contribute"
           />
           <CornerBrackets className="rounded-2xl border border-line bg-surface-2/60 backdrop-blur-sm p-5 md:p-6">

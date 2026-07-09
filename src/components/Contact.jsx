@@ -1,20 +1,33 @@
 // src/components/Contact.jsx
-import { Mail, Linkedin, FileDown, Circle } from 'lucide-react'
+import { useState } from 'react'
+import { Mail, Linkedin, Circle, Copy, Check, Printer } from 'lucide-react'
 import { SectionTitle } from '../shared/ui'
+import ResumeLink from './ResumeLink'
 
 const DEFAULTS = {
   email: 'alexbrow@uw.edu',
   linkedinUrl: 'https://www.linkedin.com/in/alexanderchasebrown/',
-  resumeUrl: '/resume.pdf',
   badge: 'Available Summer 2027 · Seeking full-time engineering roles',
 }
 
 export default function Contact({
   email = DEFAULTS.email,
   linkedinUrl = DEFAULTS.linkedinUrl,
-  resumeUrl = DEFAULTS.resumeUrl,
   badge = DEFAULTS.badge,
 }) {
+  const [copied, setCopied] = useState(false)
+
+  const copyEmail = async (e) => {
+    e.preventDefault()
+    try {
+      await navigator.clipboard?.writeText(email)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 1600)
+    } catch { /* ignore — fall through to mailto: */
+      window.location.href = `mailto:${email}`
+    }
+  }
+
   return (
     <section aria-labelledby="contact-title">
       <div className="max-w-3xl mx-auto text-center">
@@ -32,6 +45,7 @@ export default function Contact({
         </p>
 
         <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+          {/* Email — mailto on click, secondary copy button */}
           <a
             href={`mailto:${email}`}
             className="glow-btn inline-flex items-center gap-2 px-5 py-3 rounded-lg bg-brand-500 text-white font-semibold hover:bg-brand-400 transition-colors"
@@ -39,6 +53,17 @@ export default function Contact({
             <Mail className="w-4 h-4" />
             {email}
           </a>
+          <button
+            type="button"
+            onClick={copyEmail}
+            className="inline-flex items-center gap-2 px-4 py-3 rounded-lg border border-line-strong text-gray-100 hover:border-brand-400/60 hover:text-white transition-colors"
+            aria-live="polite"
+          >
+            {copied
+              ? <><Check className="w-4 h-4 text-emerald-300" /> Copied</>
+              : <><Copy  className="w-4 h-4" /> Copy email</>
+            }
+          </button>
           <a
             href={linkedinUrl}
             target="_blank"
@@ -48,17 +73,13 @@ export default function Contact({
             <Linkedin className="w-4 h-4 text-brand-300" />
             LinkedIn
           </a>
-          {resumeUrl && (
-            <a
-              href={resumeUrl}
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex items-center gap-2 px-5 py-3 rounded-lg border border-line text-gray-300 hover:text-white hover:border-brand-400/60 transition-colors"
-            >
-              <FileDown className="w-4 h-4" />
-              Resume (PDF)
-            </a>
-          )}
+
+          {/* Resume — PDF (with decrypt animation) + print-friendly HTML */}
+          <ResumeLink />
+          <ResumeLink format="html" showIcon={false}>
+            <Printer className="w-4 h-4" />
+            <span>Print view</span>
+          </ResumeLink>
         </div>
       </div>
     </section>

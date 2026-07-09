@@ -17,6 +17,7 @@ import {
 } from '../../shared/ui'
 import { SafeImage, SafeVideo } from '../../shared/Media'
 import { projects } from '../../content/projects'
+import { usePageMeta } from '../../shared/usePageMeta'
 
 const project = projects.find(p => p.id === 'multitool') || {}
 
@@ -166,6 +167,12 @@ const toleranceTable = [
 ]
 
 export default function MultiToolFab() {
+  usePageMeta({
+    title: 'Multi-Tool Fabrication · GD&T + Machining · Alex Brown',
+    description: 'Fabricated a functional folding multi-tool from raw aluminum on manual mill + CNC. Held ±0.005 in precision, 0.003 in parallelism, 0.002 in flatness against a full GD&T drawing package.',
+    path: '/projects/multitool',
+    image: '/projects/multitool-final.jpg',
+  })
   return (
     <ProjectLayout>
       <PageHero
@@ -297,32 +304,6 @@ export default function MultiToolFab() {
             <MetricBox value="0.003 in"  label="Parallelism control"      sub="Verified w/ dial indicator" />
             <MetricBox value="0.002 in"  label="Flatness control"         sub="Granite + indicator" />
             <MetricBox value="100%"      label="Features inspected"       sub="Recorded to spreadsheet" />
-          </div>
-        </Container>
-      </section>
-
-      {/* Skills / capabilities summary — reads well to a recruiter */}
-      <section className="pb-10">
-        <Container>
-          <SectionTitle
-            kicker="Capabilities demonstrated"
-            code="C/04"
-            title="What this project proves I can do"
-          />
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {[
-              { title: 'Process planning',       body: 'Order-of-operations, fixturing, and inspection strategy planned before touching a machine.' },
-              { title: 'Manual + CNC machining', body: 'Comfortable moving between manual mill and CNC for the right operation on the right feature.' },
-              { title: 'GD&T interpretation',    body: 'Read a full drawing package and translate flatness / parallelism / position callouts into machining strategy.' },
-              { title: 'Metrology',              body: 'Calipers, pin gauges, dial indicators, and granite surface used to prove parts against the print.' },
-              { title: 'Assembly integration',   body: 'Pivots, bushings, spacers, and fasteners integrated into an articulated assembly that actually works.' },
-              { title: 'DFM communication',      body: 'Iterated with machinist feedback on tolerances and features that were expensive or fragile to produce.' },
-            ].map((c) => (
-              <Glass key={c.title}>
-                <div className="text-white font-semibold">{c.title}</div>
-                <p className="text-sm text-gray-300 mt-1.5 leading-relaxed">{c.body}</p>
-              </Glass>
-            ))}
           </div>
         </Container>
       </section>
