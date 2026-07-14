@@ -1,8 +1,46 @@
+# https://alexandercbrown.com/robots.txt
+# Portfolio is fully indexable. Search engines, link-preview bots, and
+# recruiter tooling are welcome. Only heavy binary source assets are gated.
+
 User-agent: *
 Allow: /
+Allow: /projects/
+Allow: /about
+Allow: /resume
+Allow: /sitemap.xml
+Allow: /og.png
+Allow: /favicon.svg
+Allow: /robots.txt
 
-# No crawling of raw source assets
+# Explicit allow for major crawlers (belt-and-suspenders; same as *)
+User-agent: Googlebot
+Allow: /
+
+User-agent: Googlebot-Image
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: DuckDuckBot
+Allow: /
+
+User-agent: LinkedInBot
+Allow: /
+
+User-agent: Twitterbot
+Allow: /
+
+User-agent: Slackbot
+Allow: /
+
+User-agent: facebookexternalhit
+Allow: /
+
+# Keep raw 3D source and Vite hashed bundles out of the index.
+# Page HTML, project media under /projects/, and OG assets stay Allow.
 Disallow: /models/
 Disallow: /assets/
 
 Sitemap: https://alexandercbrown.com/sitemap.xml
+Sitemap: https://www.alexandercbrown.com/sitemap.xml

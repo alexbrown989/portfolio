@@ -1,13 +1,13 @@
 // src/pages/projects/MultiToolFab.jsx
 //
 // Hands-on machining case study. Follows the standard shared-UI layout:
-// PageHero → STAR → media → tolerance table → AAR → CTA → Pager.
+// PageHero → STAR → media → inspection interactive → tolerance table → AAR → CTA → Pager.
 //
-// TODO(alex): drop the following into /public/projects/ (paths already wired):
-//   multitool-final.jpg      — final assembled multi-tool photo
-//   multitool-cnc-1.mp4      — CNC video #1
-//   multitool-cnc-2.mp4      — CNC video #2
-//   multitool-inspection.jpg — (optional) inspection setup / measurement sheet
+// Media (in /public/projects/):
+//   cnc-compressed.mp4           — CNC machining video
+//   milling-compressed.mp4       — manual milling video
+//   multitool-final.jpg          — finished tool laid out
+//   multitool-final-folded.jpg   — finished tool folded
 
 import { useState } from 'react'
 import ProjectLayout from '../ProjectLayout'
@@ -190,41 +190,29 @@ export default function MultiToolFab() {
       {/* STAR summary — the hiring-manager-facing pitch */}
       <STARSection star={project.star} title="Overview" />
 
-      {/* Signature interactive */}
-      <section className="pb-10">
-        <Container>
-          <SectionTitle
-            kicker="Interactive"
-            code="I/01"
-            title="Inspection gauge · verify against the print"
-            subtitle="Pick a feature, drag the needle. The accept band is per the drawing's tolerance callout. Cross into caution and reject bands to see how the same feature reads as pass or fail during a real over-check inspection."
-          />
-          <InspectionGauge />
-        </Container>
-      </section>
-
-      {/* Final part / media strip */}
+      {/* Final part / media — project is complete */}
       <section className="pb-10">
         <Container>
           <SectionTitle
             kicker="Media"
-            code="M/02"
+            code="M/01"
             title="From raw stock to finished assembly"
-            subtitle="Two CNC videos and the finished multi-tool. If any of the media below is missing, drop the corresponding file into /public/projects/. The layout already expects it."
+            subtitle="CNC + manual mill process video, then the finished multi-tool laid out and folded."
           />
-          <div className="grid lg:grid-cols-3 gap-5">
+          <div className="grid md:grid-cols-2 gap-5">
             <Glass pad={false}>
               <div className="p-4">
                 <SafeVideo
-                  src="/projects/multitool-cnc-1.mp4"
-                  label="CNC operation · pass 1"
-                  aspect="aspect-[4/3]"
+                  src={project.videoCnc || '/projects/cnc-compressed.mp4'}
+                  poster={project.image}
+                  label="CNC machining"
+                  aspect="aspect-video"
                 />
               </div>
               <div className="px-5 py-4 border-t border-line">
-                <div className="text-white font-semibold">CNC operation · pass 1</div>
+                <div className="text-white font-semibold">CNC machining</div>
                 <p className="text-sm text-gray-300 mt-1.5 leading-relaxed">
-                  Machining the arm / jaw feature set on the CNC. Fixturing and op order planned so critical faces are cut in a single setup.
+                  CNC pass on the arm / jaw feature set. Fixturing and op order planned so critical faces stay in a single setup.
                 </p>
               </div>
             </Glass>
@@ -232,15 +220,16 @@ export default function MultiToolFab() {
             <Glass pad={false}>
               <div className="p-4">
                 <SafeVideo
-                  src="/projects/multitool-cnc-2.mp4"
-                  label="CNC operation · pass 2"
-                  aspect="aspect-[4/3]"
+                  src={project.videoMill || '/projects/milling-compressed.mp4'}
+                  poster={project.imageFolded || project.image}
+                  label="Manual milling"
+                  aspect="aspect-video"
                 />
               </div>
               <div className="px-5 py-4 border-t border-line">
-                <div className="text-white font-semibold">CNC operation · pass 2</div>
+                <div className="text-white font-semibold">Manual milling</div>
                 <p className="text-sm text-gray-300 mt-1.5 leading-relaxed">
-                  Second setup, second face. Datum surfaces re-referenced so parallelism and flatness callouts stay achievable.
+                  Manual mill work for features that needed hands-on control. Datum surfaces re-referenced so parallelism and flatness stayed achievable.
                 </p>
               </div>
             </Glass>
@@ -249,20 +238,51 @@ export default function MultiToolFab() {
               <div className="p-4">
                 <SafeImage
                   src={project.image || '/projects/multitool-final.jpg'}
-                  alt="Finished folding multi-tool assembly"
-                  label="Finished assembly"
+                  alt="Finished multi-tool laid out"
+                  label="Finished · laid out"
                   aspect="aspect-[4/3]"
                   fit="contain"
                 />
               </div>
               <div className="px-5 py-4 border-t border-line">
-                <div className="text-white font-semibold">Finished assembly</div>
+                <div className="text-white font-semibold">Finished assembly · laid out</div>
                 <p className="text-sm text-gray-300 mt-1.5 leading-relaxed">
-                  Pivots, bushings, spacers, and fasteners integrated into a functional articulated multi-tool. Alignment, fit, and motion verified before sign-off.
+                  Arms, jaws, pivots, bushings, spacers, and fasteners integrated. Alignment, fit, and motion verified against the print.
+                </p>
+              </div>
+            </Glass>
+
+            <Glass pad={false}>
+              <div className="p-4">
+                <SafeImage
+                  src={project.imageFolded || '/projects/multitool-final-folded.jpg'}
+                  alt="Finished multi-tool folded"
+                  label="Finished · folded"
+                  aspect="aspect-[4/3]"
+                  fit="contain"
+                />
+              </div>
+              <div className="px-5 py-4 border-t border-line">
+                <div className="text-white font-semibold">Finished assembly · folded</div>
+                <p className="text-sm text-gray-300 mt-1.5 leading-relaxed">
+                  Folded configuration confirming pivot clearance, stack thickness, and that the articulated joints actually close cleanly.
                 </p>
               </div>
             </Glass>
           </div>
+        </Container>
+      </section>
+
+      {/* Signature interactive */}
+      <section className="pb-10">
+        <Container>
+          <SectionTitle
+            kicker="Interactive"
+            code="I/02"
+            title="Inspection gauge · verify against the print"
+            subtitle="Pick a feature, drag the needle. The accept band is per the drawing's tolerance callout. Cross into caution and reject bands to see how the same feature reads as pass or fail during a real over-check inspection."
+          />
+          <InspectionGauge />
         </Container>
       </section>
 
