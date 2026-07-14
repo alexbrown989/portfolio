@@ -57,6 +57,11 @@ export default function ProjectDetail() {
                   <video
                     src={project.video}
                     controls
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    preload="auto"
                     className="w-full rounded-2xl bg-black object-cover"
                   />
                 </Glass>
