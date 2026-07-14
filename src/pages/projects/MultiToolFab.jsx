@@ -181,8 +181,11 @@ export default function MultiToolFab() {
         subtitle="Fabricated a functional folding multi-tool assembly from raw aluminum stock using manual mill + CNC operations. Held ±0.005 in precision dimensions, 0.003 in parallelism, and 0.002 in flatness against a full GD&T drawing package, and inspected every feature back to the print."
         chips={project.tech || []}
         status={{ label: 'Completed', tone: 'idle' }}
+        image={project.thumb || project.imageFolded || '/projects/thumbs/multitool.jpg'}
+        imageAlt="Finished folding multi-tool"
+        imageFit="cover"
       >
-        <div className="mt-2 text-xs font-mono uppercase tracking-[0.18em] text-gray-500">
+        <div className="mt-2 text-[10.5px] font-mono uppercase tracking-[0.18em] text-gray-500">
           Mar – Jun 2026
         </div>
       </PageHero>
