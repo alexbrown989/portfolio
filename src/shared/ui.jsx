@@ -170,29 +170,49 @@ export function PageHero({
   chips = [],
   status,
   align = 'left',
+  image,
+  imageAlt = '',
+  imageFit = 'cover',
   children,
 }) {
   const alignCls = align === 'center' ? 'text-center items-center' : 'text-left'
+  const hasImage = Boolean(image)
+
   return (
     <section className="pt-24 pb-8">
       <Container>
-        <div className={`flex flex-col gap-3 ${alignCls}`}>
-          {kicker && <Kicker>{kicker}</Kicker>}
-          <h1 className="text-3xl md:text-5xl font-extrabold text-white tracking-tight leading-tight">
-            {title}
-          </h1>
-          {subtitle && (
-            <p className="text-gray-300 max-w-3xl text-[15px] md:text-base leading-relaxed">
-              {subtitle}
-            </p>
+        <div className={hasImage ? 'grid lg:grid-cols-[1.05fr_0.95fr] gap-8 lg:gap-10 items-center' : ''}>
+          <div className={`flex flex-col gap-3 ${alignCls}`}>
+            {kicker && <Kicker>{kicker}</Kicker>}
+            <h1 className="text-3xl md:text-5xl font-extrabold text-white tracking-tight leading-tight">
+              {title}
+            </h1>
+            {subtitle && (
+              <p className="text-gray-300 max-w-3xl text-[15px] md:text-base leading-relaxed">
+                {subtitle}
+              </p>
+            )}
+            {(chips.length > 0 || status) && (
+              <div className="flex flex-wrap items-center gap-2 pt-1">
+                {status && <StatusPill label={status.label} tone={status.tone} pulse={status.pulse} />}
+                {chips.map((c) => <Chip key={c}>{c}</Chip>)}
+              </div>
+            )}
+            {children}
+          </div>
+
+          {hasImage && (
+            <CornerBrackets className="rounded-2xl border border-line bg-surface-2/50 overflow-hidden">
+              <div className="relative aspect-[4/3] md:aspect-[16/11] bg-surface-3">
+                <img
+                  src={image}
+                  alt={imageAlt || ''}
+                  className={`absolute inset-0 w-full h-full ${imageFit === 'contain' ? 'object-contain p-3' : 'object-cover'}`}
+                  loading="eager"
+                />
+              </div>
+            </CornerBrackets>
           )}
-          {(chips.length > 0 || status) && (
-            <div className="flex flex-wrap items-center gap-2 pt-1">
-              {status && <StatusPill label={status.label} tone={status.tone} pulse={status.pulse} />}
-              {chips.map((c) => <Chip key={c}>{c}</Chip>)}
-            </div>
-          )}
-          {children}
         </div>
       </Container>
     </section>
@@ -226,24 +246,38 @@ export function ProjectPager({ currentId }) {
 
   const PagerCard = ({ project, direction }) => {
     const isNext = direction === 'next'
+    const src = project.thumb || project.image
     return (
       <Link
         to={`/projects/${project.id}`}
-        className={`group relative flex-1 rounded-xl border border-line bg-surface-2/50 hover:border-brand-500/40 hover:bg-surface-2 transition-all duration-200 p-5 ${isNext ? 'md:text-right' : ''}`}
+        className={`group relative flex-1 overflow-hidden rounded-xl border border-line bg-surface-2/50 hover:border-brand-500/40 hover:bg-surface-2 transition-all duration-200 ${isNext ? 'md:text-right' : ''}`}
       >
-        <div className={`text-[10.5px] font-mono uppercase tracking-[0.22em] text-gray-500 flex items-center gap-1.5 ${isNext ? 'md:justify-end' : ''}`}>
-          {!isNext && <ArrowLeft className="w-3.5 h-3.5 text-brand-300" />}
-          {isNext ? 'Next case study' : 'Previous case study'}
-          {isNext && <ArrowRight className="w-3.5 h-3.5 text-brand-300" />}
-        </div>
-        <div className="mt-1 text-white font-semibold text-[15px] leading-snug">
-          {project.title}
-        </div>
-        {project.category && (
-          <div className="mt-1 text-[11px] font-mono uppercase tracking-[0.18em] text-brand-300/80">
-            {project.category}
+        {src && (
+          <div className={`relative h-24 overflow-hidden bg-surface-3 ${isNext ? '' : ''}`}>
+            <img
+              src={src}
+              alt=""
+              loading="lazy"
+              className="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:opacity-95 transition-opacity"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-surface-2 via-surface-2/40 to-transparent" />
           </div>
         )}
+        <div className="p-5 pt-4">
+          <div className={`text-[10.5px] font-mono uppercase tracking-[0.22em] text-gray-500 flex items-center gap-1.5 ${isNext ? 'md:justify-end' : ''}`}>
+            {!isNext && <ArrowLeft className="w-3.5 h-3.5 text-brand-300" />}
+            {isNext ? 'Next case study' : 'Previous case study'}
+            {isNext && <ArrowRight className="w-3.5 h-3.5 text-brand-300" />}
+          </div>
+          <div className="mt-1 text-white font-semibold text-[15px] leading-snug">
+            {project.title}
+          </div>
+          {project.category && (
+            <div className="mt-1 text-[11px] font-mono uppercase tracking-[0.18em] text-brand-300/80">
+              {project.category}
+            </div>
+          )}
+        </div>
       </Link>
     )
   }

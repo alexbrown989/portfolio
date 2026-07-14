@@ -73,7 +73,7 @@ function ProjectCard({ project, index }) {
         {/* Cover */}
         <div className="relative aspect-[16/10] overflow-hidden bg-surface-3">
           <SafeImage
-            src={project.image}
+            src={project.thumb || project.image}
             alt=""
             label={project.title}
             aspect="aspect-[16/10]"

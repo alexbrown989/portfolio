@@ -373,15 +373,18 @@ export default function Gearbox() {
         subtitle="Quarter-long small-team design of a three-stage spur-gear reduction for a 1-DOF robotic elbow. 4000 → 50 RPM · 2.11 → 169 lb-in. Full AGMA 2001-D04 analysis, mixed 4140-steel / 6061-T6-aluminum stack, design-review-approved assembly."
         chips={project.tech || []}
         status={{ label: 'Completed', tone: 'idle' }}
+        image={project.thumb || project.image || '/projects/thumbs/gearbox.jpg'}
+        imageAlt="Three-stage reduction gearbox CAD render"
+        imageFit="cover"
       >
-        <div className="mt-2 text-xs font-mono uppercase tracking-[0.18em] text-gray-500">
+        <div className="mt-2 text-[10.5px] font-mono uppercase tracking-[0.18em] text-gray-500">
           Mar – Apr 2026 · small-team collaboration
         </div>
       </PageHero>
 
       <STARSection star={project.star} title="Overview" />
 
-      {/* CAD render — hero visual until STL lands */}
+      {/* Full CAD render */}
       <section className="pb-10">
         <Container>
           <SectionTitle
@@ -391,12 +394,12 @@ export default function Gearbox() {
             subtitle="Final SolidWorks render of the three-stage reduction for the 1-DOF robotic elbow. Interactive STL assembly viewer comes next once the model is uploaded."
           />
           <Glass pad={false}>
-            <div className="p-4 md:p-6">
+            <div className="p-4 md:p-6 bg-surface-3/40">
               <SafeImage
                 src={project.image || '/projects/gearbox-render.jpg'}
                 alt="Three-stage reduction gearbox CAD render"
                 label="Gearbox render"
-                aspect="aspect-[3/4] md:aspect-[16/10]"
+                aspect="aspect-[3/4] max-h-[72vh]"
                 fit="contain"
               />
             </div>

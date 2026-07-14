@@ -5,11 +5,15 @@
 // metric grid.
 
 import { useEffect, useRef, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { motion, useReducedMotion } from 'framer-motion'
 import { ArrowRight, Circle } from 'lucide-react'
 import { site } from '../content/siteConfig'
+import { projects } from '../content/projects'
 import { CornerBrackets } from '../shared/ui'
 import ResumeLink from './ResumeLink'
+
+const FEATURED_IDS = ['multitool', 'gearbox']
 
 const container = {
   hidden: { opacity: 0 },
@@ -178,6 +182,42 @@ export default function Hero() {
             Explore projects
           </a>
           <ResumeLink />
+        </motion.div>
+
+        {/* Featured project visuals — updated hardware thumbs */}
+        <motion.div variants={item} className="mt-10 w-full max-w-3xl">
+          <div className="grid sm:grid-cols-2 gap-3">
+            {FEATURED_IDS.map((id) => {
+              const p = projects.find((x) => x.id === id)
+              if (!p) return null
+              const src = p.thumb || p.image
+              return (
+                <Link
+                  key={id}
+                  to={`/projects/${id}`}
+                  className="group relative overflow-hidden rounded-xl border border-line bg-surface-2/50 hover:border-brand-500/45 transition-colors"
+                >
+                  <div className="relative aspect-[16/10] overflow-hidden bg-surface-3">
+                    <img
+                      src={src}
+                      alt={p.title}
+                      loading="eager"
+                      className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                    />
+                    <div className="pointer-events-none absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-surface-0/90 to-transparent" />
+                  </div>
+                  <div className="absolute bottom-0 left-0 right-0 p-3 text-left">
+                    <div className="text-[10px] font-mono uppercase tracking-[0.2em] text-brand-200/90">
+                      {p.category}
+                    </div>
+                    <div className="text-sm font-semibold text-white leading-snug mt-0.5 line-clamp-1">
+                      {p.title}
+                    </div>
+                  </div>
+                </Link>
+              )
+            })}
+          </div>
         </motion.div>
 
         {/* System readout */}
