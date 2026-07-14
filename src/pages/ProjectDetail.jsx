@@ -5,6 +5,7 @@ import { useParams, Link } from 'react-router-dom'
 import { projects } from '../content/projects'
 import ProjectLayout from './ProjectLayout'
 import YouTube from '../shared/Youtube'
+import { SafeVideo } from '../shared/Media'
 import {
   Container, PageHero, Glass, ProjectPager, ProjectCTA, BackToProjects,
 } from '../shared/ui'
@@ -54,16 +55,7 @@ export default function ProjectDetail() {
 
               {project.video && !project.youtube && (
                 <Glass pad={false}>
-                  <video
-                    src={project.video}
-                    controls
-                    autoPlay
-                    loop
-                    muted
-                    playsInline
-                    preload="auto"
-                    className="w-full rounded-2xl bg-black object-cover"
-                  />
+                  <SafeVideo src={project.video} label={project.title} aspect="aspect-video" />
                 </Glass>
               )}
 

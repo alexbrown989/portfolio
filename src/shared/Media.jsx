@@ -3,7 +3,7 @@
 // into /public/projects/ yet, the layout still renders — you get a HUD-styled
 // placeholder card with the expected filename, not a broken image icon.
 
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Image as ImageIcon, Film, AlertCircle } from 'lucide-react'
 
 function Placeholder({ label, path, kind }) {
@@ -59,13 +59,28 @@ export function SafeVideo({
   controls = true,
 }) {
   const [failed, setFailed] = useState(false)
-  // Browsers only allow autoplay when the video is muted, so a video that
-  // opts into autoPlay is forced-muted regardless of the muted prop.
+  const ref = useRef(null)
+
+  // Browsers only allow autoplay when the video is actually muted. React does
+  // NOT reliably reflect the `muted` attribute to the DOM property, so we set
+  // it imperatively and kick off playback once the element is mounted.
   const isMuted = muted || autoPlay
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    el.muted = isMuted
+    el.defaultMuted = isMuted
+    if (autoPlay) {
+      const p = el.play?.()
+      if (p && typeof p.catch === 'function') p.catch(() => {})
+    }
+  }, [isMuted, autoPlay, src])
+
   return (
     <div className={`relative ${aspect} w-full overflow-hidden rounded-xl border border-line bg-black ${className}`}>
       {!failed ? (
         <video
+          ref={ref}
           src={src}
           poster={poster}
           controls={controls}

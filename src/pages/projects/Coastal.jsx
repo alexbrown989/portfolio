@@ -2,6 +2,7 @@
 import { lazy, Suspense } from 'react'
 import ProjectLayout from '../ProjectLayout'
 import YouTube from '../../shared/Youtube'
+import { SafeVideo } from '../../shared/Media'
 import { projects } from '../../content/projects'
 import {
   Container, PageHero, SectionTitle, Glass, MetricBox,
@@ -124,16 +125,12 @@ export default function Coastal() {
           />
           <div className="grid lg:grid-cols-[1.15fr_1fr] gap-5">
             <Glass pad={false}>
-              <video
+              <SafeVideo
                 src="/projects/saipan.mp4"
-                controls
-                autoPlay
-                loop
-                muted
-                playsInline
-                preload="auto"
                 poster="/projects/cover.jpg"
-                className="w-full aspect-video rounded-t-2xl bg-black"
+                label="Flow-field visualization"
+                aspect="aspect-video"
+                className="rounded-b-none border-0"
               />
               <div className="px-5 py-3 border-t border-line text-sm text-gray-300">
                 Flow-field visualization with velocity vectors and vorticity contours from the tank runs.
