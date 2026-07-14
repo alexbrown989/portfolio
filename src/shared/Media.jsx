@@ -46,16 +46,33 @@ export function SafeImage({ src, alt, label, className = '', aspect = 'aspect-[1
   )
 }
 
-export function SafeVideo({ src, poster, label, className = '', aspect = 'aspect-video', fit = 'contain' }) {
+export function SafeVideo({
+  src,
+  poster,
+  label,
+  className = '',
+  aspect = 'aspect-video',
+  fit = 'contain',
+  autoPlay = true,
+  loop = true,
+  muted = true,
+  controls = true,
+}) {
   const [failed, setFailed] = useState(false)
+  // Browsers only allow autoplay when the video is muted, so a video that
+  // opts into autoPlay is forced-muted regardless of the muted prop.
+  const isMuted = muted || autoPlay
   return (
     <div className={`relative ${aspect} w-full overflow-hidden rounded-xl border border-line bg-black ${className}`}>
       {!failed ? (
         <video
           src={src}
           poster={poster}
-          controls
-          preload="metadata"
+          controls={controls}
+          autoPlay={autoPlay}
+          loop={loop}
+          muted={isMuted}
+          preload={autoPlay ? 'auto' : 'metadata'}
           playsInline
           onError={() => setFailed(true)}
           className={`w-full h-full ${fit === 'cover' ? 'object-cover' : 'object-contain'}`}

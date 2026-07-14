@@ -127,6 +127,11 @@ export default function Coastal() {
               <video
                 src="/projects/saipan.mp4"
                 controls
+                autoPlay
+                loop
+                muted
+                playsInline
+                preload="auto"
                 poster="/projects/cover.jpg"
                 className="w-full aspect-video rounded-t-2xl bg-black"
               />

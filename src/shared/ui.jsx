@@ -246,38 +246,24 @@ export function ProjectPager({ currentId }) {
 
   const PagerCard = ({ project, direction }) => {
     const isNext = direction === 'next'
-    const src = project.thumb || project.image
     return (
       <Link
         to={`/projects/${project.id}`}
-        className={`group relative flex-1 overflow-hidden rounded-xl border border-line bg-surface-2/50 hover:border-brand-500/40 hover:bg-surface-2 transition-all duration-200 ${isNext ? 'md:text-right' : ''}`}
+        className={`group relative flex-1 rounded-xl border border-line bg-surface-2/50 hover:border-brand-500/40 hover:bg-surface-2 transition-all duration-200 p-5 ${isNext ? 'md:text-right' : ''}`}
       >
-        {src && (
-          <div className={`relative h-24 overflow-hidden bg-surface-3 ${isNext ? '' : ''}`}>
-            <img
-              src={src}
-              alt=""
-              loading="lazy"
-              className="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:opacity-95 transition-opacity"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-surface-2 via-surface-2/40 to-transparent" />
+        <div className={`text-[10.5px] font-mono uppercase tracking-[0.22em] text-gray-500 flex items-center gap-1.5 ${isNext ? 'md:justify-end' : ''}`}>
+          {!isNext && <ArrowLeft className="w-3.5 h-3.5 text-brand-300" />}
+          {isNext ? 'Next case study' : 'Previous case study'}
+          {isNext && <ArrowRight className="w-3.5 h-3.5 text-brand-300" />}
+        </div>
+        <div className="mt-1 text-white font-semibold text-[15px] leading-snug">
+          {project.title}
+        </div>
+        {project.category && (
+          <div className="mt-1 text-[11px] font-mono uppercase tracking-[0.18em] text-brand-300/80">
+            {project.category}
           </div>
         )}
-        <div className="p-5 pt-4">
-          <div className={`text-[10.5px] font-mono uppercase tracking-[0.22em] text-gray-500 flex items-center gap-1.5 ${isNext ? 'md:justify-end' : ''}`}>
-            {!isNext && <ArrowLeft className="w-3.5 h-3.5 text-brand-300" />}
-            {isNext ? 'Next case study' : 'Previous case study'}
-            {isNext && <ArrowRight className="w-3.5 h-3.5 text-brand-300" />}
-          </div>
-          <div className="mt-1 text-white font-semibold text-[15px] leading-snug">
-            {project.title}
-          </div>
-          {project.category && (
-            <div className="mt-1 text-[11px] font-mono uppercase tracking-[0.18em] text-brand-300/80">
-              {project.category}
-            </div>
-          )}
-        </div>
       </Link>
     )
   }

@@ -6,6 +6,7 @@ import {
   ProjectPager, ProjectCTA, STARSection, AARSection,
 } from '../../shared/ui'
 import { projects } from '../../content/projects'
+import { SafeVideo } from '../../shared/Media'
 import { usePageMeta } from '../../shared/usePageMeta'
 import { motion } from 'framer-motion'
 import { Target, Eye, Cpu, GitMerge } from 'lucide-react'
@@ -89,14 +90,12 @@ export default function Turret() {
 
             <Glass pad={false}>
               <div className="p-4">
-                <div className="aspect-[16/10] rounded-xl border border-line bg-black overflow-hidden">
-                  <video
-                    src={project.printVideo || '/projects/turret-print.mp4'}
-                    controls
-                    className="w-full h-full object-contain"
-                    poster="/projects/print-turret.jpg"
-                  />
-                </div>
+                <SafeVideo
+                  src={project.printVideo || '/projects/turret-print.mp4'}
+                  poster="/projects/print-turret.jpg"
+                  label="Print timelapse"
+                  aspect="aspect-[16/10]"
+                />
               </div>
               <div className="px-5 py-4 border-t border-line">
                 <div className="text-white font-semibold">Print timelapse</div>
@@ -153,14 +152,12 @@ export default function Turret() {
           <div className="grid lg:grid-cols-2 gap-5">
             <Glass pad={false}>
               <div className="p-4">
-                <div className="aspect-[16/10] rounded-xl border border-line bg-black overflow-hidden">
-                  <video
-                    src={project.video || '/projects/turret-op.mp4'}
-                    controls
-                    className="w-full h-full object-contain"
-                    poster="/projects/turret-demo.jpg"
-                  />
-                </div>
+                <SafeVideo
+                  src={project.video || '/projects/turret-op.mp4'}
+                  poster="/projects/turret-demo.jpg"
+                  label="Live scan demonstration"
+                  aspect="aspect-[16/10]"
+                />
               </div>
               <div className="px-5 py-4 border-t border-line">
                 <div className="text-white font-semibold">Live scan demonstration</div>
