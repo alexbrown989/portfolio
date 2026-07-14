@@ -6,7 +6,7 @@
 // Media (in /public/projects/):
 //   cnc-compressed.mp4           — CNC machining video
 //   milling-compressed.mp4       — manual milling video
-//   multitool-final.jpg          — finished tool laid out
+//   multitool-finished.jpg       — finished tool laid out
 //   multitool-final-folded.jpg   — finished tool folded
 
 import { useState } from 'react'
@@ -171,7 +171,7 @@ export default function MultiToolFab() {
     title: 'Multi-Tool Fabrication · GD&T + Machining · Alex Brown',
     description: 'Fabricated a functional folding multi-tool from raw aluminum on manual mill + CNC. Held ±0.005 in precision, 0.003 in parallelism, 0.002 in flatness against a full GD&T drawing package.',
     path: '/projects/multitool',
-    image: '/projects/multitool-final.jpg',
+    image: '/projects/multitool-finished.jpg',
   })
   return (
     <ProjectLayout>
@@ -240,7 +240,7 @@ export default function MultiToolFab() {
             <Glass pad={false}>
               <div className="p-4">
                 <SafeImage
-                  src={project.image || '/projects/multitool-final.jpg'}
+                  src={project.image || '/projects/multitool-finished.jpg'}
                   alt="Finished multi-tool laid out"
                   label="Finished · laid out"
                   aspect="aspect-[4/3]"

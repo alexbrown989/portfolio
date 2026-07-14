@@ -32,7 +32,7 @@ export const projects = [
     year: 'Mar – Jun 2026',
     summary:
       'Fabricated a functional folding multi-tool from raw aluminum using manual mill + CNC operations. Held ±0.005 in precision dimensions, 0.003 in parallelism, and 0.002 in flatness against GD&T drawings; inspected and recorded every feature against the print.',
-    image: '/projects/multitool-final.jpg',
+    image: '/projects/multitool-finished.jpg',
     imageFolded: '/projects/multitool-final-folded.jpg',
     thumb: '/projects/thumbs/multitool.jpg',
     videoCnc: '/projects/cnc-compressed.mp4',
