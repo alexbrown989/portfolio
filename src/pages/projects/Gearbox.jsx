@@ -381,12 +381,38 @@ export default function Gearbox() {
 
       <STARSection star={project.star} title="Overview" />
 
+      {/* CAD render — hero visual until STL lands */}
+      <section className="pb-10">
+        <Container>
+          <SectionTitle
+            kicker="CAD"
+            code="C/01"
+            title="Design render"
+            subtitle="Final SolidWorks render of the three-stage reduction for the 1-DOF robotic elbow. Interactive STL assembly viewer comes next once the model is uploaded."
+          />
+          <Glass pad={false}>
+            <div className="p-4 md:p-6">
+              <SafeImage
+                src={project.image || '/projects/gearbox-render.jpg'}
+                alt="Three-stage reduction gearbox CAD render"
+                label="Gearbox render"
+                aspect="aspect-[3/4] md:aspect-[16/10]"
+                fit="contain"
+              />
+            </div>
+            <div className="px-5 py-3 border-t border-line text-sm text-gray-300">
+              Mixed 4140-steel / 6061-T6-aluminum stack · 80:1 total reduction · design-review-approved assembly
+            </div>
+          </Glass>
+        </Container>
+      </section>
+
       {/* Signature interactive */}
       <section className="pb-10">
         <Container>
           <SectionTitle
             kicker="Interactive"
-            code="I/01"
+            code="I/02"
             title="Live 3-stage train · 4000 → 50 RPM"
             subtitle="Every gear rotates at its correct relative speed. Steel pinions in brand color, aluminum driven gears in silver. Total reduction 80:1."
           />
@@ -394,36 +420,38 @@ export default function Gearbox() {
         </Container>
       </section>
 
-      {/* STL viewer — user will drop the assembly */}
-      <section className="pb-10">
-        <Container>
-          <SectionTitle
-            kicker="Assembly"
-            code="A/02"
-            title="Interactive CAD model"
-            subtitle="Explore the assembled gearbox. Uses the same STL viewer as the other case studies — drop the file into /public/models/ to activate."
-          />
-          <Glass pad={false}>
-            <Suspense fallback={
-              <div className="h-[520px] flex items-center justify-center text-brand-300 text-sm font-mono">
-                Loading 3D model…
+      {/* STL viewer — only when the assembly file is present */}
+      {project.stl && (
+        <section className="pb-10">
+          <Container>
+            <SectionTitle
+              kicker="Assembly"
+              code="A/03"
+              title="Interactive CAD model"
+              subtitle="Explore the assembled gearbox."
+            />
+            <Glass pad={false}>
+              <Suspense fallback={
+                <div className="h-[520px] flex items-center justify-center text-brand-300 text-sm font-mono">
+                  Loading 3D model…
+                </div>
+              }>
+                <STLViewer
+                  src={project.stl}
+                  layFlat
+                  height={520}
+                  cameraPosition={[900, 900, 900]}
+                  controlsTarget={[0, 0, 0]}
+                  fitMargin={1.5}
+                />
+              </Suspense>
+              <div className="px-5 py-3 border-t border-line text-xs text-gray-400 font-mono">
+                Drag to rotate · Scroll to zoom · Double-click to reset
               </div>
-            }>
-              <STLViewer
-                src={project.stl || '/models/gearbox.stl'}
-                layFlat
-                height={520}
-                cameraPosition={[900, 900, 900]}
-                controlsTarget={[0, 0, 0]}
-                fitMargin={1.5}
-              />
-            </Suspense>
-            <div className="px-5 py-3 border-t border-line text-xs text-gray-400 font-mono">
-              Drag to rotate · Scroll to zoom · Double-click to reset
-            </div>
-          </Glass>
-        </Container>
-      </section>
+            </Glass>
+          </Container>
+        </section>
+      )}
 
       {/* AGMA table — real numbers */}
       <section className="pb-10">
@@ -438,45 +466,12 @@ export default function Gearbox() {
         </Container>
       </section>
 
-      {/* CAD render media */}
-      <section className="pb-10">
-        <Container>
-          <SectionTitle
-            kicker="CAD"
-            code="C/04"
-            title="Design snapshots"
-          />
-          <div className="grid md:grid-cols-3 gap-5">
-            {[
-              { src: project.image || '/projects/gearbox-render.jpg', label: 'Final render' },
-              { src: '/projects/gearbox-cad-1.jpg',                    label: 'CAD assembly · view 1' },
-              { src: '/projects/gearbox-cad-2.jpg',                    label: 'CAD assembly · view 2' },
-            ].map((m) => (
-              <Glass pad={false} key={m.label}>
-                <div className="p-4">
-                  <SafeImage
-                    src={m.src}
-                    alt={m.label}
-                    label={m.label}
-                    aspect="aspect-[4/3]"
-                    fit="contain"
-                  />
-                </div>
-                <div className="px-5 py-3 border-t border-line text-sm text-gray-300">
-                  {m.label}
-                </div>
-              </Glass>
-            ))}
-          </div>
-        </Container>
-      </section>
-
       {/* Key outcomes */}
       <section className="pb-10">
         <Container>
           <SectionTitle
             kicker="Key outcomes"
-            code="R/05"
+            code="R/04"
             title="Design point + margins"
           />
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">

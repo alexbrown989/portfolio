@@ -33,11 +33,9 @@ export const projects = [
     summary:
       'Fabricated a functional folding multi-tool from raw aluminum using manual mill + CNC operations. Held ±0.005 in precision dimensions, 0.003 in parallelism, and 0.002 in flatness against GD&T drawings; inspected and recorded every feature against the print.',
     image: '/projects/multitool-final.jpg',
-    // TODO(alex): drop these into /public/projects/
-    //   multitool-final.jpg      — final assembled multi-tool photo
-    //   multitool-cnc-1.mp4      — CNC video #1
-    //   multitool-cnc-2.mp4      — CNC video #2
-    //   multitool-inspection.jpg — (optional) inspection setup / spreadsheet
+    imageFolded: '/projects/multitool-final-folded.jpg',
+    videoCnc: '/projects/cnc-compressed.mp4',
+    videoMill: '/projects/milling-compressed.mp4',
     tech: ['Manual Mill', 'CNC', 'GD&T', 'Metrology', 'DFM'],
     status: 'COMPLETED',
     star: {
@@ -83,12 +81,8 @@ export const projects = [
     summary:
       'Quarter-long small-team design of a three-stage spur-gear reduction for a 1-DOF robotic elbow. 4000 → 50 RPM, 2.11 → 169 lb-in, full AGMA 2001-D04 bending-stress analysis, mixed 4140-steel / 6061-T6-aluminum stack, design-review-approved.',
     image: '/projects/gearbox-render.jpg',
-    stl: '/models/gearbox.stl',
-    // TODO(alex): drop these into /public/
-    //   projects/gearbox-render.jpg   — final CAD render / exploded view
-    //   projects/gearbox-cad-1.jpg    — CAD assembly screenshot #1
-    //   projects/gearbox-cad-2.jpg    — CAD assembly screenshot #2
-    //   models/gearbox.stl            — assembled STL for the 3D viewer
+    // STL assembly viewer lands when /models/gearbox.stl is uploaded.
+    stl: null,
     tech: ['SolidWorks', 'AGMA 2001-D04', 'Spur Gears', 'Tolerance Stack-Up', 'GD&T'],
     status: 'COMPLETED',
     star: {
