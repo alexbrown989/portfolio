@@ -146,11 +146,22 @@ export const knowledgeBase = [
   {
     id: 'verus',
     title: 'Verus Aerospace · Lead Intern',
-    tags: ['verus', 'aerospace', 'internship', 'intern', 'current job', 'current role'],
-    terms: ['verus', 'verus aerospace', 'current internship', 'current role', 'aerospace internship'],
+    tags: [
+      'verus', 'aerospace', 'internship', 'intern', 'current job', 'current role',
+      'manufacturing quality', 'quality engineering', 'inspection planning',
+      'configuration control', 'nonconformance', 'production improvement',
+    ],
+    terms: [
+      'verus', 'verus aerospace', 'current internship', 'current role',
+      'aerospace internship', 'manufacturing quality', 'quality engineering',
+      'aerospace manufacturing', 'manufacturing quality engineering',
+    ],
     patterns: [
       'tell me about verus', 'what do you do at verus', 'current role', 'current internship',
       'aerospace experience', 'what is your internship', 'verus aerospace',
+      'show me work related to manufacturing quality',
+      'what manufacturing quality work has alex done',
+      'manufacturing quality experience',
     ],
     answer:
       'Dec 2025 – Present, Tacoma, WA. I support aerospace manufacturing, quality, and process improvement for flight-critical hardware in a high-mix production environment. My work covers Engineering Masters and configuration control in Infor VISUAL ERP, developing inspection plans and quality documentation, AS9102 First Article Inspection activities, and independent over-check inspections on Gulfstream assemblies. I also lead the Quality Clinic (non-conforming hardware disposition + workflow redesign) and was selected as Lead Intern to onboard incoming interns.',
@@ -191,6 +202,23 @@ export const knowledgeBase = [
     patterns: ['have you worked with titanium', 'have you worked with inconel', 'aerospace materials'],
     answer:
       'At Verus I have exposure to multi-spindle CNC machining of titanium and Inconel components: close-tolerance aerospace manufacturing at real production scale. Combined with the Multi-Tool Fabrication project, that means both hands-on machining and the aerospace-production perspective on why tolerances are non-negotiable.',
+  },
+  {
+    id: 'shape-memory-alloys',
+    title: 'Shape-memory alloys',
+    tags: ['shape-memory alloy', 'shape memory alloys', 'sma', 'nitinol', 'smart materials'],
+    terms: ['shape-memory alloy', 'shape memory alloy', 'shape memory alloys', 'nitinol'],
+    patterns: [
+      'what has alex done with shape-memory alloys',
+      'shape memory alloy experience',
+      'has alex worked with nitinol',
+    ],
+    answer:
+      'No documented project on this portfolio uses shape-memory alloys or Nitinol, so I would not claim direct experience. The closest materials work is the PCM vibration-composite study and the BET-H bio-inspired thermal framework, but those use different mechanisms and should not be presented as SMA work.',
+    links: [
+      { label: 'PCM materials study', to: '/projects/vibration' },
+      { label: 'BET-H thermal framework', to: '/projects/beth' },
+    ],
   },
 
   /* ---------- Navy / military ---------- */
@@ -265,11 +293,25 @@ export const knowledgeBase = [
   {
     id: 'coastal',
     title: 'Saipan Coastal Wave Dynamics',
-    tags: ['coastal', 'saipan', 'piv', 'wave', 'fluid dynamics', 'seawall', 'erosion', 'cfd', 'pacific'],
-    terms: ['coastal', 'saipan', 'piv', 'wave dynamics', 'seawall'],
-    patterns: ['coastal project', 'saipan project', 'piv accuracy', 'wave dynamics'],
+    tags: [
+      'coastal', 'saipan', 'piv', 'wave', 'water movement', 'fluid dynamics',
+      'seawall', 'erosion', 'island model', 'hydraulic flume', 'matlab',
+      'pivlab', 'dem', 'pacific',
+    ],
+    terms: [
+      'coastal', 'saipan', 'piv', 'wave dynamics', 'water movement',
+      'island model', 'coastal erosion', 'erosion analysis', 'hydraulic flume',
+      'dem processing', 'pivlab',
+    ],
+    patterns: [
+      'coastal project', 'saipan project', 'piv accuracy', 'wave dynamics',
+      'analyzing water movement around an island model',
+      'which project analyzed water movement',
+      'what software did alex use for the saipan erosion analysis',
+      'software used for saipan analysis',
+    ],
     answer:
-      'First lab-scale pipeline quantifying wave–coast interactions for Saipan (~$45M+ infrastructure exposure). Processed DEM in MATLAB, 3D-printed the island geometry at 0.2 mm layers, and designed a novel polka-dot Visual Field Architecture background that improved PIV particle correlation ~40%. Tank runs under Froude similarity produced ↓37% wave energy at the shoreline, ↓42% coastal vorticity, and identified three high-risk zones.',
+      'The Saipan Coastal Wave Dynamics project analyzed water movement around a scaled, 3D-printed island model in a hydraulic tank. Alex processed digital elevation model (DEM) data in MATLAB, used PIVLab for particle-image velocimetry and flow-field analysis, and validated vectors against manual particle tracks. A custom Visual Field Architecture background improved PIV particle correlation ~40%. Tank runs under Froude similarity measured 37% lower shoreline wave energy, 42% lower coastal vorticity, and identified three high-risk zones.',
     links: [{ label: 'Case study', to: '/projects/coastal' }],
   },
   {
@@ -569,9 +611,10 @@ export const knowledgeBase = [
 // Suggested prompts shown in the empty state.
 export const suggestedPrompts = [
   'What is Alex doing at Verus Aerospace?',
+  'Show me Alex’s work related to manufacturing quality.',
+  'Which project analyzed water movement around an island model?',
+  'What software was used for the Saipan erosion analysis?',
   'Walk me through the multi-tool project.',
   'When is Alex available for full-time?',
   'How do I contact Alex?',
-  'Tell me about the BET-H thermal framework.',
-  'What was hardest about the gearbox project?',
 ]

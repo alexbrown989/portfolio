@@ -16,7 +16,7 @@
 // candidates as tappable follow-up options, instead of confidently
 // returning the wrong long answer.
 
-import { knowledgeBase } from '../../content/knowledgeBase'
+import { knowledgeBase } from '../../content/knowledgeBase.js'
 
 const STOP = new Set([
   'a','an','the','and','or','but','of','for','to','in','on','at','with','by','is',
@@ -24,10 +24,16 @@ const STOP = new Set([
   'do','did','does','have','has','had','how','what','when','where','why','who',
   'about','tell','show','walk','through','give','some','any','can','could',
   'would','should','please','from','into','so','if','than','then','also','just',
+  // Every question in this assistant is implicitly about Alex. His name
+  // carries no intent and previously caused the biography entry to hijack
+  // unrelated queries such as "What software did Alex use for Saipan?"
+  'alex','alexander','brown',
 ])
 
 function normalize(s = '') {
   return String(s).toLowerCase()
+    .replace(/[’‘]/g, "'")
+    .replace(/'s\b/g, '')
     // Preserve alphanumerics and a few connectors that carry meaning
     // ('&' → e.g. gd&t, '-' → e.g. as9102-eligible).
     .replace(/[^a-z0-9&\-'\s+]/g, ' ')
@@ -49,7 +55,12 @@ function jaccard(a, b) {
 
 function includesPhrase(hay, needle) {
   if (!needle) return false
-  return hay.includes(needle)
+  // Match complete normalized words/phrases, not arbitrary substrings.
+  // Raw includes() made "ai" match inside "saipan".
+  return hay === needle ||
+    hay.startsWith(`${needle} `) ||
+    hay.endsWith(` ${needle}`) ||
+    hay.includes(` ${needle} `)
 }
 
 /** Score a single knowledge-base entry against a normalized query. */
@@ -66,7 +77,9 @@ function scoreEntry(qNorm, qTokens, entry) {
     // For queries longer than a couple words, allow contained-in-query
     // AND all-tokens-in-query fallbacks.
     const pTokens = tokenize(pn)
-    if (pTokens.length && pTokens.every(t => qTokens.includes(t))) {
+    // One-token fuzzy patterns are too broad ("work", "alex", "quality").
+    // Require at least two meaningful tokens before granting an intent hit.
+    if (pTokens.length >= 2 && pTokens.every(t => qTokens.includes(t))) {
       s += 14; hits.pattern++
     }
   }
@@ -128,6 +141,22 @@ export function search(query, limit = 5) {
 // Very light intent classification for the fallback path so we route to
 // the right region of the site even when no KB entry matched.
 const INTENT_HINTS = [
+  { pattern: /\b(saipan|coastal|erosion|seawall|wave|water movement|island model|piv|pivlab|flume|dem)\b/i,
+    label: 'Saipan Coastal Wave Dynamics',             entryId: 'coastal' },
+  { pattern: /\b(manufacturing quality|quality engineering|inspection plan|configuration control|nonconform|quality clinic)\b/i,
+    label: 'Manufacturing quality at Verus',           entryId: 'verus' },
+  { pattern: /\b(multi-?tool|manual mill|machining|metrology|flatness|parallelism)\b/i,
+    label: 'Multi-Tool Fabrication',                    entryId: 'multitool' },
+  { pattern: /\b(gearbox|gear ratio|robotic elbow|agma|backlash|shaft sizing)\b/i,
+    label: 'Reduction Gearbox',                         entryId: 'gearbox' },
+  { pattern: /\b(phase[- ]?change|pcm|vibration|damping|ring[- ]?down|piezo)\b/i,
+    label: 'PCM Vibration Analysis',                    entryId: 'vibration' },
+  { pattern: /\b(turret|gimbal|servo|nodemcu|2[- ]?axis)\b/i,
+    label: '2-Axis Autonomous Turret',                  entryId: 'turret' },
+  { pattern: /\b(elastin|bet[- ]?h|bio[- ]?inspired thermal|passive thermal)\b/i,
+    label: 'BET-H thermal framework',                   entryId: 'beth' },
+  { pattern: /\b(micromobility|mobility equity|dedoose)\b/i,
+    label: 'Equitable Micromobility Study',             entryId: 'micromobility' },
   { pattern: /\b(project|projects|portfolio|case study|case studies)\b/i,
     label: 'Project portfolio',                         entryId: 'projects-overview' },
   { pattern: /\b(intern|internship|verus|aerospace|quality|manufacturing|as9102|inconel|titanium)\b/i,
@@ -192,7 +221,8 @@ export function respond(query) {
 
   const [top, second] = ranked
   const clear =
-    top.score >= 12 && (!second || (top.score - second.score) >= 6)
+    (!second && top.score >= 8) ||
+    (top.score >= 12 && (top.score - second.score) >= 6)
 
   // If the top match is not decisive, offer a disambiguation menu so we
   // never return a confidently wrong long answer.
@@ -213,7 +243,10 @@ export function respond(query) {
     title: e.title,
     body: e.answer,
     links: e.links || [],
-    related: ranked.slice(1, 3).map(r => ({
+    // Do not surface incidental one-token overlaps as "Related" links.
+    // This previously produced suggestions such as Travel after a
+    // manufacturing-quality question.
+    related: ranked.slice(1).filter(r => r.score >= 8).slice(0, 2).map(r => ({
       label: r.entry.title,
       entryId: r.entry.id,
     })),
