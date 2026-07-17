@@ -6,7 +6,7 @@
 import { Link } from 'react-router-dom'
 import { FileDown, ArrowUpRight } from 'lucide-react'
 
-const RESUME_URL = '/resume.pdf'
+const RESUME_URL = '/Resume.pdf'
 const HTML_URL   = '/resume'
 
 /**
