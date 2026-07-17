@@ -374,7 +374,7 @@ Left for you (Alex):
       (`/public/projects/gearbox-render.jpg`, `gearbox-cad-1.jpg`,
       `gearbox-cad-2.jpg`). Layout renders cleanly without them; the
       moment they land, the pages populate.
-- [ ] **Regenerate resume PDF** to `/public/resume.pdf` with the new
+- [x] **Regenerate resume PDF** to `/public/Resume.pdf` with the new
       section ordering (Verus → Projects → Education → Service).
 - [ ] **Ship an og.png** social preview to `/public/og.png` (1200×630).
 - [ ] Downloadable engineering artifacts per project (§6.1) —

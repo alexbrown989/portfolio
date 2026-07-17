@@ -75,7 +75,7 @@
       ]
     },
     {
-      "source": "/resume.pdf",
+      "source": "/Resume.pdf",
       "headers": [
         { "key": "Cache-Control", "value": "public, max-age=3600, must-revalidate" },
         { "key": "Content-Disposition", "value": "attachment; filename=\"alex-brown-resume.pdf\"" }

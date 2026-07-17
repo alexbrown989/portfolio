@@ -37,7 +37,7 @@ export const knowledgeBase = [
       { label: 'Contact section', to: '/#contact' },
       { label: 'Email',            to: 'mailto:alexbrow@uw.edu', external: true },
       { label: 'LinkedIn',         to: 'https://www.linkedin.com/in/alexanderchasebrown/', external: true },
-      { label: 'Resume (PDF)',     to: '/resume.pdf', external: true },
+      { label: 'Resume (PDF)',     to: '/Resume.pdf', external: true },
     ],
   },
   {
@@ -77,8 +77,8 @@ export const knowledgeBase = [
     tags: ['resume', 'cv', 'curriculum vitae', 'pdf'],
     terms: ['resume', 'cv', 'resume pdf'],
     patterns: ['do you have a resume', 'can i see your resume', 'resume link', 'download resume'],
-    answer: 'PDF resume is at /resume.pdf. Same section order as the site: Verus internship → Projects → Education → Service.',
-    links: [{ label: 'Download resume', to: '/resume.pdf', external: true }],
+    answer: 'The current PDF resume is available at /Resume.pdf. It covers aerospace manufacturing quality at Verus, hands-on machining and gearbox design, Navy service, skills, and education.',
+    links: [{ label: 'Download resume', to: '/Resume.pdf', external: true }],
   },
   {
     id: 'github',
