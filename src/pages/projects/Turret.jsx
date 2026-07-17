@@ -6,7 +6,7 @@ import {
   ProjectPager, ProjectCTA, STARSection, AARSection,
 } from '../../shared/ui'
 import { projects } from '../../content/projects'
-import { SafeVideo } from '../../shared/Media'
+import { SafeImage, SafeVideo } from '../../shared/Media'
 import { usePageMeta } from '../../shared/usePageMeta'
 import { motion } from 'framer-motion'
 import { Target, Eye, Cpu, GitMerge } from 'lucide-react'
@@ -71,14 +71,13 @@ export default function Turret() {
           <div className="grid lg:grid-cols-2 gap-5">
             <Glass pad={false}>
               <div className="p-4">
-                <div className="aspect-[16/10] rounded-xl border border-line bg-black/50 overflow-hidden">
-                  <img
-                    src={project.image || '/projects/turret-full.jpg'}
-                    alt="Finished turret assembly"
-                    className="w-full h-full object-contain"
-                    loading="eager"
-                  />
-                </div>
+                <SafeImage
+                  src={project.image || '/projects/turret-full.jpg'}
+                  alt="Finished turret assembly"
+                  label="Assembled platform"
+                  aspect="aspect-[16/10]"
+                  fit="contain"
+                />
               </div>
               <div className="px-5 py-4 border-t border-line">
                 <div className="text-white font-semibold">Assembled platform</div>
@@ -169,13 +168,13 @@ export default function Turret() {
 
             <Glass pad={false}>
               <div className="p-4">
-                <div className="aspect-[16/10] rounded-xl border border-line bg-black overflow-hidden">
-                  <img
-                    src={project.codeImage || '/projects/turret-code.png'}
-                    alt="Embedded C++ control logic"
-                    className="w-full h-full object-contain"
-                  />
-                </div>
+                <SafeImage
+                  src={project.codeImage || '/projects/turret-code.png'}
+                  alt="Embedded C++ control logic"
+                  label="Embedded C++"
+                  aspect="aspect-[16/10]"
+                  fit="contain"
+                />
               </div>
               <div className="px-5 py-4 border-t border-line">
                 <div className="text-white font-semibold">Embedded C++</div>

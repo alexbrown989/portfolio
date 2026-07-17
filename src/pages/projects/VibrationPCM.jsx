@@ -7,6 +7,7 @@ import {
   ProjectPager, ProjectCTA, STARSection, AARSection,
 } from '../../shared/ui'
 import { projects } from '../../content/projects'
+import { SafeImage } from '../../shared/Media'
 import { usePageMeta } from '../../shared/usePageMeta'
 
 const STLViewer = lazy(() => import('../../shared/STLViewer.jsx'))
@@ -122,11 +123,7 @@ function DampingSlider() {
 
 /* ---------------------- Media helper ---------------------- */
 function ImageCard({ src, alt, aspect = 'aspect-[4/3]' }) {
-  return (
-    <div className={`rounded-xl border border-line bg-black/30 p-2 ${aspect} w-full overflow-hidden`}>
-      <img src={src} alt={alt} loading="lazy" className="w-full h-full object-contain" />
-    </div>
-  )
+  return <SafeImage src={src} alt={alt} aspect={aspect} fit="contain" />
 }
 
 /* ---------------------- Damping waveform ---------------------- */
