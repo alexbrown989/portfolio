@@ -391,7 +391,7 @@ export default function Gearbox() {
             kicker="CAD"
             code="C/01"
             title="Design render"
-            subtitle="Final SolidWorks render of the three-stage reduction for the 1-DOF robotic elbow. Interactive STL assembly viewer comes next once the model is uploaded."
+            subtitle="Final SolidWorks render of the three-stage reduction for the 1-DOF robotic elbow. The complete assembly is available in the interactive viewer below."
           />
           <Glass pad={false}>
             <div className="p-4 md:p-6 bg-surface-3/40">
@@ -431,7 +431,7 @@ export default function Gearbox() {
               kicker="Assembly"
               code="A/03"
               title="Interactive CAD model"
-              subtitle="Explore the assembled gearbox."
+              subtitle="Explore the complete gearbox assembly with the same lighting, fit/reset behavior, and orbit controls used across the other project viewers."
             />
             <Glass pad={false}>
               <Suspense fallback={

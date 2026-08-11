@@ -83,8 +83,7 @@ export const projects = [
       'Quarter-long small-team design of a three-stage spur-gear reduction for a 1-DOF robotic elbow. 4000 → 50 RPM, 2.11 → 169 lb-in, full AGMA 2001-D04 bending-stress analysis, mixed 4140-steel / 6061-T6-aluminum stack, design-review-approved.',
     image: '/projects/gearbox-render.jpg',
     thumb: '/projects/thumbs/gearbox.jpg',
-    // STL assembly viewer lands when /models/gearbox.stl is uploaded.
-    stl: null,
+    stl: '/models/gearbox.stl',
     tech: ['SolidWorks', 'AGMA 2001-D04', 'Spur Gears', 'Tolerance Stack-Up', 'GD&T'],
     status: 'COMPLETED',
     star: {
