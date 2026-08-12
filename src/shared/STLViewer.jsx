@@ -30,10 +30,23 @@ class MiniBoundary extends React.Component {
 }
 
 function Model({ src, layFlat = true, color = '#c8d1de' }) {
-  const geometry = useLoader(STLLoader, src)
-  geometry.computeVertexNormals?.()
-  geometry.computeBoundingBox?.()
-  if (layFlat) geometry.rotateX(-Math.PI / 2)
+  const loaded = useLoader(STLLoader, src)
+
+  // useLoader caches geometry per URL, so the loaded object must never be
+  // mutated: re-mounting a viewer would rotate an already-rotated part.
+  // Clone, orient, then center on the origin. Centering matters because
+  // OrbitControls targets [0,0,0]; an STL exported far from its origin
+  // (the gearbox assembly sits ~270 units out) would otherwise orbit and
+  // frame around empty space instead of the part.
+  const geometry = useMemo(() => {
+    const g = loaded.clone()
+    if (layFlat) g.rotateX(-Math.PI / 2)
+    g.center()
+    g.computeVertexNormals()
+    g.computeBoundingBox()
+    return g
+  }, [loaded, layFlat])
+
   return (
     <mesh geometry={geometry} castShadow receiveShadow>
       <meshStandardMaterial color={color} metalness={0.15} roughness={0.55} />
