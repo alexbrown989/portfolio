@@ -200,7 +200,7 @@ export default function Gearbox() {
               kicker="Assembly"
               code="A/02"
               title="Interactive CAD model"
-              subtitle="Orbit the full CAD assembly. Drag to rotate, scroll to zoom, and reset the framing with the button, a double-click, or the R key."
+              subtitle="The full assembly, opening on a three-quarter top-down view so the whole gear train reads at a glance."
             />
             <Glass pad={false}>
               <Suspense fallback={
@@ -212,7 +212,11 @@ export default function Gearbox() {
                   src={project.stl}
                   layFlat
                   height={520}
-                  cameraPosition={[900, 900, 900]}
+                  // Bounds derives the distance, so this vector only sets the
+                  // viewing direction. A steeper elevation than the default
+                  // isometric is needed here: laid flat, the assembly is long
+                  // and low, so a 35-degree view foreshortens it badly.
+                  cameraPosition={[700, 1500, 900]}
                   controlsTarget={[0, 0, 0]}
                   fitMargin={1.5}
                 />
